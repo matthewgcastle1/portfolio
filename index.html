@@ -309,6 +309,17 @@
   }
   footer a { color: var(--chalk-dust); }
   footer a:hover { color: var(--gold); }
+  .footer-btn {
+    display: inline-block;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--gold) !important;
+    border: 1px solid var(--gold-dim);
+    padding: 9px 18px;
+    border-radius: 2px;
+    transition: background .25s ease;
+  }
+  .footer-btn:hover { background: rgba(224,184,74,0.08); color: #f0cc6e !important; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -476,7 +487,8 @@
 
 <footer>
   Matthew Castle &middot; Austin, TX &middot; <a href="mailto:matthewgcastle@gmail.com">matthewgcastle@gmail.com</a>
-  <div style="margin-top: 10px;"><a href="writing.html">technical writing &rarr;</a></div>
+  <div style="margin-top: 20px;"><a href="writing.html" class="footer-btn">technical writing &rarr;</a></div>
+  <div style="margin-top: 14px;"><a href="books.html">favorite books &rarr;</a></div>
 </footer>
 
 <script>

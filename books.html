@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favorite Books</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .books-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .book-card {
+      background: white;
+      border: 1px solid #e0d9ce;
+      border-radius: 4px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .book-card:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .book-card h3 {
+      font-size: 1.2rem;
+      color: #1a3a3a;
+      margin-bottom: 0.3rem;
+      line-height: 1.4;
+    }
+
+    .book-author {
+      color: #8a8a8a;
+      font-style: italic;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+    }
+
+    .book-category {
+      display: inline-block;
+      background-color: #e8e0d5;
+      color: #5a5a5a;
+      padding: 0.3rem 0.7rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 1rem;
+    }
+
+    .book-description {
+      color: #5a5a5a;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .book-notes {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-left: 3px solid #8b7355;
+      font-size: 0.9rem;
+      color: #5a5a5a;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .book-notes.placeholder {
+      color: #a0a0a0;
+    }
+
+    @media (max-width: 768px) {
+      .books-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Favorite Books</h1>
+      <p>A curated collection of essential reads</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="index.html">← Home</a>
+      <a href="writing.html">Technical Writing</a>
+      <a href="demos.html">Demos</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Favorite Books</h1>
+        <div class="article-meta">A personal collection of works that matter</div>
+      </div>
+
+      <div class="article-body">
+        <p>Below is a curated collection of favorite books spanning philosophy, literature, history, and more. This list will grow and evolve over time.</p>
+      </div>
+
+      <div class="books-grid">
+        <div class="book-card">
+          <h3>The Brothers Karamazov</h3>
+          <div class="book-author">Fyodor Dostoyevsky</div>
+          <div class="book-category">Fiction / Philosophy</div>
+          <div class="book-description">Dostoyevsky's final novel features three brothers, each representing different approaches to faith, doubt, and morality. Considered one of the greatest novels ever written, it grapples with questions of suffering, freedom, and God.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Fathers and Sons</h3>
+          <div class="book-author">Ivan Turgenev</div>
+          <div class="book-category">Fiction / Philosophy</div>
+          <div class="book-description">A novel examining the generational conflict between liberal romantics of the 1840s and the radical nihilists of the 1860s. Turgenev's nuanced portrayal of Bazarov explores the clash between old and new worldviews.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Notes from Underground</h3>
+          <div class="book-author">Fyodor Dostoyevsky</div>
+          <div class="book-category">Philosophy / Fiction</div>
+          <div class="book-description">A short but profound work presenting a narrator's bitter reflections on rationalism, free will, and the human condition. Often considered the first existentialist novel, it challenges Enlightenment assumptions about human nature.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Thus Spoke Zarathustra</h3>
+          <div class="book-author">Friedrich Nietzsche</div>
+          <div class="book-category">Philosophy / Parable</div>
+          <div class="book-description">A philosophical novel presenting Nietzsche's ideas through the teachings of a wandering prophet. Features the concept of the Übermensch and explores themes of eternal recurrence, self-overcoming, and the creation of new values.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>On the Genealogy of Morals</h3>
+          <div class="book-author">Friedrich Nietzsche</div>
+          <div class="book-category">Philosophy</div>
+          <div class="book-description">Nietzsche traces the origins of morality through history, arguing that our concepts of good and evil are products of power dynamics and resentment rather than universal truths. A genealogical investigation into Western values.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Joyous Science</h3>
+          <div class="book-author">Friedrich Nietzsche</div>
+          <div class="book-category">Philosophy</div>
+          <div class="book-description">A transitional work where Nietzsche develops his mature philosophy. Introduces the idea of eternal recurrence and emphasizes life affirmation, intellectual freedom, and the creative potential of human existence.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Beyond Good and Evil</h3>
+          <div class="book-author">Friedrich Nietzsche</div>
+          <div class="book-category">Philosophy</div>
+          <div class="book-description">Nietzsche's critique of traditional morality and Western philosophy. He challenges the concept of good and evil as social constructs, advocating for a transvaluation of all values and the cultivation of the noble and strong.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Catch-22</h3>
+          <div class="book-author">Joseph Heller</div>
+          <div class="book-category">Fiction / Satire</div>
+          <div class="book-description">A darkly comic novel about American bombardiers in World War II. Heller captures the absurdity and bureaucratic madness of war, creating a masterpiece of satire that influenced generations of writers.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Catcher in the Rye</h3>
+          <div class="book-author">J.D. Salinger</div>
+          <div class="book-category">Fiction</div>
+          <div class="book-description">A coming-of-age novel following Holden Caulfield as he navigates adolescence, alienation, and his search for authenticity in a world of "phonies." A landmark work in American literature capturing teenage angst and disillusionment.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Lucifer Principle</h3>
+          <div class="book-author">Howard Bloom</div>
+          <div class="book-category">Science / Philosophy</div>
+          <div class="book-description">Bloom argues that the universe and human nature are fundamentally driven by competition, hierarchy, and self-assertion. An ambitious work connecting physics, biology, and human history through evolutionary principles.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Sorrows of Young Werther</h3>
+          <div class="book-author">Johann Wolfgang von Goethe</div>
+          <div class="book-category">Fiction / Philosophy</div>
+          <div class="book-description">An epistolary novel presenting a young man's passionate, ultimately tragic love affair. Goethe's exploration of romantic idealism and emotional suffering became a defining work of the Sturm und Drang movement.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Gnostic Gospels</h3>
+          <div class="book-author">Elaine Pagels</div>
+          <div class="book-category">History / Religion</div>
+          <div class="book-description">Pagels examines the recently discovered Nag Hammadi texts, exploring alternative early Christian movements and the development of orthodox Christianity. A groundbreaking work in understanding early religious history.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Adam, Eve, and the Serpent</h3>
+          <div class="book-author">Elaine Pagels</div>
+          <div class="book-category">History / Religion</div>
+          <div class="book-description">Pagels explores how early Christian interpretations of the Adam and Eve story shaped attitudes toward sexuality, power, and freedom. A scholarly examination of how religious texts were used to construct political and sexual hierarchies.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Crime and Punishment</h3>
+          <div class="book-author">Fyodor Dostoyevsky</div>
+          <div class="book-category">Fiction / Philosophy</div>
+          <div class="book-description">A psychological novel exploring guilt, morality, and redemption through the story of Raskolnikov, a troubled student who commits murder. Dostoyevsky's masterwork delves into the darkest corners of the human psyche.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Godel, Escher, Bach</h3>
+          <div class="book-author">Douglas Hofstadter</div>
+          <div class="book-category">Science / Philosophy</div>
+          <div class="book-description">A work of philosophy and science that explores the nature of consciousness and intelligence through the interplay of mathematics, art, and music. Hofstadter's masterpiece examines self-reference and recursion in a way that challenges conventional thinking.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Lessons of History</h3>
+          <div class="book-author">Will and Ariel Durant</div>
+          <div class="book-category">History</div>
+          <div class="book-description">A distillation of the Durants' lifetime study of civilization. Drawing from their massive 11-volume "Story of Civilization," they extract timeless patterns about human nature, government, economics, and the cycles of history.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Odyssey</h3>
+          <div class="book-author">Homer</div>
+          <div class="book-category">Fiction / Epic</div>
+          <div class="book-description">Homer's epic poem following Odysseus's ten-year journey home after the Trojan War. A foundational work of Western literature exploring themes of perseverance, cunning, loyalty, and the struggle between fate and free will.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Human, All Too Human</h3>
+          <div class="book-author">Friedrich Nietzsche</div>
+          <div class="book-category">Philosophy</div>
+          <div class="book-description">Nietzsche's break from his earlier romanticism, adopting a more psychological and aphoristic approach. He examines human behavior, morality, and culture with skepticism toward metaphysics and idealism.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Empire of the Summer Moon</h3>
+          <div class="book-author">S.C. Gwynne</div>
+          <div class="book-category">History</div>
+          <div class="book-description">The rise and fall of the Comanche empire and the tragic story of Cynthia Ann Parker. A gripping account of the clash between Native American and Euro-American civilizations on the American frontier.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Republic</h3>
+          <div class="book-author">Plato</div>
+          <div class="book-category">Philosophy</div>
+          <div class="book-description">Plato's Socratic dialogue exploring justice, the ideal state, and the nature of reality. Introduces the allegory of the cave and the theory of Forms. A cornerstone of Western political philosophy.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>One Flew Over the Cuckoo's Nest</h3>
+          <div class="book-author">Ken Kesey</div>
+          <div class="book-category">Fiction</div>
+          <div class="book-description">A novel about rebellion against institutional control in a psychiatric hospital. McMurphy's battle against Nurse Ratched became a cultural touchstone for questioning authority and the definition of sanity.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Electric Kool-Aid Acid Test</h3>
+          <div class="book-author">Tom Wolfe</div>
+          <div class="book-category">Non-fiction / Journalism</div>
+          <div class="book-description">Wolfe's immersive account of Ken Kesey and the Merry Pranksters' cross-country bus trip experimenting with LSD. A defining work of New Journalism capturing 1960s counterculture.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Structure of Scientific Revolutions</h3>
+          <div class="book-author">Thomas Kuhn</div>
+          <div class="book-category">Science / Philosophy</div>
+          <div class="book-description">Kuhn introduces the concept of paradigm shifts, arguing that scientific progress happens through revolutionary breaks rather than steady accumulation. Changed how we understand scientific change.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>First Love</h3>
+          <div class="book-author">Ivan Turgenev</div>
+          <div class="book-category">Fiction</div>
+          <div class="book-description">A novella about a teenage boy's infatuation with a captivating young woman. Turgenev captures the intensity and confusion of first love with psychological precision and emotional honesty.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Hamlet</h3>
+          <div class="book-author">William Shakespeare</div>
+          <div class="book-category">Fiction / Drama</div>
+          <div class="book-description">Shakespeare's tragedy of a Danish prince paralyzed by doubt and introspection. One of literature's most complex characters grapples with revenge, mortality, and the corruption of power.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Desert Solitaire</h3>
+          <div class="book-author">Edward Abbey</div>
+          <div class="book-category">Nature / Memoir</div>
+          <div class="book-description">Abbey's account of his seasons as a park ranger in the Utah desert. A meditation on wilderness, solitude, and the threat of industrial civilization to the natural world.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>The Selfish Gene</h3>
+          <div class="book-author">Richard Dawkins</div>
+          <div class="book-category">Science / Biology</div>
+          <div class="book-description">Dawkins argues that evolution operates at the level of genes, not individuals or species. Introduced the concept of memes and revolutionized how we understand natural selection.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Amusing Ourselves to Death</h3>
+          <div class="book-author">Neil Postman</div>
+          <div class="book-category">Media / Philosophy</div>
+          <div class="book-description">Postman argues that television's emphasis on entertainment has eroded public discourse and rational thought. A prescient warning about how media shapes consciousness.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>1984</h3>
+          <div class="book-author">George Orwell</div>
+          <div class="book-category">Fiction / Dystopian</div>
+          <div class="book-description">Orwell's dystopian vision of totalitarian surveillance and thought control. A chilling exploration of how power manipulates truth, language, and memory to maintain control.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Animal Farm</h3>
+          <div class="book-author">George Orwell</div>
+          <div class="book-category">Fiction / Satire</div>
+          <div class="book-description">An allegorical novella satirizing the Russian Revolution and Stalinist totalitarianism. Animals overthrow their human farmer only to recreate the same oppressive hierarchy.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Brave New World</h3>
+          <div class="book-author">Aldous Huxley</div>
+          <div class="book-category">Fiction / Dystopian</div>
+          <div class="book-description">Huxley imagines a future where humanity is controlled through pleasure, genetic engineering, and conditioning rather than pain. A different dystopian vision than Orwell's, equally disturbing.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>An Imaginary Tale: The Story of √-1</h3>
+          <div class="book-author">Paul Nahin</div>
+          <div class="book-category">Mathematics / History</div>
+          <div class="book-description">Nahin traces the history of the imaginary unit and complex numbers. A fascinating account of how mathematicians reluctantly accepted and eventually embraced a number that "shouldn't exist."</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Civilization and Its Discontents</h3>
+          <div class="book-author">Sigmund Freud</div>
+          <div class="book-category">Philosophy / Psychology</div>
+          <div class="book-description">Freud examines the tension between individual desires and societal demands. He argues civilization requires suppressing primal instincts, creating inevitable psychological discontent.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Relativity: The Special and General Theory</h3>
+          <div class="book-author">Albert Einstein</div>
+          <div class="book-category">Science / Physics</div>
+          <div class="book-description">Einstein's own accessible explanation of his revolutionary theories. He walks readers through the concepts of space-time, gravity as curvature, and the nature of the universe.</div>
+        </div>
+
+        <div class="book-card">
+          <h3>Walden</h3>
+          <div class="book-author">Henry David Thoreau</div>
+          <div class="book-category">Nature / Philosophy</div>
+          <div class="book-description">Thoreau's account of two years living in a cabin at Walden Pond. A meditation on simple living, self-reliance, and resistance to materialism. The grandfather of American nature writing and a foundational text for questioning industrial society.</div>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>
