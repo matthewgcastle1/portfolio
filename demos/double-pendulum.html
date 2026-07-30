@@ -230,7 +230,7 @@
           $$\ddot{\theta}_2 = \frac{2\sin(\theta_1-\theta_2)\!\left(\dot{\theta}_1^2 L_1(m_1+m_2) + g(m_1+m_2)\cos\theta_1 + \dot{\theta}_2^2 L_2 m_2 \cos(\theta_1-\theta_2)\right)}{L_2\!\left(2m_1+m_2-m_2\cos(2\theta_1-2\theta_2)\right)}$$
         </blockquote>
 
-        <p>These equations are derived by applying the Euler&ndash;Lagrange equations to the system&rsquo;s Lagrangian. They cannot be solved analytically. The simulation integrates them numerically using the 4th-order Runge-Kutta method (the same RK4 described in the <a href="../articles/numerical-methods.html" style="color: #8b7355;">numerical methods article</a>), which provides excellent accuracy and energy conservation over long runs.</p>
+        <p>These equations are derived by applying the Euler&ndash;Lagrange equations to the system&rsquo;s Lagrangian. They cannot be solved analytically. The simulation integrates them numerically using the 4th-order Runge-Kutta method (the same RK4 described in the <a href="../writing/numerical-methods.html" style="color: #8b7355;">numerical methods article</a>), which provides excellent accuracy and energy conservation over long runs.</p>
 
         <h2>Why It&rsquo;s Chaotic</h2>
         <p>A single pendulum is <em>integrable</em>&mdash;it has as many conserved quantities (energy) as degrees of freedom (one angle). The double pendulum has two degrees of freedom but only one conserved quantity (total energy). This mismatch is what allows chaos. The system has enough freedom to explore its phase space in complicated ways, but not enough constraints to keep it predictable.</p>
