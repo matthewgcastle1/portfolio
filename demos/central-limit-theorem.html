@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central Limit Theorem</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .canvas-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+    }
+
+    .canvas-wrapper .canvas-label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    #sourceCanvas { aspect-ratio: 2.2 / 1; }
+    #histogramCanvas { aspect-ratio: 2 / 1; }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.5rem 0.3rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover { background-color: #6b5344; }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover { background-color: #c4bfb4; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .toggle-row input[type="checkbox"] { cursor: pointer; }
+
+    .toggle-row label {
+      font-size: 0.85rem;
+      color: #1a3a3a;
+      cursor: pointer;
+      font-weight: normal;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem 0.8rem;
+      font-size: 0.78rem;
+      font-family: monospace;
+      color: #2c2c2c;
+    }
+
+    .stats-grid .stat-label {
+      color: #5a5a5a;
+      font-family: Georgia, serif;
+      font-size: 0.8rem;
+    }
+
+    .stats-grid .stat-value {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .divider {
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Central Limit Theorem</h1>
+      <p>Draw any distribution. Watch the means become normal.</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Central Limit Theorem</h1>
+        <div class="article-meta">Interactive Demo | Mathematics &amp; Statistics</div>
+      </div>
+
+      <div class="article-body">
+        <h2>The Most Important Theorem in Statistics</h2>
+        <p>Draw any probability distribution on the top canvas&mdash;as weird and asymmetric as you like. The bottom canvas shows the distribution of <em>sample means</em>: repeatedly draw n values from your distribution, compute their average, and plot the result. As n grows, this histogram converges to a bell curve, regardless of what you drew. This is the Central Limit Theorem.</p>
+        <p>Select a preset distribution or <strong>draw your own</strong> on the top canvas. Increase the sample size n and watch the histogram become Gaussian. The orange curve is the theoretical normal distribution $\mathcal{N}(\mu, \sigma^2/n)$.</p>
+      </div>
+
+      <div class="demo-container">
+        <div class="canvas-stack">
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Source Distribution &mdash; draw here</div>
+            <canvas id="sourceCanvas"></canvas>
+          </div>
+          <div class="canvas-wrapper">
+            <div class="canvas-label" id="histogramLabel">Distribution of Sample Means (n = 2)</div>
+            <canvas id="histogramCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>Preset Distribution</label>
+            <select id="presetSelect">
+              <option value="uniform">Uniform</option>
+              <option value="exponential">Exponential (right-skewed)</option>
+              <option value="leftskew">Left-Skewed</option>
+              <option value="bimodal">Bimodal</option>
+              <option value="trimodal">Trimodal</option>
+              <option value="dice">Dice Roll (1&ndash;6)</option>
+              <option value="ushape">U-Shaped</option>
+              <option value="spike">Spike (near-delta)</option>
+              <option value="triangle">Triangle</option>
+              <option value="comb">Comb (5 peaks)</option>
+              <option value="custom" selected>Custom (draw)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Sample Size n: <span id="sampleSizeVal">2</span></label>
+            <input type="range" id="sampleSizeSlider" min="0" max="6" step="1" value="1">
+            <div class="value-display">Steps: 1, 2, 3, 5, 10, 30, 100</div>
+          </div>
+
+          <div class="control-group">
+            <label>Speed: <span id="speedVal">50</span> samples/batch</label>
+            <input type="range" id="speedSlider" min="1" max="200" step="1" value="50">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="toggle-row">
+            <input type="checkbox" id="showNormal" checked>
+            <label for="showNormal">Show theoretical normal curve</label>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="button-row">
+            <button onclick="resetSamples()">Reset Samples</button>
+            <button onclick="addBatch()" class="secondary">+1000 Samples</button>
+          </div>
+          <div class="button-row">
+            <button onclick="clearDrawing()">Clear Drawing</button>
+            <button onclick="toggleRunning()" id="runBtn">Pause</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="control-group">
+            <label>Statistics</label>
+            <div class="stats-grid">
+              <span class="stat-label">Total samples:</span>
+              <span class="stat-value" id="statTotal">0</span>
+              <span class="stat-label">Source $\mu$:</span>
+              <span class="stat-value" id="statSourceMean">&mdash;</span>
+              <span class="stat-label">Source $\sigma$:</span>
+              <span class="stat-value" id="statSourceStd">&mdash;</span>
+              <span class="stat-label">Mean of means:</span>
+              <span class="stat-value" id="statMeanOfMeans">&mdash;</span>
+              <span class="stat-label">Std of means:</span>
+              <span class="stat-value" id="statStdOfMeans">&mdash;</span>
+              <span class="stat-label">Theoretical $\sigma/\sqrt{n}$:</span>
+              <span class="stat-value" id="statTheoretical">&mdash;</span>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <strong>Draw on the top canvas</strong> to create any distribution. The simulation repeatedly draws n samples, computes their mean, and builds the histogram below. The CLT predicts this histogram converges to a Gaussian.
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Exponential:</strong> Highly skewed right. With n = 2 the histogram is still clearly skewed. At n = 30, it looks normal.</li>
+          <li><strong>Bimodal / Trimodal:</strong> Multiple distinct peaks. The means fill in the gaps and form a single bell curve.</li>
+          <li><strong>U-Shaped:</strong> Highest at the edges, nothing in the middle. The means pile up in the center and become Gaussian.</li>
+          <li><strong>Spike:</strong> Nearly a delta function. With n = 1 the histogram is a sharp spike. As n grows, it stays narrow but becomes Gaussian-shaped.</li>
+          <li><strong>Comb:</strong> Five equally-spaced peaks. A striking example&mdash;the means blend into a single bell curve.</li>
+          <li><strong>Draw your own:</strong> Click &ldquo;Clear Drawing&rdquo; and draw directly on the top canvas. Create the weirdest, most asymmetric distribution you can imagine. The CLT still works.</li>
+          <li><strong>n = 1 vs n = 100:</strong> At n = 1, the histogram matches the source distribution exactly. At n = 100, everything is a bell curve.</li>
+        </ul>
+
+        <h2>How It Works</h2>
+        <p>The simulation samples from your drawn distribution using the inverse CDF method. Your drawing is interpreted as a probability density function (PDF), which is normalized so the area under it equals 1. The CDF is computed by numerical integration, and random samples are generated by inverting the CDF with a uniform random number.</p>
+        <p>For each point in the histogram, n values are drawn from this distribution and averaged. The histogram bins these averages. The theoretical normal curve $\mathcal{N}(\mu, \sigma^2/n)$ is overlaid for comparison, where $\mu$ and $\sigma^2$ are the true mean and variance of the source distribution.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // --- Canvas setup ---
+    const sourceCanvas = document.getElementById('sourceCanvas');
+    const histogramCanvas = document.getElementById('histogramCanvas');
+    const ctxSrc = sourceCanvas.getContext('2d');
+    const ctxHist = histogramCanvas.getContext('2d');
+
+    const BINS = 256; // resolution of the source distribution
+    let pdf = new Float64Array(BINS); // the drawn PDF (unnormalized heights)
+    let cdf = new Float64Array(BINS + 1); // cumulative distribution for sampling
+    let sourceMean = 0;
+    let sourceVar = 0;
+    let sourceStd = 0;
+
+    // Histogram of sample means
+    const HIST_BINS = 120;
+    let histCounts = new Float64Array(HIST_BINS);
+    let histMin = 0;
+    let histMax = 1;
+    let totalSamples = 0;
+    let sumOfMeans = 0;
+    let sumOfMeansSq = 0;
+
+    // Controls
+    const sampleSizeSteps = [1, 2, 3, 5, 10, 30, 100];
+    let sampleSize = 2;
+    let speed = 50;
+    let showNormal = true;
+    let isRunning = true;
+    let isDrawing = false;
+    let lastDrawX = -1;
+    let lastDrawHeight = 0;
+    let currentPreset = 'custom';
+
+    // --- Resize ---
+    function resizeCanvases() {
+      [sourceCanvas, histogramCanvas].forEach(c => {
+        const rect = c.parentElement.getBoundingClientRect();
+        c.width = rect.width;
+        c.height = c === histogramCanvas ? c.width / 2 : c.width / 2.2;
+      });
+    }
+    resizeCanvases();
+    window.addEventListener('resize', () => { resizeCanvases(); drawAll(); });
+
+    // --- PDF / CDF computation ---
+    function normalizePDF() {
+      let sum = 0;
+      for (let i = 0; i < BINS; i++) sum += pdf[i];
+      if (sum < 1e-10) return;
+
+      // Build CDF for sampling
+      cdf[0] = 0;
+      for (let i = 0; i < BINS; i++) {
+        cdf[i + 1] = cdf[i] + pdf[i] / sum;
+      }
+      // Ensure last value is exactly 1
+      cdf[BINS] = 1.0;
+
+      // Compute mean and variance (distribution is over [0, 1])
+      sourceMean = 0;
+      for (let i = 0; i < BINS; i++) {
+        const x = (i + 0.5) / BINS;
+        sourceMean += x * (pdf[i] / sum);
+      }
+      sourceVar = 0;
+      for (let i = 0; i < BINS; i++) {
+        const x = (i + 0.5) / BINS;
+        sourceVar += (x - sourceMean) * (x - sourceMean) * (pdf[i] / sum);
+      }
+      sourceStd = Math.sqrt(sourceVar);
+    }
+
+    function sampleFromDistribution() {
+      const u = Math.random();
+      // Binary search in CDF
+      let lo = 0, hi = BINS;
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (cdf[mid + 1] < u) lo = mid + 1;
+        else hi = mid;
+      }
+      // Interpolate within the bin
+      const binStart = cdf[lo];
+      const binEnd = cdf[lo + 1];
+      const frac = (binEnd > binStart) ? (u - binStart) / (binEnd - binStart) : 0.5;
+      return (lo + frac) / BINS;
+    }
+
+    // --- Preset generators ---
+    function generatePreset(type) {
+      pdf.fill(0);
+      switch (type) {
+        case 'uniform':
+          for (let i = 0; i < BINS; i++) pdf[i] = 1;
+          break;
+        case 'exponential':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS * 5;
+            pdf[i] = Math.exp(-x);
+          }
+          break;
+        case 'bimodal':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS;
+            pdf[i] = Math.exp(-((x - 0.25) * (x - 0.25)) / (2 * 0.04 * 0.04))
+                   + Math.exp(-((x - 0.75) * (x - 0.75)) / (2 * 0.04 * 0.04));
+          }
+          break;
+        case 'dice':
+          pdf.fill(0);
+          for (let d = 1; d <= 6; d++) {
+            const center = Math.round(((d - 0.5) / 6) * BINS);
+            const halfWidth = Math.max(1, Math.round(BINS / 6 / 2.5));
+            for (let i = center - halfWidth; i <= center + halfWidth && i < BINS; i++) {
+              if (i >= 0) pdf[i] = 1;
+            }
+          }
+          break;
+        case 'ushape':
+          for (let i = 0; i < BINS; i++) {
+            const x = (i / BINS - 0.5) * 2; // -1 to 1
+            pdf[i] = x * x * x * x + 0.05; // x^4 shape, high at edges
+          }
+          break;
+        case 'leftskew':
+          for (let i = 0; i < BINS; i++) {
+            const x = (1 - i / BINS) * 5; // reversed exponential
+            pdf[i] = Math.exp(-x);
+          }
+          break;
+        case 'trimodal':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS;
+            pdf[i] = Math.exp(-((x - 0.15) * (x - 0.15)) / (2 * 0.03 * 0.03))
+                   + 0.6 * Math.exp(-((x - 0.5) * (x - 0.5)) / (2 * 0.03 * 0.03))
+                   + Math.exp(-((x - 0.85) * (x - 0.85)) / (2 * 0.03 * 0.03));
+          }
+          break;
+        case 'spike':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS;
+            pdf[i] = Math.exp(-((x - 0.3) * (x - 0.3)) / (2 * 0.008 * 0.008));
+          }
+          break;
+        case 'triangle':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS;
+            pdf[i] = x < 0.5 ? 2 * x : 2 * (1 - x);
+          }
+          break;
+        case 'comb':
+          for (let i = 0; i < BINS; i++) {
+            const x = i / BINS;
+            pdf[i] = 0;
+            for (let p = 0; p < 5; p++) {
+              const center = 0.1 + p * 0.2;
+              pdf[i] += Math.exp(-((x - center) * (x - center)) / (2 * 0.015 * 0.015));
+            }
+          }
+          break;
+      }
+      normalizePDF();
+    }
+
+    // --- Drawing on source canvas ---
+    function getDrawPos(e) {
+      const rect = sourceCanvas.getBoundingClientRect();
+      const scaleX = sourceCanvas.width / rect.width;
+      const scaleY = sourceCanvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function drawToPDF(pos) {
+      const binIdx = Math.floor(pos.x / sourceCanvas.width * BINS);
+      const height = Math.max(0, 1 - pos.y / sourceCanvas.height);
+      const brushWidth = 4;
+
+      function setBrush(center, h) {
+        for (let j = -brushWidth; j <= brushWidth; j++) {
+          const idx = center + j;
+          if (idx >= 0 && idx < BINS) {
+            const w = 1 - Math.abs(j) / (brushWidth + 1);
+            pdf[idx] = h * w;
+          }
+        }
+      }
+
+      if (lastDrawX >= 0 && Math.abs(binIdx - lastDrawX) > 1) {
+        const start = Math.min(lastDrawX, binIdx);
+        const end = Math.max(lastDrawX, binIdx);
+        const startH = lastDrawHeight;
+        for (let i = start; i <= end && i < BINS; i++) {
+          if (i >= 0) {
+            const t = (end > start) ? (i - start) / (end - start) : 0.5;
+            const h = startH + (height - startH) * t;
+            setBrush(i, h);
+          }
+        }
+      } else if (binIdx >= 0 && binIdx < BINS) {
+        setBrush(binIdx, height);
+      }
+      lastDrawX = binIdx;
+      lastDrawHeight = height;
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      isDrawing = true;
+      lastDrawX = -1;
+      lastDrawHeight = 0;
+      // Clear the PDF when starting to draw over a preset
+      if (currentPreset !== 'custom') {
+        pdf.fill(0);
+        currentPreset = 'custom';
+        document.getElementById('presetSelect').value = 'custom';
+      }
+      const pos = getDrawPos(e);
+      drawToPDF(pos);
+      normalizePDF();
+      resetSamples();
+      drawAll();
+    }
+
+    function moveDraw(e) {
+      e.preventDefault();
+      if (!isDrawing) return;
+      drawToPDF(getDrawPos(e));
+      normalizePDF();
+      resetSamples();
+      drawAll();
+    }
+
+    function endDraw() {
+      isDrawing = false;
+      lastDrawX = -1;
+    }
+
+    sourceCanvas.addEventListener('mousedown', startDraw);
+    sourceCanvas.addEventListener('mousemove', moveDraw);
+    sourceCanvas.addEventListener('mouseup', endDraw);
+    sourceCanvas.addEventListener('mouseleave', endDraw);
+    sourceCanvas.addEventListener('touchstart', startDraw, { passive: false });
+    sourceCanvas.addEventListener('touchmove', moveDraw, { passive: false });
+    sourceCanvas.addEventListener('touchend', endDraw);
+
+    // --- Controls ---
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      currentPreset = e.target.value;
+      if (currentPreset !== 'custom') {
+        generatePreset(currentPreset);
+        resetSamples();
+        drawAll();
+      }
+    });
+
+    document.getElementById('sampleSizeSlider').addEventListener('input', (e) => {
+      const idx = parseInt(e.target.value);
+      sampleSize = sampleSizeSteps[idx];
+      document.getElementById('sampleSizeVal').textContent = sampleSize;
+      document.getElementById('histogramLabel').textContent =
+        'Distribution of Sample Means (n = ' + sampleSize + ')';
+      resetSamples();
+    });
+
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      speed = parseInt(e.target.value);
+      document.getElementById('speedVal').textContent = speed;
+    });
+
+    document.getElementById('showNormal').addEventListener('change', (e) => {
+      showNormal = e.target.checked;
+      drawAll();
+    });
+
+    function clearDrawing() {
+      pdf.fill(0);
+      sourceMean = 0;
+      sourceVar = 0;
+      sourceStd = 0;
+      currentPreset = 'custom';
+      document.getElementById('presetSelect').value = 'custom';
+      resetSamples();
+      drawAll();
+    }
+
+    function resetSamples() {
+      // Determine histogram range: mean +/- 4 std/sqrt(n) or at least [0,1] range
+      const n = sampleSize;
+      const theoreticalStd = sourceStd / Math.sqrt(n);
+      if (theoreticalStd > 0 && n > 1) {
+        histMin = Math.max(0, sourceMean - 5 * theoreticalStd);
+        histMax = Math.min(1, sourceMean + 5 * theoreticalStd);
+      } else {
+        histMin = 0;
+        histMax = 1;
+      }
+      // Ensure reasonable range
+      if (histMax - histMin < 0.05) {
+        histMin = Math.max(0, sourceMean - 0.05);
+        histMax = Math.min(1, sourceMean + 0.05);
+      }
+
+      histCounts.fill(0);
+      totalSamples = 0;
+      sumOfMeans = 0;
+      sumOfMeansSq = 0;
+      updateStats();
+    }
+
+    function addBatch() {
+      doSampling(1000);
+      drawAll();
+    }
+
+    function toggleRunning() {
+      isRunning = !isRunning;
+      document.getElementById('runBtn').textContent = isRunning ? 'Pause' : 'Run';
+    }
+
+    // --- Sampling ---
+    function doSampling(count) {
+      // Check if distribution is valid
+      let pdfSum = 0;
+      for (let i = 0; i < BINS; i++) pdfSum += pdf[i];
+      if (pdfSum < 1e-10) return;
+
+      const n = sampleSize;
+      for (let s = 0; s < count; s++) {
+        let mean = 0;
+        for (let j = 0; j < n; j++) {
+          mean += sampleFromDistribution();
+        }
+        mean /= n;
+
+        // Add to histogram
+        const binIdx = Math.floor((mean - histMin) / (histMax - histMin) * HIST_BINS);
+        if (binIdx >= 0 && binIdx < HIST_BINS) {
+          histCounts[binIdx]++;
+        }
+        totalSamples++;
+        sumOfMeans += mean;
+        sumOfMeansSq += mean * mean;
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = totalSamples.toLocaleString();
+      document.getElementById('statSourceMean').textContent =
+        sourceStd > 0 ? sourceMean.toFixed(4) : '\u2014';
+      document.getElementById('statSourceStd').textContent =
+        sourceStd > 0 ? sourceStd.toFixed(4) : '\u2014';
+
+      if (totalSamples > 1) {
+        const meanOfMeans = sumOfMeans / totalSamples;
+        const varOfMeans = sumOfMeansSq / totalSamples - meanOfMeans * meanOfMeans;
+        const stdOfMeans = Math.sqrt(Math.max(0, varOfMeans));
+        const theoreticalStd = sourceStd / Math.sqrt(sampleSize);
+
+        document.getElementById('statMeanOfMeans').textContent = meanOfMeans.toFixed(4);
+        document.getElementById('statStdOfMeans').textContent = stdOfMeans.toFixed(4);
+        document.getElementById('statTheoretical').textContent =
+          sourceStd > 0 ? theoreticalStd.toFixed(4) : '\u2014';
+      } else {
+        document.getElementById('statMeanOfMeans').textContent = '\u2014';
+        document.getElementById('statStdOfMeans').textContent = '\u2014';
+        document.getElementById('statTheoretical').textContent = '\u2014';
+      }
+    }
+
+    // --- Drawing ---
+    function drawBackground(ctx, canvas) {
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSourceCanvas() {
+      const c = sourceCanvas;
+      const ctx = ctxSrc;
+      drawBackground(ctx, c);
+
+      // Find max PDF value for scaling
+      let maxPDF = 0;
+      for (let i = 0; i < BINS; i++) {
+        if (pdf[i] > maxPDF) maxPDF = pdf[i];
+      }
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= 4; i++) {
+        const x = i * c.width / 4;
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke();
+      }
+
+      // X axis
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, c.height - 1); ctx.lineTo(c.width, c.height - 1); ctx.stroke();
+
+      if (maxPDF < 1e-10) return;
+
+      // Draw filled PDF
+      ctx.fillStyle = 'rgba(79, 195, 247, 0.3)';
+      ctx.beginPath();
+      ctx.moveTo(0, c.height);
+      for (let i = 0; i < BINS; i++) {
+        const x = (i + 0.5) / BINS * c.width;
+        const y = c.height - (pdf[i] / maxPDF) * c.height * 0.9;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(c.width, c.height);
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw PDF outline
+      ctx.strokeStyle = '#4fc3f7';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < BINS; i++) {
+        const x = (i + 0.5) / BINS * c.width;
+        const y = c.height - (pdf[i] / maxPDF) * c.height * 0.9;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Draw mean line
+      if (sourceStd > 0) {
+        const mx = sourceMean * c.width;
+        ctx.strokeStyle = 'rgba(255, 167, 38, 0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(mx, 0); ctx.lineTo(mx, c.height); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Labels in top-right corner (away from canvas-label)
+        ctx.fillStyle = 'rgba(255, 167, 38, 0.8)';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText('\u03BC = ' + sourceMean.toFixed(3), c.width - 12, 20);
+        ctx.fillText('\u03C3 = ' + sourceStd.toFixed(3), c.width - 12, 34);
+      }
+    }
+
+    function drawHistogramCanvas() {
+      const c = histogramCanvas;
+      const ctx = ctxHist;
+      drawBackground(ctx, c);
+
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= 4; i++) {
+        const x = i * c.width / 4;
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke();
+      }
+
+      // X axis
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, c.height - 20); ctx.lineTo(c.width, c.height - 20); ctx.stroke();
+
+      // Axis labels
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      for (let i = 0; i <= 4; i++) {
+        const val = histMin + (histMax - histMin) * i / 4;
+        ctx.fillText(val.toFixed(2), i * c.width / 4, c.height - 6);
+      }
+
+      if (totalSamples === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '14px Georgia';
+        ctx.textAlign = 'center';
+        ctx.fillText('Draw a distribution above, then sampling begins automatically', c.width / 2, c.height / 2);
+        return;
+      }
+
+      // Find max histogram count
+      let maxCount = 0;
+      for (let i = 0; i < HIST_BINS; i++) {
+        if (histCounts[i] > maxCount) maxCount = histCounts[i];
+      }
+
+      const plotHeight = c.height - 30;
+      const barWidth = c.width / HIST_BINS;
+
+      // If showing normal curve, scale histogram to match the theoretical density
+      let scaleFactor;
+      const binWidth = (histMax - histMin) / HIST_BINS;
+      if (showNormal && sourceStd > 0 && sampleSize > 1) {
+        // Scale so histogram area matches normal curve area
+        // Histogram bar height = count / (totalSamples * binWidth) for density
+        // Normal peak = 1 / (sigma/sqrt(n) * sqrt(2*pi))
+        const theoreticalStd = sourceStd / Math.sqrt(sampleSize);
+        const normalPeak = 1 / (theoreticalStd * Math.sqrt(2 * Math.PI));
+        // maxDensity from histogram
+        const maxDensity = maxCount / (totalSamples * binWidth);
+        const peakToUse = Math.max(maxDensity, normalPeak);
+        scaleFactor = plotHeight * 0.9 / peakToUse;
+      } else {
+        scaleFactor = plotHeight * 0.9 / (maxCount / (totalSamples * binWidth) || 1);
+      }
+
+      // Draw histogram bars
+      for (let i = 0; i < HIST_BINS; i++) {
+        if (histCounts[i] === 0) continue;
+        const density = histCounts[i] / (totalSamples * binWidth);
+        const h = density * scaleFactor;
+        const x = i * barWidth;
+        const y = plotHeight - h;
+
+        ctx.fillStyle = 'rgba(79, 195, 247, 0.6)';
+        ctx.fillRect(x, y, barWidth - 0.5, h);
+      }
+
+      // Draw theoretical normal curve
+      if (showNormal && sourceStd > 0 && sampleSize >= 1) {
+        const theoreticalStd = sourceStd / Math.sqrt(sampleSize);
+        if (theoreticalStd > 0) {
+          ctx.strokeStyle = '#ffa726';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          let first = true;
+          for (let px = 0; px < c.width; px++) {
+            const x = histMin + (px / c.width) * (histMax - histMin);
+            const z = (x - sourceMean) / theoreticalStd;
+            const density = Math.exp(-0.5 * z * z) / (theoreticalStd * Math.sqrt(2 * Math.PI));
+            const y = plotHeight - density * scaleFactor;
+            if (first) { ctx.moveTo(px, y); first = false; }
+            else ctx.lineTo(px, y);
+          }
+          ctx.stroke();
+        }
+      }
+
+      // Draw mean line
+      if (totalSamples > 1) {
+        const meanOfMeans = sumOfMeans / totalSamples;
+        const mx = ((meanOfMeans - histMin) / (histMax - histMin)) * c.width;
+        ctx.strokeStyle = 'rgba(102, 187, 106, 0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(mx, 0); ctx.lineTo(mx, plotHeight); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    function drawAll() {
+      drawSourceCanvas();
+      drawHistogramCanvas();
+      updateStats();
+    }
+
+    // --- Animation loop ---
+    function animate() {
+      if (isRunning && !isDrawing) {
+        let pdfSum = 0;
+        for (let i = 0; i < BINS; i++) pdfSum += pdf[i];
+        if (pdfSum > 1e-10) {
+          doSampling(speed);
+          drawAll();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // --- Init ---
+    generatePreset('uniform');
+    document.getElementById('presetSelect').value = 'uniform';
+    currentPreset = 'uniform';
+    resetSamples();
+    drawAll();
+    animate();
+  </script>
+</body>
+</html>

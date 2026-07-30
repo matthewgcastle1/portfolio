@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complex Analysis Explorer</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .canvas-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+    }
+
+    .canvas-wrapper .canvas-label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    #mainCanvas { aspect-ratio: 1 / 1; }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      background-color: #8b7355;
+      color: white;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .toggle-row label {
+      font-weight: normal;
+      margin-bottom: 0;
+      font-size: 0.85rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 4px;
+      border-left: 3px solid #8b7355;
+      font-size: 0.8rem;
+    }
+
+    .info-box .info-line {
+      font-family: monospace;
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+      color: #1a3a3a;
+    }
+
+    .info-box .info-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-box .info-label {
+      color: #5a5a5a;
+      font-family: Georgia, serif;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Complex Analysis Explorer</h1>
+      <p>Domain coloring, contour integrals, and the residue theorem</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Complex Analysis Explorer</h1>
+        <div class="article-meta">Visualize complex functions and verify the residue theorem</div>
+      </div>
+
+      <div class="article-body">
+        <p>Every pixel represents a complex number $z$. The color encodes $f(z)$: hue shows the argument (angle), brightness shows the magnitude. Drag the contour across poles and watch the integral jump by exactly $2\pi i$ times the enclosed residues.</p>
+      </div>
+
+      <div class="demo-container">
+        <div class="canvas-stack">
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Domain Coloring &mdash; drag circle to move contour</div>
+            <canvas id="mainCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>Function</label>
+            <select id="functionSelect"></select>
+          </div>
+
+          <div class="control-group">
+            <label>Contour Center X</label>
+            <input type="range" id="centerX" min="-3" max="3" step="0.05" value="0">
+            <div class="value-display" id="centerXVal">0.00</div>
+          </div>
+
+          <div class="control-group">
+            <label>Contour Center Y</label>
+            <input type="range" id="centerY" min="-3" max="3" step="0.05" value="0">
+            <div class="value-display" id="centerYVal">0.00</div>
+          </div>
+
+          <div class="control-group">
+            <label>Contour Radius</label>
+            <input type="range" id="radius" min="0.1" max="3" step="0.05" value="0.8">
+            <div class="value-display" id="radiusVal">0.80</div>
+          </div>
+
+          <div class="control-group">
+            <label>Zoom (range)</label>
+            <input type="range" id="zoom" min="1" max="8" step="0.5" value="3">
+            <div class="value-display" id="zoomVal">&minus;3 to 3</div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="control-group">
+            <div class="toggle-row">
+              <input type="checkbox" id="showGrid" checked>
+              <label for="showGrid">Show grid</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showPoles" checked>
+              <label for="showPoles">Show poles</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showZeros" checked>
+              <label for="showZeros">Show zeros</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showContour" checked>
+              <label for="showContour">Show contour</label>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="info-box" id="infoBox">
+            <div class="info-line"><span class="info-label">Integral:</span> &mdash;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body">
+        <h2>What is Domain Coloring?</h2>
+        <p>A complex function $f(z)$ maps one complex number to another. We can't easily plot this&mdash;it would require four dimensions. Domain coloring sidesteps the problem: for each input $z$, we compute $f(z)$ and encode the result as a color. The <strong>hue</strong> represents the argument (angle) of $f(z)$, cycling through the full color wheel. The <strong>brightness</strong> represents the magnitude $|f(z)|$, with logarithmic scaling so that both very large and very small values are visible.</p>
+        <p>Poles show up as points where all colors converge and brightness spikes. Zeros are dark points where all colors converge. Branch cuts appear as sharp hue discontinuities.</p>
+
+        <h2>Contour Integration</h2>
+        <p>A contour integral $\oint f(z)\,dz$ integrates a complex function along a closed curve in the complex plane. We parameterize the contour as $\gamma(t) = c + re^{it}$ for $t \in [0, 2\pi]$, so the integral becomes:</p>
+        $$\oint f(z)\,dz = \int_0^{2\pi} f(\gamma(t)) \cdot \gamma'(t)\,dt$$
+        <p>The demo computes this numerically using the trapezoidal rule with 500 sample points.</p>
+
+        <h2>Cauchy&rsquo;s Integral Theorem</h2>
+        <p>If $f$ is analytic (complex-differentiable) everywhere inside and on the contour, the integral is exactly zero. This is Cauchy's integral theorem. Try it with $f(z) = z^2$ or $f(z) = e^z$&mdash;no matter where you place the contour, the integral stays at zero.</p>
+
+        <h2>The Residue Theorem</h2>
+        <p>When $f$ has isolated singularities (poles) inside the contour, the integral is determined entirely by the <strong>residues</strong> at those poles:</p>
+        $$\oint f(z)\,dz = 2\pi i \sum \operatorname{Res}(f, z_k)$$
+        <p>where the sum is over all poles $z_k$ enclosed by the contour. This is one of the most powerful results in mathematics&mdash;a complicated integral reduces to a finite sum.</p>
+
+        <h2>Computing Residues</h2>
+        <p>For a simple pole at $z_0$, the residue is:</p>
+        $$\operatorname{Res}(f, z_0) = \lim_{z \to z_0} (z - z_0) f(z)$$
+        <p>For a pole of order $n$, the formula involves the $(n-1)$-th derivative. For $1/z^2$, the pole at 0 has order 2 and residue 0&mdash;so the integral around it is zero even though the function blows up there!</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>$1/z$:</strong> Start with the contour away from the origin (integral $\approx 0$), then drag it to enclose the pole. The integral jumps to $2\pi i$.</li>
+          <li><strong>$1/(z^2+1)$:</strong> The poles are at $\pm i$. Enclose the pole at $i$ (move contour center up) and the integral becomes $\pi$.</li>
+          <li><strong>$z^2$ or $e^z$:</strong> These are entire functions. The integral is always 0, no matter where the contour is.</li>
+          <li><strong>$1/z^2$:</strong> Enclose the pole at 0. The integral is still 0! A second-order pole has residue 0.</li>
+          <li><strong>$\tan(z)$:</strong> Poles at odd multiples of $\pi/2$. Enclose one, two, or more.</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+  (function() {
+    // --- Complex arithmetic ---
+    function cadd(a, b) { return [a[0]+b[0], a[1]+b[1]]; }
+    function csub(a, b) { return [a[0]-b[0], a[1]-b[1]]; }
+    function cmul(a, b) { return [a[0]*b[0]-a[1]*b[1], a[0]*b[1]+a[1]*b[0]]; }
+    function cdiv(a, b) {
+      const d = b[0]*b[0]+b[1]*b[1];
+      if (d === 0) return [Infinity, Infinity];
+      return [(a[0]*b[0]+a[1]*b[1])/d, (a[1]*b[0]-a[0]*b[1])/d];
+    }
+    function cexp(z) {
+      const r = Math.exp(z[0]);
+      return [r*Math.cos(z[1]), r*Math.sin(z[1])];
+    }
+    function csin(z) {
+      return [Math.sin(z[0])*Math.cosh(z[1]), Math.cos(z[0])*Math.sinh(z[1])];
+    }
+    function ccos(z) {
+      return [Math.cos(z[0])*Math.cosh(z[1]), -Math.sin(z[0])*Math.sinh(z[1])];
+    }
+    function cabs(z) { return Math.sqrt(z[0]*z[0]+z[1]*z[1]); }
+    function carg(z) { return Math.atan2(z[1], z[0]); }
+    function ctan(z) { return cdiv(csin(z), ccos(z)); }
+
+    // --- Domain coloring ---
+    function hslToRgb(h, s, l) {
+      h = ((h % 1) + 1) % 1;
+      const c = (1 - Math.abs(2*l - 1)) * s;
+      const x = c * (1 - Math.abs((h*6) % 2 - 1));
+      const m = l - c/2;
+      let r, g, b;
+      if (h < 1/6) { r=c; g=x; b=0; }
+      else if (h < 2/6) { r=x; g=c; b=0; }
+      else if (h < 3/6) { r=0; g=c; b=x; }
+      else if (h < 4/6) { r=0; g=x; b=c; }
+      else if (h < 5/6) { r=x; g=0; b=c; }
+      else { r=c; g=0; b=x; }
+      return [(r+m)*255, (g+m)*255, (b+m)*255];
+    }
+
+    function domainColor(w) {
+      const arg = carg(w);
+      const mag = cabs(w);
+      const h = (arg / (2 * Math.PI) + 1) % 1;
+      // Log scaling for brightness
+      const logMag = Math.log2(mag + 1);
+      const l = 1 - 1 / (1 + logMag * 0.3);
+      // Add contour lines for magnitude
+      const l2 = l * (0.85 + 0.15 * Math.cos(2 * Math.PI * Math.log2(mag + 0.001)));
+      return hslToRgb(h, 0.9, Math.max(0.05, Math.min(0.95, l2)));
+    }
+
+    // --- Preset functions ---
+    const presets = [
+      {
+        name: '1/z',
+        label: '1/z',
+        f: z => cdiv([1,0], z),
+        poles: [[0, 0]],
+        poleOrders: [1],
+        residues: [[1, 0]],
+        zeros: []
+      },
+      {
+        name: '1/(z²+1)',
+        label: '1/(z\u00B2+1)',
+        f: z => cdiv([1,0], cadd(cmul(z,z), [1,0])),
+        poles: [[0, 1], [0, -1]],
+        poleOrders: [1, 1],
+        residues: [[0, -0.5], [0, 0.5]],
+        zeros: []
+      },
+      {
+        name: '1/((z-1)(z+2))',
+        label: '1/((z\u22121)(z+2))',
+        f: z => cdiv([1,0], cmul(csub(z,[1,0]), cadd(z,[2,0]))),
+        poles: [[1, 0], [-2, 0]],
+        poleOrders: [1, 1],
+        residues: [[1/3, 0], [-1/3, 0]],
+        zeros: []
+      },
+      {
+        name: 'z²',
+        label: 'z\u00B2 (entire)',
+        f: z => cmul(z, z),
+        poles: [],
+        poleOrders: [],
+        residues: [],
+        zeros: [[0, 0]]
+      },
+      {
+        name: 'e^z',
+        label: 'e\u1DBF (entire)',
+        f: z => cexp(z),
+        poles: [],
+        poleOrders: [],
+        residues: [],
+        zeros: []
+      },
+      {
+        name: 'sin(z)/z',
+        label: 'sin(z)/z',
+        f: z => {
+          const m = cabs(z);
+          if (m < 1e-10) return [1, 0]; // removable singularity
+          return cdiv(csin(z), z);
+        },
+        poles: [],
+        poleOrders: [],
+        residues: [],
+        zeros: [] // zeros at nπ for n≠0
+      },
+      {
+        name: 'tan(z)',
+        label: 'tan(z)',
+        f: z => ctan(z),
+        poles: [[-Math.PI/2,0],[Math.PI/2,0],[-3*Math.PI/2,0],[3*Math.PI/2,0]],
+        poleOrders: [1,1,1,1],
+        residues: [[-1,0],[-1,0],[-1,0],[-1,0]],
+        zeros: [[-Math.PI,0],[0,0],[Math.PI,0]]
+      },
+      {
+        name: '1/z²',
+        label: '1/z\u00B2 (order 2 pole)',
+        f: z => cdiv([1,0], cmul(z, z)),
+        poles: [[0, 0]],
+        poleOrders: [2],
+        residues: [[0, 0]], // residue is 0 for 1/z²
+        zeros: []
+      },
+      {
+        name: '(z²+1)/(z³-z)',
+        label: '(z\u00B2+1)/(z\u00B3\u2212z)',
+        f: z => cdiv(cadd(cmul(z,z),[1,0]), csub(cmul(z,cmul(z,z)), z)),
+        // z³-z = z(z-1)(z+1), poles at 0, 1, -1
+        poles: [[0,0],[1,0],[-1,0]],
+        poleOrders: [1,1,1],
+        residues: [[-1,0],[1,0],[1,0]],
+        zeros: [] // z²+1=0 → z=±i
+      }
+    ];
+
+    // --- Canvas setup ---
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.width; // square
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); cachedImage = null; drawAll(); });
+
+    // --- State ---
+    let currentPreset = 0;
+    let contourCx = 0, contourCy = 0, contourR = 0.8;
+    let worldRange = 3;
+    let showGrid = true, showPoles = true, showZeros = true, showContour = true;
+    let cachedImage = null;
+    let cachedPreset = -1;
+    let cachedRange = -1;
+    let cachedWidth = -1;
+
+    // --- Controls ---
+    const functionSelect = document.getElementById('functionSelect');
+    presets.forEach((p, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = p.label;
+      functionSelect.appendChild(opt);
+    });
+
+    functionSelect.addEventListener('change', () => {
+      currentPreset = parseInt(functionSelect.value);
+      cachedImage = null;
+      drawAll();
+    });
+
+    const centerXSlider = document.getElementById('centerX');
+    const centerYSlider = document.getElementById('centerY');
+    const radiusSlider = document.getElementById('radius');
+    const zoomSlider = document.getElementById('zoom');
+
+    centerXSlider.addEventListener('input', () => {
+      contourCx = parseFloat(centerXSlider.value);
+      document.getElementById('centerXVal').textContent = contourCx.toFixed(2);
+      drawAll();
+    });
+    centerYSlider.addEventListener('input', () => {
+      contourCy = parseFloat(centerYSlider.value);
+      document.getElementById('centerYVal').textContent = contourCy.toFixed(2);
+      drawAll();
+    });
+    radiusSlider.addEventListener('input', () => {
+      contourR = parseFloat(radiusSlider.value);
+      document.getElementById('radiusVal').textContent = contourR.toFixed(2);
+      drawAll();
+    });
+    zoomSlider.addEventListener('input', () => {
+      worldRange = parseFloat(zoomSlider.value);
+      document.getElementById('zoomVal').textContent = `\u2212${worldRange} to ${worldRange}`;
+      cachedImage = null;
+      drawAll();
+    });
+
+    document.getElementById('showGrid').addEventListener('change', e => { showGrid = e.target.checked; drawAll(); });
+    document.getElementById('showPoles').addEventListener('change', e => { showPoles = e.target.checked; drawAll(); });
+    document.getElementById('showZeros').addEventListener('change', e => { showZeros = e.target.checked; drawAll(); });
+    document.getElementById('showContour').addEventListener('change', e => { showContour = e.target.checked; drawAll(); });
+
+    // --- Coordinate conversion ---
+    function worldToCanvas(wx, wy) {
+      const cx = (wx / worldRange + 1) / 2 * canvas.width;
+      const cy = (1 - wy / worldRange) / 2 * canvas.height;
+      return [cx, cy];
+    }
+
+    function canvasToWorld(cx, cy) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const px = cx * scaleX;
+      const py = cy * scaleY;
+      const wx = (px / canvas.width * 2 - 1) * worldRange;
+      const wy = (1 - py / canvas.height * 2) * worldRange;
+      return [wx, wy];
+    }
+
+    // --- Drag interaction ---
+    let dragging = null; // 'center' or 'radius'
+
+    function getMouseWorld(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      return canvasToWorld(mx, my);
+    }
+
+    function getTouchWorld(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.touches[0].clientX - rect.left;
+      const my = e.touches[0].clientY - rect.top;
+      return canvasToWorld(mx, my);
+    }
+
+    function startDrag(wx, wy) {
+      const dx = wx - contourCx;
+      const dy = wy - contourCy;
+      const distFromCenter = Math.sqrt(dx*dx + dy*dy);
+      const distFromEdge = Math.abs(distFromCenter - contourR);
+      const threshold = worldRange * 0.06;
+
+      if (distFromEdge < threshold) {
+        dragging = 'radius';
+      } else if (distFromCenter < contourR) {
+        dragging = 'center';
+      } else {
+        dragging = 'center'; // clicking outside: move center there
+        contourCx = wx;
+        contourCy = wy;
+        syncSliders();
+        drawAll();
+      }
+    }
+
+    function moveDrag(wx, wy) {
+      if (!dragging) return;
+      if (dragging === 'center') {
+        contourCx = wx;
+        contourCy = wy;
+      } else {
+        const dx = wx - contourCx;
+        const dy = wy - contourCy;
+        contourR = Math.max(0.1, Math.sqrt(dx*dx + dy*dy));
+      }
+      syncSliders();
+      drawAll();
+    }
+
+    function syncSliders() {
+      centerXSlider.value = contourCx;
+      centerYSlider.value = contourCy;
+      radiusSlider.value = Math.min(3, contourR);
+      document.getElementById('centerXVal').textContent = contourCx.toFixed(2);
+      document.getElementById('centerYVal').textContent = contourCy.toFixed(2);
+      document.getElementById('radiusVal').textContent = contourR.toFixed(2);
+    }
+
+    canvas.addEventListener('mousedown', e => {
+      const [wx, wy] = getMouseWorld(e);
+      startDrag(wx, wy);
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (dragging) {
+        const [wx, wy] = getMouseWorld(e);
+        moveDrag(wx, wy);
+      }
+    });
+    canvas.addEventListener('mouseup', () => { dragging = null; });
+    canvas.addEventListener('mouseleave', () => { dragging = null; });
+
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const [wx, wy] = getTouchWorld(e);
+      startDrag(wx, wy);
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (dragging) {
+        const [wx, wy] = getTouchWorld(e);
+        moveDrag(wx, wy);
+      }
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => { dragging = null; });
+
+    // --- Render domain coloring to offscreen canvas ---
+    function renderDomainColoring() {
+      if (cachedImage && cachedPreset === currentPreset && cachedRange === worldRange && cachedWidth === canvas.width) {
+        return cachedImage;
+      }
+
+      const w = canvas.width;
+      const h = canvas.height;
+      const offscreen = document.createElement('canvas');
+      offscreen.width = w;
+      offscreen.height = h;
+      const offCtx = offscreen.getContext('2d');
+      const imgData = offCtx.createImageData(w, h);
+      const data = imgData.data;
+
+      const f = presets[currentPreset].f;
+      // Use reduced resolution for performance, then scale
+      const step = w > 600 ? 2 : 1;
+
+      for (let py = 0; py < h; py += step) {
+        for (let px = 0; px < w; px += step) {
+          const wx = (px / w * 2 - 1) * worldRange;
+          const wy = (1 - py / h * 2) * worldRange;
+          const z = [wx, wy];
+          let fz;
+          try { fz = f(z); } catch(e) { fz = [0,0]; }
+
+          const mag = cabs(fz);
+          let rgb;
+          if (!isFinite(mag) || mag > 1e10) {
+            rgb = [255, 255, 255];
+          } else {
+            rgb = domainColor(fz);
+          }
+
+          for (let dy = 0; dy < step && py+dy < h; dy++) {
+            for (let dx = 0; dx < step && px+dx < w; dx++) {
+              const idx = ((py+dy) * w + (px+dx)) * 4;
+              data[idx] = rgb[0];
+              data[idx+1] = rgb[1];
+              data[idx+2] = rgb[2];
+              data[idx+3] = 255;
+            }
+          }
+        }
+      }
+
+      offCtx.putImageData(imgData, 0, 0);
+      cachedImage = offscreen;
+      cachedPreset = currentPreset;
+      cachedRange = worldRange;
+      cachedWidth = w;
+      return offscreen;
+    }
+
+    // --- Contour integration ---
+    function integrateContour(f, cx, cy, r, N) {
+      let sumRe = 0, sumIm = 0;
+      for (let i = 0; i < N; i++) {
+        const t = 2 * Math.PI * i / N;
+        const t2 = 2 * Math.PI * (i + 1) / N;
+        // Midpoint of arc segment
+        const tm = (t + t2) / 2;
+        const z = [cx + r * Math.cos(tm), cy + r * Math.sin(tm)];
+        // γ'(t) = ir * e^(it)
+        const dz = [-r * Math.sin(tm), r * Math.cos(tm)];
+        const dt = (t2 - t);
+
+        let fz;
+        try { fz = f(z); } catch(e) { fz = [0,0]; }
+
+        const mag = cabs(fz);
+        if (!isFinite(mag) || mag > 1e12) continue;
+
+        const integrand = cmul(fz, dz);
+        sumRe += integrand[0] * dt;
+        sumIm += integrand[1] * dt;
+      }
+      return [sumRe, sumIm];
+    }
+
+    // --- Determine which poles are enclosed ---
+    function getEnclosedPoles(preset, cx, cy, r) {
+      const enclosed = [];
+      preset.poles.forEach((p, i) => {
+        const dx = p[0] - cx;
+        const dy = p[1] - cy;
+        if (dx*dx + dy*dy < r*r) {
+          enclosed.push({
+            pole: p,
+            order: preset.poleOrders[i],
+            residue: preset.residues[i]
+          });
+        }
+      });
+      return enclosed;
+    }
+
+    // --- Format complex number ---
+    function fmtComplex(z, digits) {
+      digits = digits || 4;
+      const re = z[0], im = z[1];
+      if (Math.abs(re) < 5e-4 && Math.abs(im) < 5e-4) return '0';
+      if (Math.abs(im) < 5e-4) return re.toFixed(digits);
+      if (Math.abs(re) < 5e-4) {
+        if (Math.abs(im - 1) < 5e-4) return 'i';
+        if (Math.abs(im + 1) < 5e-4) return '\u2212i';
+        return im.toFixed(digits) + 'i';
+      }
+      const sign = im >= 0 ? ' + ' : ' \u2212 ';
+      const absIm = Math.abs(im);
+      if (Math.abs(absIm - 1) < 5e-4) return re.toFixed(digits) + sign + 'i';
+      return re.toFixed(digits) + sign + absIm.toFixed(digits) + 'i';
+    }
+
+    // --- Draw ---
+    function drawAll() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Domain coloring
+      const dc = renderDomainColoring();
+      ctx.drawImage(dc, 0, 0);
+
+      const preset = presets[currentPreset];
+
+      // Grid
+      if (showGrid) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 0.5;
+        for (let i = Math.ceil(-worldRange); i <= Math.floor(worldRange); i++) {
+          const [x1, y1] = worldToCanvas(i, -worldRange);
+          const [x2, y2] = worldToCanvas(i, worldRange);
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          const [x3, y3] = worldToCanvas(-worldRange, i);
+          const [x4, y4] = worldToCanvas(worldRange, i);
+          ctx.beginPath(); ctx.moveTo(x3, y3); ctx.lineTo(x4, y4); ctx.stroke();
+        }
+        // Axes
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1;
+        const [ax1, ay1] = worldToCanvas(0, -worldRange);
+        const [ax2, ay2] = worldToCanvas(0, worldRange);
+        ctx.beginPath(); ctx.moveTo(ax1, ay1); ctx.lineTo(ax2, ay2); ctx.stroke();
+        const [ax3, ay3] = worldToCanvas(-worldRange, 0);
+        const [ax4, ay4] = worldToCanvas(worldRange, 0);
+        ctx.beginPath(); ctx.moveTo(ax3, ay3); ctx.lineTo(ax4, ay4); ctx.stroke();
+      }
+
+      // Poles
+      if (showPoles) {
+        preset.poles.forEach(p => {
+          const [px, py] = worldToCanvas(p[0], p[1]);
+          const s = 6;
+          ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(px-s, py-s); ctx.lineTo(px+s, py+s);
+          ctx.moveTo(px+s, py-s); ctx.lineTo(px-s, py+s);
+          ctx.stroke();
+        });
+      }
+
+      // Zeros
+      if (showZeros) {
+        preset.zeros.forEach(z => {
+          const [px, py] = worldToCanvas(z[0], z[1]);
+          ctx.strokeStyle = 'rgba(100, 180, 255, 0.9)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(px, py, 6, 0, 2*Math.PI);
+          ctx.stroke();
+        });
+      }
+
+      // Contour
+      if (showContour) {
+        const [ccx, ccy] = worldToCanvas(contourCx, contourCy);
+        const [edgeX] = worldToCanvas(contourCx + contourR, contourCy);
+        const pixelR = edgeX - ccx;
+
+        // Glow
+        ctx.strokeStyle = 'rgba(0, 255, 220, 0.15)';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(ccx, ccy, pixelR, 0, 2*Math.PI);
+        ctx.stroke();
+
+        // Main contour
+        ctx.strokeStyle = 'rgba(0, 255, 220, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.arc(ccx, ccy, pixelR, 0, 2*Math.PI);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Direction arrow
+        const arrowAngle = -Math.PI / 4;
+        const ax = ccx + pixelR * Math.cos(arrowAngle);
+        const ay = ccy - pixelR * Math.sin(arrowAngle);
+        const tangent = arrowAngle + Math.PI / 2; // CCW tangent
+        ctx.fillStyle = 'rgba(0, 255, 220, 0.9)';
+        ctx.beginPath();
+        ctx.moveTo(ax + 7*Math.cos(tangent), ay - 7*Math.sin(tangent));
+        ctx.lineTo(ax - 4*Math.cos(tangent) + 4*Math.sin(tangent), ay + 4*Math.sin(tangent) + 4*Math.cos(tangent));
+        ctx.lineTo(ax - 4*Math.cos(tangent) - 4*Math.sin(tangent), ay + 4*Math.sin(tangent) - 4*Math.cos(tangent));
+        ctx.closePath();
+        ctx.fill();
+
+        // Center dot
+        ctx.fillStyle = 'rgba(0, 255, 220, 0.6)';
+        ctx.beginPath();
+        ctx.arc(ccx, ccy, 3, 0, 2*Math.PI);
+        ctx.fill();
+      }
+
+      // Update info
+      updateInfo();
+    }
+
+    function updateInfo() {
+      const preset = presets[currentPreset];
+      const f = preset.f;
+      const integral = integrateContour(f, contourCx, contourCy, contourR, 500);
+      const enclosed = getEnclosedPoles(preset, contourCx, contourCy, contourR);
+
+      let residueSum = [0, 0];
+      enclosed.forEach(e => {
+        residueSum = cadd(residueSum, e.residue);
+      });
+      // 2πi × residue sum
+      const predicted = cmul([0, 2 * Math.PI], residueSum);
+
+      const box = document.getElementById('infoBox');
+      let html = '';
+      html += `<div class="info-line"><span class="info-label">Integral &oint;f(z)dz:</span></div>`;
+      html += `<div class="info-line">&nbsp; ${fmtComplex(integral, 4)}</div>`;
+      html += `<div class="info-line" style="margin-top:0.4rem"><span class="info-label">Poles enclosed:</span> ${enclosed.length}</div>`;
+
+      if (enclosed.length > 0) {
+        enclosed.forEach(e => {
+          html += `<div class="info-line">&nbsp; z=${fmtComplex(e.pole,2)}, Res=${fmtComplex(e.residue,4)}</div>`;
+        });
+      }
+
+      html += `<div class="info-line" style="margin-top:0.4rem"><span class="info-label">&sum; Residues:</span> ${fmtComplex(residueSum, 4)}</div>`;
+      html += `<div class="info-line"><span class="info-label">2&pi;i &times; &sum;Res:</span> ${fmtComplex(predicted, 4)}</div>`;
+
+      // Verification
+      const err = cabs(csub(integral, predicted));
+      const matchStr = err < 0.1 ? '<span style="color:#4a7a4a">&#10003; Matches!</span>' : '<span style="color:#8b5555">Numerical error: ' + err.toFixed(4) + '</span>';
+      html += `<div class="info-line" style="margin-top:0.4rem">${matchStr}</div>`;
+
+      box.innerHTML = html;
+    }
+
+    // --- Initial draw ---
+    drawAll();
+  })();
+  </script>
+</body>
+</html>

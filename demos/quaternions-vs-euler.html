@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quaternions vs. Euler Angles</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .canvas-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .canvas-box { text-align: center; }
+    .canvas-box h4 { color: #1a3a3a; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+    .control-group { margin-bottom: 1.2rem; }
+    .control-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; color: #1a3a3a; font-size: 0.9rem; }
+    .control-group input[type="range"] { width: 100%; margin-bottom: 0.3rem; cursor: pointer; }
+    .value-display { font-size: 0.8rem; color: #5a5a5a; font-family: monospace; }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background-color 0.3s;
+      margin-bottom: 0.5rem;
+    }
+    button:hover { background-color: #6b5344; }
+    button.secondary { background-color: #d4cfc4; color: #1a3a3a; }
+    button.secondary:hover { background-color: #c4bfb4; }
+    .divider { border-top: 1px solid #e0d9ce; margin: 1rem 0; }
+    .lock-indicator {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+      transition: all 0.25s ease;
+    }
+    .lock-indicator.locked {
+      background-color: #fbe9e7;
+      border-left-color: #c0392b;
+      color: #8b2f24;
+      font-weight: 600;
+    }
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+      font-family: monospace;
+    }
+    @media (max-width: 1024px) {
+      .demo-container { grid-template-columns: 1fr; }
+      .controls { position: static; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Quaternions vs. Euler Angles</h1>
+      <p>Two ways to represent a rotation, and why one of them breaks</p>
+    </div>
+  </header>
+
+  <main>
+    <nav><a href="../demos.html">&larr; Home</a></nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Quaternions vs. Euler Angles</h1>
+        <div class="article-meta">Interactive Demo | Rotations in 3D</div>
+      </div>
+
+      <div class="article-body">
+        <p>Both boxes below show the exact same object under the exact same rotation, at rest. The left one is driven directly by roll, pitch, and yaw angles. The right one is driven by a quaternion built from those same angles &mdash; a mathematically different way of encoding the identical orientation. Drag pitch toward &plusmn;90&deg; and watch the warning light up on the left: you've hit <strong>gimbal lock</strong>, where roll and yaw stop being independent. Then hit "Animate A &rarr; B" to watch the two representations disagree about <em>how</em> to get from one orientation to another, even though they agree on the endpoints.</p>
+      </div>
+
+      <div class="demo-container">
+        <div>
+          <div class="canvas-row">
+            <div class="canvas-box">
+              <h4>Euler angles (roll, pitch, yaw)</h4>
+              <canvas id="canvasEuler" width="360" height="360"></canvas>
+            </div>
+            <div class="canvas-box">
+              <h4>Quaternion</h4>
+              <canvas id="canvasQuat" width="360" height="360"></canvas>
+            </div>
+          </div>
+          <div class="lock-indicator" id="lockIndicator">Pitch is far from &plusmn;90&deg; &mdash; all three axes are independent.</div>
+        </div>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>Roll <span class="value-display" id="rollVal">0&deg;</span></label>
+            <input type="range" id="roll" min="-180" max="180" step="1" value="0">
+          </div>
+          <div class="control-group">
+            <label>Pitch <span class="value-display" id="pitchVal">0&deg;</span></label>
+            <input type="range" id="pitch" min="-180" max="180" step="1" value="0">
+          </div>
+          <div class="control-group">
+            <label>Yaw <span class="value-display" id="yawVal">0&deg;</span></label>
+            <input type="range" id="yaw" min="-180" max="180" step="1" value="0">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="control-group">
+            <label>Interpolation comparison</label>
+            <button onclick="animateAB()">Animate A &rarr; B</button>
+            <button class="secondary" onclick="resetSliders()">Reset to A (identity)</button>
+          </div>
+
+          <div class="info-box" id="infoBox">t = 0.00</div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>Why Euler Angles Fail: Gimbal Lock</h2>
+        <p>An Euler-angle rotation is applied as three separate rotations in sequence &mdash; here, yaw around $z$, then pitch around $y$, then roll around $x$: $R = R_z(\psi) R_y(\theta) R_x(\phi)$. Each of the three axes you rotate around is defined <em>relative to the result of the previous rotation</em>. When pitch reaches $\pm90°$, the roll axis and the yaw axis rotate into physical alignment &mdash; they become the same axis in space. At that instant you've lost a degree of freedom: turning the "roll" knob and turning the "yaw" knob do the same thing. This is gimbal lock, and it's not a bug in any particular implementation &mdash; it's a structural problem with using three sequential angles to describe orientation.</p>
+
+        <h2>How Quaternions Avoid It</h2>
+        <p>A quaternion represents a rotation as a single object $q = w + xi + yj + zk$, unit-length, encoding an axis and an angle directly: $q = \left(\cos\frac{\alpha}{2},\ \hat{n}\sin\frac{\alpha}{2}\right)$ for a rotation of angle $\alpha$ about unit axis $\hat{n}$. There's no sequence of dependent rotations, so there's no configuration where two axes collapse into one &mdash; the representation has no singularity. The tradeoff is that quaternions are less intuitive to read off directly (nobody thinks in $w,x,y,z$), which is why interfaces still expose roll/pitch/yaw sliders &mdash; but the rotation is stored and interpolated as a quaternion underneath.</p>
+
+        <h2>The Other Problem: Interpolation</h2>
+        <p>Gimbal lock is the dramatic failure, but there's a subtler one that matters just as much in animation and robotics: interpolating <em>between</em> two orientations. Linearly interpolating Euler angles component-wise (roll, pitch, and yaw each eased independently from A to B) does not produce constant angular velocity, and can take a visibly wrong-looking path &mdash; the object appears to wobble or overshoot, because three independently-eased angles don't correspond to a single smooth rotation.</p>
+
+        <p>Quaternions interpolate correctly via <strong>SLERP</strong> (spherical linear interpolation):</p>
+        <p>$$\mathrm{slerp}(q_0, q_1, t) = \frac{\sin[(1-t)\Omega]}{\sin\Omega}q_0 + \frac{\sin[t\Omega]}{\sin\Omega}q_1, \qquad \cos\Omega = q_0 \cdot q_1$$</p>
+        <p>This traces the shortest arc on the 4D unit sphere between the two orientations, at constant angular velocity &mdash; the rotational equivalent of walking in a straight line instead of a wobbly one. Click "Animate A &rarr; B" above to see both paths run side by side between the same two orientations.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Find gimbal lock:</strong> drag pitch to 90&deg;. The indicator turns red. Now move roll and yaw &mdash; on the Euler side, they visibly do the same thing.</li>
+          <li><strong>Compare interpolation:</strong> click "Animate A &rarr; B" from the identity orientation. Watch the left cube's path versus the right cube's &mdash; the quaternion side moves at a constant, even rate; the Euler side does not.</li>
+          <li><strong>Reset and repeat</strong> from a different starting orientation to see the same story play out differently each time.</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer><p>&copy; 2024. All rights reserved.</p></footer>
+
+  <script>
+    const canvasEuler = document.getElementById('canvasEuler');
+    const canvasQuat = document.getElementById('canvasQuat');
+    const ctxE = canvasEuler.getContext('2d');
+    const ctxQ = canvasQuat.getContext('2d');
+
+    function resize() {
+      [canvasEuler, canvasQuat].forEach(c => {
+        const rect = c.parentElement.getBoundingClientRect();
+        c.width = rect.width;
+        c.height = c.width;
+      });
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // ---- Math ----
+    const DEG = Math.PI / 180;
+
+    function matMulVec(m, v) {
+      return [
+        m[0]*v[0] + m[1]*v[1] + m[2]*v[2],
+        m[3]*v[0] + m[4]*v[1] + m[5]*v[2],
+        m[6]*v[0] + m[7]*v[1] + m[8]*v[2]
+      ];
+    }
+    function matMulMat(a, b) {
+      const r = new Array(9).fill(0);
+      for (let i = 0; i < 3; i++)
+        for (let j = 0; j < 3; j++)
+          for (let k = 0; k < 3; k++)
+            r[i*3+j] += a[i*3+k] * b[k*3+j];
+      return r;
+    }
+    function rotX(a) { const c=Math.cos(a), s=Math.sin(a); return [1,0,0, 0,c,-s, 0,s,c]; }
+    function rotY(a) { const c=Math.cos(a), s=Math.sin(a); return [c,0,s, 0,1,0, -s,0,c]; }
+    function rotZ(a) { const c=Math.cos(a), s=Math.sin(a); return [c,-s,0, s,c,0, 0,0,1]; }
+
+    function eulerToMatrix(rollDeg, pitchDeg, yawDeg) {
+      const rx = rotX(rollDeg * DEG), ry = rotY(pitchDeg * DEG), rz = rotZ(yawDeg * DEG);
+      return matMulMat(rz, matMulMat(ry, rx));
+    }
+
+    function eulerToQuat(rollDeg, pitchDeg, yawDeg) {
+      const r = rollDeg * DEG / 2, p = pitchDeg * DEG / 2, y = yawDeg * DEG / 2;
+      const cr = Math.cos(r), sr = Math.sin(r);
+      const cp = Math.cos(p), sp = Math.sin(p);
+      const cy = Math.cos(y), sy = Math.sin(y);
+      // matches R = Rz(yaw) Ry(pitch) Rx(roll)  =>  q = qz * qy * qx
+      const qx = [cr, sr, 0, 0];
+      const qy = [cp, 0, sp, 0];
+      const qz = [cy, 0, 0, sy];
+      return quatNormalize(quatMul(quatMul(qz, qy), qx));
+    }
+
+    function quatMul(a, b) {
+      const [aw,ax,ay,az] = a, [bw,bx,by,bz] = b;
+      return [
+        aw*bw - ax*bx - ay*by - az*bz,
+        aw*bx + ax*bw + ay*bz - az*by,
+        aw*by - ax*bz + ay*bw + az*bx,
+        aw*bz + ax*by - ay*bx + az*bw
+      ];
+    }
+    function quatNormalize(q) {
+      const n = Math.sqrt(q[0]*q[0]+q[1]*q[1]+q[2]*q[2]+q[3]*q[3]) || 1;
+      return [q[0]/n, q[1]/n, q[2]/n, q[3]/n];
+    }
+    function quatToMatrix(q) {
+      const [w,x,y,z] = q;
+      return [
+        1-2*(y*y+z*z), 2*(x*y-w*z),   2*(x*z+w*y),
+        2*(x*y+w*z),   1-2*(x*x+z*z), 2*(y*z-w*x),
+        2*(x*z-w*y),   2*(y*z+w*x),   1-2*(x*x+y*y)
+      ];
+    }
+    function slerp(q0, q1, t) {
+      let [w0,x0,y0,z0] = q0;
+      let [w1,x1,y1,z1] = q1;
+      let dot = w0*w1 + x0*x1 + y0*y1 + z0*z1;
+      if (dot < 0) { w1=-w1; x1=-x1; y1=-y1; z1=-z1; dot=-dot; }
+      if (dot > 0.9995) {
+        const w = w0+(w1-w0)*t, x = x0+(x1-x0)*t, y = y0+(y1-y0)*t, z = z0+(z1-z0)*t;
+        return quatNormalize([w,x,y,z]);
+      }
+      const theta0 = Math.acos(dot);
+      const theta = theta0 * t;
+      const s0 = Math.cos(theta) - dot * Math.sin(theta) / Math.sin(theta0);
+      const s1 = Math.sin(theta) / Math.sin(theta0);
+      return [
+        s0*w0 + s1*w1, s0*x0 + s1*x1, s0*y0 + s1*y1, s0*z0 + s1*z1
+      ];
+    }
+    function lerpAngle(a, b, t) { return a + (b - a) * t; }
+
+    // ---- Object geometry: cube + colored axes ----
+    const cubeVerts = [
+      [-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],
+      [-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]
+    ];
+    const cubeEdges = [
+      [0,1],[1,2],[2,3],[3,0],
+      [4,5],[5,6],[6,7],[7,4],
+      [0,4],[1,5],[2,6],[3,7]
+    ];
+    const axes = [
+      { dir: [1.7,0,0], color: 'rgb(255,100,100)', label: 'x' },
+      { dir: [0,1.7,0], color: 'rgb(100,220,180)', label: 'y' },
+      { dir: [0,0,1.7], color: 'rgb(120,160,255)', label: 'z' }
+    ];
+
+    function project(p, size) {
+      const dist = 5;
+      const f = dist / (dist - p[2]);
+      return [size/2 + p[0]*f*(size*0.19), size/2 - p[1]*f*(size*0.19)];
+    }
+
+    function drawObject(ctx, matrix, size) {
+      ctx.clearRect(0, 0, size, size);
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#1a1a2e'); grad.addColorStop(1, '#16213e');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, size, size);
+
+      const pts = cubeVerts.map(v => project(matMulVec(matrix, v), size));
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.lineWidth = 1.6;
+      cubeEdges.forEach(([i,j]) => {
+        ctx.beginPath(); ctx.moveTo(pts[i][0], pts[i][1]); ctx.lineTo(pts[j][0], pts[j][1]); ctx.stroke();
+      });
+
+      const origin = project(matMulVec(matrix, [0,0,0]), size);
+      axes.forEach(ax => {
+        const tip = project(matMulVec(matrix, ax.dir), size);
+        ctx.strokeStyle = ax.color; ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.moveTo(origin[0], origin[1]); ctx.lineTo(tip[0], tip[1]); ctx.stroke();
+        ctx.fillStyle = ax.color; ctx.font = 'bold 14px monospace';
+        ctx.fillText(ax.label, tip[0] + 6, tip[1]);
+      });
+    }
+
+    // ---- State ----
+    const rollEl = document.getElementById('roll');
+    const pitchEl = document.getElementById('pitch');
+    const yawEl = document.getElementById('yaw');
+    const rollVal = document.getElementById('rollVal');
+    const pitchVal = document.getElementById('pitchVal');
+    const yawVal = document.getElementById('yawVal');
+    const lockIndicator = document.getElementById('lockIndicator');
+    const infoBox = document.getElementById('infoBox');
+
+    let animating = false, animStart = 0, animDuration = 2600;
+    let angleA = [0, 0, 0];
+    let angleB = [90, 88, 90];
+
+    function currentAngles() { return [parseFloat(rollEl.value), parseFloat(pitchEl.value), parseFloat(yawEl.value)]; }
+
+    function renderStatic() {
+      const [roll, pitch, yaw] = currentAngles();
+      rollVal.textContent = roll.toFixed(0) + '°';
+      pitchVal.textContent = pitch.toFixed(0) + '°';
+      yawVal.textContent = yaw.toFixed(0) + '°';
+
+      const size = canvasEuler.width;
+      drawObject(ctxE, eulerToMatrix(roll, pitch, yaw), size);
+      drawObject(ctxQ, quatToMatrix(eulerToQuat(roll, pitch, yaw)), size);
+
+      const locked = Math.abs(Math.abs(pitch) - 90) < 6;
+      lockIndicator.classList.toggle('locked', locked);
+      lockIndicator.textContent = locked
+        ? '⚠ Gimbal lock: pitch is within 6° of ±90° — roll and yaw are now rotating around the same axis on the Euler side.'
+        : 'Pitch is far from ±90° — all three axes are independent.';
+      infoBox.textContent = 'roll=' + roll.toFixed(0) + '°  pitch=' + pitch.toFixed(0) + '°  yaw=' + yaw.toFixed(0) + '°';
+    }
+
+    [rollEl, pitchEl, yawEl].forEach(el => el.addEventListener('input', () => { if (!animating) renderStatic(); }));
+
+    function resetSliders() {
+      animating = false;
+      rollEl.value = angleA[0]; pitchEl.value = angleA[1]; yawEl.value = angleA[2];
+      renderStatic();
+    }
+
+    function easeInOutCubic(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+    function animateAB() {
+      angleA = currentAngles();
+      animStart = performance.now();
+      animating = true;
+
+      const qA = eulerToQuat(angleA[0], angleA[1], angleA[2]);
+      const qB = eulerToQuat(angleB[0], angleB[1], angleB[2]);
+
+      function step(now) {
+        if (!animating) return;
+        const raw = Math.min(1, (now - animStart) / animDuration);
+        const t = easeInOutCubic(raw);
+
+        const eRoll = lerpAngle(angleA[0], angleB[0], t);
+        const ePitch = lerpAngle(angleA[1], angleB[1], t);
+        const eYaw = lerpAngle(angleA[2], angleB[2], t);
+        const size = canvasEuler.width;
+        drawObject(ctxE, eulerToMatrix(eRoll, ePitch, eYaw), size);
+
+        const q = slerp(qA, qB, t);
+        drawObject(ctxQ, quatToMatrix(q), size);
+
+        const locked = Math.abs(Math.abs(ePitch) - 90) < 6;
+        lockIndicator.classList.toggle('locked', locked);
+        lockIndicator.textContent = locked
+          ? '⚠ Gimbal lock: the Euler path is passing through ±90° pitch right now.'
+          : 'Animating A → B: left = Euler-angle LERP, right = quaternion SLERP.';
+        infoBox.textContent = 't = ' + raw.toFixed(2) + '  (euler: ' + eRoll.toFixed(0) + '°, ' + ePitch.toFixed(0) + '°, ' + eYaw.toFixed(0) + '°)';
+
+        if (raw < 1) {
+          requestAnimationFrame(step);
+        } else {
+          animating = false;
+          rollEl.value = angleB[0]; pitchEl.value = angleB[1]; yawEl.value = angleB[2];
+          renderStatic();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    renderStatic();
+  </script>
+</body>
+</html>

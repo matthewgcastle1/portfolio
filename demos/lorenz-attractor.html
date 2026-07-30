@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorenz Attractor Visualization</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    #canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+    }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1a3a3a;
+      font-size: 0.95rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .control-group input[type="text"] {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+    }
+
+    .value-display {
+      font-size: 0.85rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 1rem;
+      border-radius: 3px;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-left: 3px solid #8b7355;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Lorenz Attractor</h1>
+      <p>A visualization of chaotic dynamics</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Lorenz Attractor Visualization</h1>
+        <div class="article-meta">Interactive Demo | Mathematics & Physics</div>
+      </div>
+
+      <div class="article-body">
+        <h2>What is the Lorenz Attractor?</h2>
+        <p>The Lorenz attractor is a set of chaotic solutions to a system of three differential equations first studied by meteorologist Edward Lorenz in 1963. While investigating atmospheric convection, he discovered something remarkable: a deterministic system (one with no randomness) could produce behavior that appears random.</p>
+
+        <p>The equations are surprisingly simple:</p>
+        <blockquote>
+          dx/dt = σ(y - x)<br>
+          dy/dt = x(ρ - z) - y<br>
+          dz/dt = xy - βz
+        </blockquote>
+
+        <p>Yet they create one of mathematics' most beautiful patterns. The system never repeats itself exactly, yet it never escapes a bounded region. Instead, it traces out a distinctive butterfly-shaped pattern in 3D space. This is the essence of chaos: deterministic equations producing unpredictable long-term behavior.</p>
+
+        <h2>The Butterfly Effect</h2>
+        <p>Lorenz's discovery led to the famous "butterfly effect"—the idea that a butterfly flapping its wings in Brazil could theoretically set off a chain of events leading to a tornado in Texas. In his system, incredibly tiny changes in initial conditions lead to vastly different trajectories. This is why weather prediction beyond a couple of weeks becomes effectively impossible.</p>
+
+        <h2>Interactive Visualization</h2>
+        <p>Below, you can see the attractor rendered in real-time as a 2D projection. Use the controls to adjust the system parameters and watch how the behavior changes. Try finding the "edge of chaos" where the system transitions between ordered and chaotic behavior.</p>
+      </div>
+
+      <div class="demo-container">
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label for="sigma">σ (Sigma)</label>
+            <input type="range" id="sigma" min="0" max="50" step="0.1" value="10">
+            <div class="value-display" id="sigmaValue">10.0</div>
+          </div>
+
+          <div class="control-group">
+            <label for="rho">ρ (Rho)</label>
+            <input type="range" id="rho" min="0" max="100" step="0.1" value="28">
+            <div class="value-display" id="rhoValue">28.0</div>
+          </div>
+
+          <div class="control-group">
+            <label for="beta">β (Beta)</label>
+            <input type="range" id="beta" min="0" max="10" step="0.1" value="2.667">
+            <div class="value-display" id="betaValue">2.667</div>
+          </div>
+
+          <div class="control-group">
+            <label for="speed">Speed</label>
+            <input type="range" id="speed" min="1" max="10" step="1" value="3">
+            <div class="value-display" id="speedValue">3x</div>
+          </div>
+
+          <button onclick="resetAttractor()">Reset & Clear</button>
+          <button class="secondary" onclick="randomizeParameters()">Random Parameters</button>
+
+          <div class="info-box">
+            <strong>Classic parameters:</strong> σ=10, ρ=28, β≈2.67
+            <br><br>
+            Try ρ < 1 (stable), or increase to see chaos emerge.
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>What You're Seeing</h2>
+        <p>The visualization plots the X and Y coordinates of the system as it evolves over time. The trajectory traces a path that spirals around two "lobes" of the butterfly shape. The system never settles into a fixed pattern, yet never flies off to infinity either—it remains confined to an invisible attractor.</p>
+
+        <p>The classic parameters (σ=10, ρ=28, β≈2.67) create the signature chaotic butterfly. But try experimenting:</p>
+        <ul>
+          <li>Lower ρ values create simpler, more ordered behavior</li>
+          <li>Higher ρ values can create even more chaotic behavior</li>
+          <li>Changing σ alters the stretched shape of the wings</li>
+          <li>β affects the vertical scale and spiraling behavior</li>
+        </ul>
+
+        <h2>Why This Matters</h2>
+        <p>The Lorenz attractor was one of the first clear demonstrations that simple, deterministic systems could behave chaotically. This discovery revolutionized physics, meteorology, and mathematics. It showed us that unpredictability isn't always a sign of randomness—sometimes it's a fundamental feature of how certain systems work.</p>
+
+        <p>Today, chaos theory is crucial to understanding everything from weather and climate to ecosystems and heartbeat irregularities. The Lorenz attractor remains one of the most elegant examples of this principle.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = canvas.width * 0.75; // 4:3 aspect ratio
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let params = {
+      sigma: 10,
+      rho: 28,
+      beta: 2.667,
+      speed: 3
+    };
+
+    let x = 1;
+    let y = 1;
+    let z = 1;
+
+    const trail = [];
+    const maxTrailLength = 8000;
+    let animationId;
+
+    // Parameter controls
+    document.getElementById('sigma').addEventListener('input', (e) => {
+      params.sigma = parseFloat(e.target.value);
+      document.getElementById('sigmaValue').textContent = params.sigma.toFixed(1);
+    });
+
+    document.getElementById('rho').addEventListener('input', (e) => {
+      params.rho = parseFloat(e.target.value);
+      document.getElementById('rhoValue').textContent = params.rho.toFixed(1);
+    });
+
+    document.getElementById('beta').addEventListener('input', (e) => {
+      params.beta = parseFloat(e.target.value);
+      document.getElementById('betaValue').textContent = params.beta.toFixed(3);
+    });
+
+    document.getElementById('speed').addEventListener('input', (e) => {
+      params.speed = parseInt(e.target.value);
+      document.getElementById('speedValue').textContent = params.speed + 'x';
+    });
+
+    function resetAttractor() {
+      x = 1;
+      y = 1;
+      z = 1;
+      trail.length = 0;
+    }
+
+    function randomizeParameters() {
+      params.sigma = Math.random() * 40 + 5;
+      params.rho = Math.random() * 80 + 10;
+      params.beta = Math.random() * 8 + 1;
+
+      document.getElementById('sigma').value = params.sigma;
+      document.getElementById('rho').value = params.rho;
+      document.getElementById('beta').value = params.beta;
+
+      document.getElementById('sigmaValue').textContent = params.sigma.toFixed(1);
+      document.getElementById('rhoValue').textContent = params.rho.toFixed(1);
+      document.getElementById('betaValue').textContent = params.beta.toFixed(3);
+
+      resetAttractor();
+    }
+
+    function lorenzDerivatives(x, y, z) {
+      const dx = params.sigma * (y - x);
+      const dy = x * (params.rho - z) - y;
+      const dz = x * y - params.beta * z;
+      return { dx, dy, dz };
+    }
+
+    function stepLorenz(dt) {
+      const derivs = lorenzDerivatives(x, y, z);
+      x += derivs.dx * dt;
+      y += derivs.dy * dt;
+      z += derivs.dz * dt;
+    }
+
+    function projectToScreen(x, y) {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const scale = 8; // Adjust zoom level
+
+      return {
+        sx: centerX + x * scale,
+        sy: centerY - y * scale
+      };
+    }
+
+    function animate() {
+      // Update physics multiple times per frame for smoother motion
+      const dt = 0.001;
+      for (let i = 0; i < params.speed * 5; i++) {
+        stepLorenz(dt);
+      }
+
+      // Add current position to trail
+      const projected = projectToScreen(x, y);
+      trail.push({
+        x: projected.sx,
+        y: projected.sy,
+        age: 0
+      });
+
+      // Remove old trail points
+      if (trail.length > maxTrailLength) {
+        trail.shift();
+      }
+
+      // Increment age of trail points
+      for (let point of trail) {
+        point.age++;
+      }
+
+      // Clear canvas
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw subtle grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < canvas.width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      // Draw trail with gradient fade
+      for (let i = 0; i < trail.length; i++) {
+        const point = trail[i];
+        const alpha = 1 - (point.age / maxTrailLength);
+        const hue = (i / trail.length * 360) % 360;
+
+        ctx.strokeStyle = `hsla(${hue}, 100%, 50%, ${alpha * 0.6})`;
+        ctx.lineWidth = 1.5;
+
+        if (i > 0) {
+          ctx.beginPath();
+          ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+          ctx.lineTo(point.x, point.y);
+          ctx.stroke();
+        }
+      }
+
+      // Draw current point
+      const current = trail[trail.length - 1];
+      if (current) {
+        ctx.fillStyle = '#00ff88';
+        ctx.beginPath();
+        ctx.arc(current.x, current.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

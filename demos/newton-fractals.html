@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newton Fractals</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin: 2rem 0; }
+    #canvas {
+      background: #16213e;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      cursor: grab;
+    }
+    #canvas:active { cursor: grabbing; }
+    .controls {
+      background: white; padding: 1.5rem; border-radius: 4px; border: 1px solid #e0d9ce;
+      height: fit-content; position: sticky; top: 2rem;
+    }
+    .control-group { margin-bottom: 1.2rem; }
+    .control-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; color: #1a3a3a; font-size: 0.9rem; }
+    .control-group input[type="range"] { width: 100%; margin-bottom: 0.3rem; cursor: pointer; }
+    .control-group select {
+      width: 100%; padding: 0.5rem; border: 1px solid #d4cfc4; border-radius: 3px; font-size: 0.9rem; background: white;
+    }
+    .value-display { font-size: 0.8rem; color: #5a5a5a; font-family: monospace; }
+    button {
+      width: 100%; padding: 0.6rem; background-color: #8b7355; color: white; border: none; border-radius: 3px;
+      font-weight: 500; cursor: pointer; font-size: 0.85rem; transition: background-color .3s; margin-bottom: 0.5rem;
+    }
+    button:hover { background-color: #6b5344; }
+    .divider { border-top: 1px solid #e0d9ce; margin: 1rem 0; }
+    .info-box {
+      background-color: #f5f1e8; padding: 0.8rem; border-radius: 3px; margin-top: 1rem;
+      font-size: 0.8rem; line-height: 1.5; border-left: 3px solid #8b7355; font-family: monospace;
+    }
+    @media (max-width: 1024px) { .demo-container { grid-template-columns: 1fr; } .controls { position: static; } }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Newton Fractals</h1>
+      <p>Where does Newton's method send you, for every starting point?</p>
+    </div>
+  </header>
+
+  <main>
+    <nav><a href="../demos.html">&larr; Home</a></nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Newton Fractals</h1>
+        <div class="article-meta">Interactive Demo | Complex Analysis</div>
+      </div>
+
+      <div class="article-body">
+        <p>Newton's method finds a root of a function by repeatedly applying $z_{n+1} = z_n - \dfrac{f(z_n)}{f'(z_n)}$. On the real line, this is the familiar tangent-line method from calculus. Applied over the <em>complex</em> plane instead, every point is a starting guess $z_0$, and every point eventually converges to one of the polynomial's roots &mdash; usually the nearest one, but not always. Color each starting point by which root it converges to, and shade by how many iterations it took, and the boundaries between "which root wins" turn out to be fractal: infinitely detailed, and nowhere near as simple as "whichever root is closest."</p>
+      </div>
+
+      <div class="demo-container">
+        <canvas id="canvas" width="520" height="520"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label>Polynomial</label>
+            <select id="preset">
+              <option value="3">z&sup3; &minus; 1</option>
+              <option value="4" selected>z&#8308; &minus; 1</option>
+              <option value="5">z&#8309; &minus; 1</option>
+              <option value="6">z&#8310; &minus; 1</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Max iterations <span class="value-display" id="iterVal">28</span></label>
+            <input type="range" id="iterations" min="6" max="60" step="1" value="28">
+          </div>
+          <div class="divider"></div>
+          <button onclick="resetView()">Reset View</button>
+          <div class="value-display">Drag to pan &middot; scroll to zoom</div>
+          <div class="info-box" id="infoBox">center = (0, 0)<br>zoom = 1.0&times;</div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>Reading the Picture</h2>
+        <p>Each of the $n$ roots of $z^n - 1$ gets its own color &mdash; these are exactly the $n$-th roots of unity, evenly spaced around the unit circle: $z_k = e^{2\pi i k/n}$. A pixel at complex coordinate $c$ is colored according to which root Newton's method reaches when started at $z_0 = c$. The brightness encodes how many iterations it took to get there &mdash; bright means fast convergence, dark means the starting point was near a boundary and took its time deciding.</p>
+
+        <h2>Why the Boundary Is a Fractal</h2>
+        <p>Near the middle of each root's basin of attraction, Newton's method behaves exactly as you'd expect: nearby points converge to the nearby root, quickly. But along the boundary between two basins, arbitrarily small perturbations can send you to a completely different root &mdash; and zooming into that boundary reveals the same tangled structure again, at every scale, with tendrils of every other basin's color woven in. This sensitivity is a real, well-studied phenomenon (it's a classic example of chaotic behavior in a purely deterministic root-finding method), not a rendering artifact.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Switch polynomials:</strong> higher degree means more roots, more colors, and more intricate boundaries.</li>
+          <li><strong>Zoom into a boundary</strong> between two colors and watch the same tangled pattern reappear at the new scale.</li>
+          <li><strong>Raise the iteration count</strong> to resolve finer boundary detail (at the cost of a slightly slower render).</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer><p>&copy; 2024. All rights reserved.</p></footer>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const RES = 380; // internal render resolution (square), upscaled to canvas size
+
+    let view = { cx: 0, cy: 0, halfW: 1.6 };
+    let n = 4;
+    let maxIter = 28;
+
+    const hues = [10, 150, 260, 45, 200, 320]; // per-root hue, up to 6 roots
+
+    function hslToRgb(h, s, l) {
+      s /= 100; l /= 100;
+      const k = n => (n + h / 30) % 12;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+    }
+
+    function render() {
+      const nowN = n;
+      const rootAngles = [];
+      for (let k = 0; k < nowN; k++) rootAngles.push(2 * Math.PI * k / nowN);
+      const roots = rootAngles.map(a => [Math.cos(a), Math.sin(a)]);
+
+      const off = document.createElement('canvas');
+      off.width = RES; off.height = RES;
+      const octx = off.getContext('2d');
+      const img = octx.createImageData(RES, RES);
+
+      for (let py = 0; py < RES; py++) {
+        const y0 = view.cy + (0.5 - py / RES) * 2 * view.halfW;
+        for (let px = 0; px < RES; px++) {
+          const x0 = view.cx + (px / RES - 0.5) * 2 * view.halfW;
+          let zr = x0, zi = y0;
+          let iter = 0, converged = -1;
+          for (; iter < maxIter; iter++) {
+            // f(z) = z^n - 1, f'(z) = n z^(n-1)  (De Moivre-style power via repeated complex multiply)
+            let pr = 1, pi = 0; // z^n
+            let dr = 1, di = 0; // z^(n-1)
+            for (let k = 0; k < nowN; k++) {
+              if (k === nowN - 1) { dr = pr; di = pi; }
+              const nr = pr * zr - pi * zi;
+              const ni = pr * zi + pi * zr;
+              pr = nr; pi = ni;
+            }
+            const fr = pr - 1, fi = pi;
+            // f'(z) = n * z^(n-1)
+            const dfr = nowN * dr, dfi = nowN * di;
+            const denom = dfr * dfr + dfi * dfi;
+            if (denom < 1e-14) break;
+            // z_next = z - f/f'
+            const qr = (fr * dfr + fi * dfi) / denom;
+            const qi = (fi * dfr - fr * dfi) / denom;
+            zr -= qr; zi -= qi;
+
+            for (let ri = 0; ri < nowN; ri++) {
+              const dxr = zr - roots[ri][0], dyi = zi - roots[ri][1];
+              if (dxr * dxr + dyi * dyi < 1e-6) { converged = ri; break; }
+            }
+            if (converged !== -1) break;
+          }
+
+          const idx = (py * RES + px) * 4;
+          if (converged === -1) {
+            img.data[idx] = 10; img.data[idx+1] = 10; img.data[idx+2] = 18; img.data[idx+3] = 255;
+          } else {
+            const t = iter / maxIter;
+            const light = 70 - t * 45;
+            const [r, g, b] = hslToRgb(hues[converged % hues.length], 70, light);
+            img.data[idx] = r; img.data[idx+1] = g; img.data[idx+2] = b; img.data[idx+3] = 255;
+          }
+        }
+      }
+      octx.putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
+
+      document.getElementById('infoBox').innerHTML =
+        'center = (' + view.cx.toFixed(3) + ', ' + view.cy.toFixed(3) + ')<br>zoom = ' + (1.6 / view.halfW).toFixed(2) + '&times;';
+    }
+
+    document.getElementById('preset').addEventListener('change', e => { n = parseInt(e.target.value, 10); render(); });
+    document.getElementById('iterations').addEventListener('input', e => {
+      maxIter = parseInt(e.target.value, 10);
+      document.getElementById('iterVal').textContent = maxIter;
+      render();
+    });
+
+    function resetView() { view = { cx: 0, cy: 0, halfW: 1.6 }; render(); }
+
+    // Pan
+    let dragging = false, dragStart = null, viewStart = null;
+    canvas.addEventListener('pointerdown', e => {
+      dragging = true; dragStart = [e.clientX, e.clientY]; viewStart = { ...view };
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const dx = e.clientX - dragStart[0], dy = e.clientY - dragStart[1];
+      const scale = (2 * viewStart.halfW) / canvas.clientWidth;
+      view.cx = viewStart.cx - dx * scale;
+      view.cy = viewStart.cy + dy * scale;
+    });
+    canvas.addEventListener('pointerup', () => { if (dragging) { dragging = false; render(); } });
+    canvas.addEventListener('pointerleave', () => { if (dragging) { dragging = false; render(); } });
+
+    // Zoom
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.25 : 0.8;
+      view.halfW *= factor;
+      render();
+    }, { passive: false });
+
+    render();
+  </script>
+</body>
+</html>

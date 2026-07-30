@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Vectors to Functions: Change of Basis</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .canvas-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+    }
+
+    .canvas-wrapper .canvas-label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    #basisCanvas { aspect-ratio: 1 / 1; }
+    #functionCanvas { aspect-ratio: 3 / 1.5; }
+    #coeffCanvas { aspect-ratio: 3 / 1; }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      background-color: #8b7355;
+      color: white;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .toggle-row label {
+      font-weight: normal;
+      margin-bottom: 0;
+      font-size: 0.85rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 4px;
+      border-left: 3px solid #8b7355;
+      font-size: 0.8rem;
+    }
+
+    .info-box .info-line {
+      font-family: monospace;
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+      color: #1a3a3a;
+    }
+
+    .info-box .info-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-box .info-label {
+      color: #5a5a5a;
+      font-family: Georgia, serif;
+      font-size: 0.78rem;
+    }
+
+    .analogy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin: 1rem 0;
+    }
+
+    .analogy-table th, .analogy-table td {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #e0d9ce;
+      text-align: left;
+    }
+
+    .analogy-table th {
+      background: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .analogy-table td {
+      background: white;
+      color: #2c2c2c;
+      font-family: monospace;
+      font-size: 0.78rem;
+    }
+
+    .section-header {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid #e0d9ce;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>From Vectors to Functions</h1>
+      <p>Change of basis: the same idea connects $\mathbb{R}^2$ to Fourier series</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>From Vectors to Functions: Change of Basis</h1>
+        <div class="article-meta">The same idea connects $\mathbb{R}^2$ to Fourier series</div>
+      </div>
+
+      <div class="article-body">
+        <p>A vector doesn&rsquo;t change when you describe it in a different basis&mdash;only its coordinates do. This is change of basis in two dimensions. The remarkable thing is that the exact same idea works in infinite dimensions: a function is a &ldquo;vector,&rdquo; sines and cosines are the &ldquo;basis,&rdquo; and Fourier coefficients are the &ldquo;coordinates.&rdquo;</p>
+      </div>
+
+      <div class="demo-container">
+        <div class="canvas-stack">
+          <div class="canvas-wrapper">
+            <div class="canvas-label">R² &mdash; Change of Basis (drag vector or basis vectors)</div>
+            <canvas id="basisCanvas"></canvas>
+          </div>
+
+          <table class="analogy-table" id="analogyTable">
+            <tr><th>Finite ($\mathbb{R}^2$)</th><th>Function Space</th></tr>
+            <tr><td>Vector $\mathbf{v}$</td><td>Function $f(x)$</td></tr>
+            <tr><td>Basis $\{e_1, e_2\}$</td><td>Basis $\{1, \cos x, \sin x, \cos 2x, \ldots\}$</td></tr>
+            <tr><td>Dot product $\mathbf{v} \cdot e_1$</td><td>Inner product $\int f(x)\cos(nx)\,dx$</td></tr>
+            <tr><td>Coordinates $(v_1, v_2)$</td><td>Fourier coefficients $(a_0, a_1, b_1, \ldots)$</td></tr>
+            <tr><td>Change-of-basis matrix $P$</td><td>(infinite-dimensional)</td></tr>
+          </table>
+
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Function Space &mdash; f(x) and its Fourier reconstruction</div>
+            <canvas id="functionCanvas"></canvas>
+          </div>
+
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Fourier Coefficients &mdash; coordinates in the sine/cosine basis</div>
+            <canvas id="coeffCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="section-header">Finite Dimensions ($\mathbb{R}^2$)</div>
+
+          <div class="control-group">
+            <label>Basis Angle</label>
+            <input type="range" id="basisAngle" min="0" max="90" step="1" value="0">
+            <div class="value-display" id="basisAngleVal">0&deg; (standard basis)</div>
+          </div>
+
+          <div class="info-box" id="basisInfo">
+            <div class="info-line"><span class="info-label">Loading...</span></div>
+          </div>
+
+          <hr class="divider">
+          <div class="section-header">Function Space</div>
+
+          <div class="control-group">
+            <label>Function</label>
+            <select id="functionSelect">
+              <option value="square">Square Wave</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="triangle">Triangle</option>
+              <option value="step">Step Function</option>
+              <option value="spike">Spike (Dirac-like)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Fourier Terms</label>
+            <input type="range" id="numTerms" min="1" max="30" step="1" value="5">
+            <div class="value-display" id="numTermsVal">5 terms</div>
+          </div>
+
+          <div class="control-group">
+            <div class="toggle-row">
+              <input type="checkbox" id="showComponents" checked>
+              <label for="showComponents">Show components</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showReconstruction" checked>
+              <label for="showReconstruction">Show reconstruction</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showAnalogy" checked>
+              <label for="showAnalogy">Show analogy table</label>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="info-box" id="fourierInfo">
+            <div class="info-line"><span class="info-label">Loading...</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body">
+        <h2>Change of Basis in $\mathbb{R}^2$</h2>
+        <p>The vector $\mathbf{v} = (2, 1)$ in the standard basis is the same arrow in the plane no matter how you describe it. But if you rotate your basis vectors by 45&deg;, the same vector gets different coordinates. The vector hasn&rsquo;t moved&mdash;your description of it has changed.</p>
+        <p>The <strong>change-of-basis matrix</strong> $P$ has the new basis vectors as its columns (expressed in the old coordinates). To find the coordinates in the new basis, you compute $P^{-1}\mathbf{v}$. Drag the basis vectors or adjust the angle slider to see this in action.</p>
+
+        <h2>The Change-of-Basis Matrix</h2>
+        <p>If the new basis is $\{b_1, b_2\}$, the matrix $P = [b_1 \mid b_2]$ converts from new coordinates to old: if $[\mathbf{v}]_B = (x', y')$, then $\mathbf{v} = x'b_1 + y'b_2 = P[\mathbf{v}]_B$. Going the other direction: $[\mathbf{v}]_B = P^{-1}\mathbf{v}$.</p>
+
+        <h2>Function Spaces</h2>
+        <p>Here is the profound leap. A function $f(x)$ on $[0, 2\pi]$ can be thought of as a vector in an infinite-dimensional space. Each point $x$ gives one &ldquo;component&rdquo; of the vector. The space of all such functions is a vector space&mdash;you can add functions and scale them, and all the axioms hold.</p>
+
+        <h2>Inner Products</h2>
+        <p>The dot product $\mathbf{v} \cdot \mathbf{w} = v_1 w_1 + v_2 w_2$ generalizes to the inner product of functions:</p>
+        $$\langle f, g \rangle = \frac{1}{\pi} \int_0^{2\pi} f(x)\,g(x)\,dx$$
+        <p>This measures &ldquo;how much of $g$ is in $f$&rdquo;&mdash;exactly like the dot product measures how much of one vector points in the direction of another.</p>
+
+        <h2>Orthogonality</h2>
+        <p>The standard basis vectors are orthogonal: $e_1 \cdot e_2 = 0$. The sine and cosine functions have the same property:</p>
+        $$\int_0^{2\pi} \sin(mx)\sin(nx)\,dx = 0 \quad \text{for } m \neq n$$
+        <p>This is not a coincidence&mdash;it&rsquo;s the exact same structure. The sines and cosines form an orthogonal basis for function space, just as $e_1$ and $e_2$ form an orthogonal basis for $\mathbb{R}^2$.</p>
+
+        <h2>Fourier Series as Change of Basis</h2>
+        <p>The Fourier coefficients $a_n$ and $b_n$ are found by projecting $f$ onto each basis function:</p>
+        $$a_n = \frac{1}{\pi} \int_0^{2\pi} f(x)\cos(nx)\,dx \qquad b_n = \frac{1}{\pi} \int_0^{2\pi} f(x)\sin(nx)\,dx$$
+        <p>This is the infinite-dimensional version of $[\mathbf{v}]_B = P^{-1}\mathbf{v}$. The coefficients are the coordinates of $f$ in the sine/cosine basis. The reconstruction $f(x) \approx a_0/2 + \sum(a_n\cos(nx) + b_n\sin(nx))$ is the change of basis in action.</p>
+
+        <h2>The Profound Connection</h2>
+        <p>Everything in linear algebra&mdash;basis, coordinates, inner products, projections, orthogonality&mdash;works in infinite dimensions. Fourier analysis isn&rsquo;t a separate subject from linear algebra. It <em>is</em> linear algebra, in a bigger space. The 2D rotation you see in the top canvas and the Fourier decomposition in the bottom canvas are the same mathematical operation, generalized.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+  (function() {
+    // =====================
+    // CANVAS 1: R² Basis
+    // =====================
+    const basisCanvas = document.getElementById('basisCanvas');
+    const bCtx = basisCanvas.getContext('2d');
+
+    const functionCanvas = document.getElementById('functionCanvas');
+    const fCtx = functionCanvas.getContext('2d');
+
+    const coeffCanvas = document.getElementById('coeffCanvas');
+    const cCtx = coeffCanvas.getContext('2d');
+
+    // --- State ---
+    let basisAngle = 0; // degrees
+    let vecX = 2, vecY = 1; // vector in standard basis
+    const WORLD_RANGE = 3.5;
+
+    // Function space state
+    let currentFunction = 'square';
+    let numTerms = 5;
+    let showComponents = true, showReconstruction = true;
+
+    // Fourier coefficients cache
+    let fourierA = [];
+    let fourierB = [];
+    let functionSamples = [];
+    const NSAMPLES = 512;
+
+    // --- Resize ---
+    function resizeAll() {
+      const rect1 = basisCanvas.parentElement.getBoundingClientRect();
+      basisCanvas.width = rect1.width;
+      basisCanvas.height = rect1.width;
+
+      const rect2 = functionCanvas.parentElement.getBoundingClientRect();
+      functionCanvas.width = rect2.width;
+      functionCanvas.height = rect2.width / 2;
+
+      const rect3 = coeffCanvas.parentElement.getBoundingClientRect();
+      coeffCanvas.width = rect3.width;
+      coeffCanvas.height = rect3.width / 3;
+    }
+    resizeAll();
+    window.addEventListener('resize', () => { resizeAll(); drawAll(); });
+
+    // --- World/Canvas conversion for basis canvas ---
+    function worldToCanvas(wx, wy) {
+      const cx = (wx / WORLD_RANGE + 1) / 2 * basisCanvas.width;
+      const cy = (1 - wy / WORLD_RANGE) / 2 * basisCanvas.height;
+      return [cx, cy];
+    }
+
+    function canvasToWorld(px, py) {
+      const rect = basisCanvas.getBoundingClientRect();
+      const scaleX = basisCanvas.width / rect.width;
+      const scaleY = basisCanvas.height / rect.height;
+      const cx = px * scaleX;
+      const cy = py * scaleY;
+      const wx = (cx / basisCanvas.width * 2 - 1) * WORLD_RANGE;
+      const wy = (1 - cy / basisCanvas.height * 2) * WORLD_RANGE;
+      return [wx, wy];
+    }
+
+    // --- Basis computation ---
+    function getBasis() {
+      const a = basisAngle * Math.PI / 180;
+      return {
+        b1: [Math.cos(a), Math.sin(a)],
+        b2: [-Math.sin(a), Math.cos(a)]
+      };
+    }
+
+    function getNewCoords() {
+      // P^-1 v where P = [b1 | b2]
+      const { b1, b2 } = getBasis();
+      // For rotation matrix, P^-1 = P^T
+      const x2 = vecX * b1[0] + vecY * b1[1];
+      const y2 = vecX * b2[0] + vecY * b2[1];
+      return [x2, y2];
+    }
+
+    // --- Draw arrow ---
+    function drawArrow(ctx, canvas, x1, y1, x2, y2, color, lineWidth, label, labelOffset) {
+      const [cx1, cy1] = worldToCanvas(x1, y1);
+      const [cx2, cy2] = worldToCanvas(x2, y2);
+
+      // Recompute for non-basis canvas
+      let p1x = cx1, p1y = cy1, p2x = cx2, p2y = cy2;
+
+      const dx = p2x - p1x;
+      const dy = p2y - p1y;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      if (len < 1) return;
+
+      const angle = Math.atan2(dy, dx);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(p2x, p2y);
+      ctx.stroke();
+
+      // Arrowhead
+      const headLen = 10;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(p2x, p2y);
+      ctx.lineTo(p2x - headLen*Math.cos(angle - 0.35), p2y - headLen*Math.sin(angle - 0.35));
+      ctx.lineTo(p2x - headLen*Math.cos(angle + 0.35), p2y - headLen*Math.sin(angle + 0.35));
+      ctx.closePath();
+      ctx.fill();
+
+      // Label
+      if (label) {
+        const off = labelOffset || 12;
+        const lx = p2x + off * Math.cos(angle + Math.PI/4);
+        const ly = p2y + off * Math.sin(angle + Math.PI/4);
+        ctx.fillStyle = color;
+        ctx.font = '13px monospace';
+        ctx.fillText(label, lx, ly);
+      }
+    }
+
+    // --- Draw basis canvas ---
+    function drawBasisCanvas() {
+      const w = basisCanvas.width;
+      const h = basisCanvas.height;
+
+      // Background
+      const grad = bCtx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      bCtx.fillStyle = grad;
+      bCtx.fillRect(0, 0, w, h);
+
+      // Grid
+      bCtx.strokeStyle = 'rgba(255,255,255,0.07)';
+      bCtx.lineWidth = 0.5;
+      for (let i = Math.ceil(-WORLD_RANGE); i <= Math.floor(WORLD_RANGE); i++) {
+        const [x1, y1] = worldToCanvas(i, -WORLD_RANGE);
+        const [x2, y2] = worldToCanvas(i, WORLD_RANGE);
+        bCtx.beginPath(); bCtx.moveTo(x1, y1); bCtx.lineTo(x2, y2); bCtx.stroke();
+        const [x3, y3] = worldToCanvas(-WORLD_RANGE, i);
+        const [x4, y4] = worldToCanvas(WORLD_RANGE, i);
+        bCtx.beginPath(); bCtx.moveTo(x3, y3); bCtx.lineTo(x4, y4); bCtx.stroke();
+      }
+
+      // Axes
+      bCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+      bCtx.lineWidth = 1;
+      const [ax1, ay1] = worldToCanvas(0, -WORLD_RANGE);
+      const [ax2, ay2] = worldToCanvas(0, WORLD_RANGE);
+      bCtx.beginPath(); bCtx.moveTo(ax1, ay1); bCtx.lineTo(ax2, ay2); bCtx.stroke();
+      const [ax3, ay3] = worldToCanvas(-WORLD_RANGE, 0);
+      const [ax4, ay4] = worldToCanvas(WORLD_RANGE, 0);
+      bCtx.beginPath(); bCtx.moveTo(ax3, ay3); bCtx.lineTo(ax4, ay4); bCtx.stroke();
+
+      // Standard basis (faded)
+      drawArrow(bCtx, basisCanvas, 0, 0, 1, 0, 'rgba(255,100,100,0.25)', 1.5, 'e\u2081');
+      drawArrow(bCtx, basisCanvas, 0, 0, 0, 1, 'rgba(100,150,255,0.25)', 1.5, 'e\u2082');
+
+      // Custom basis (bright)
+      const { b1, b2 } = getBasis();
+      drawArrow(bCtx, basisCanvas, 0, 0, b1[0], b1[1], 'rgba(255,100,100,0.9)', 2.5, 'b\u2081');
+      drawArrow(bCtx, basisCanvas, 0, 0, b2[0], b2[1], 'rgba(100,150,255,0.9)', 2.5, 'b\u2082');
+
+      // Ghost: decomposition in standard basis
+      const [vx1, vy1] = worldToCanvas(vecX, 0);
+      const [vx2, vy2] = worldToCanvas(0, vecY);
+      const [orig] = worldToCanvas(0, 0);
+      const [origX, origY] = worldToCanvas(0, 0);
+
+      // Standard basis decomposition lines (ghost)
+      bCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      bCtx.lineWidth = 1;
+      bCtx.setLineDash([4, 4]);
+      const [vp] = [worldToCanvas(vecX, vecY)];
+      const vpx = worldToCanvas(vecX, vecY)[0];
+      const vpy = worldToCanvas(vecX, vecY)[1];
+      bCtx.beginPath(); bCtx.moveTo(vpx, vpy); bCtx.lineTo(vx1, vy1); bCtx.stroke();
+      bCtx.beginPath(); bCtx.moveTo(vpx, vpy); bCtx.lineTo(vx2, vy2); bCtx.stroke();
+      bCtx.setLineDash([]);
+
+      // New basis decomposition lines (bright)
+      const [nx, ny] = getNewCoords();
+      const projB1x = nx * b1[0], projB1y = nx * b1[1];
+      const projB2x = ny * b2[0], projB2y = ny * b2[1];
+      bCtx.strokeStyle = 'rgba(0,255,200,0.2)';
+      bCtx.lineWidth = 1;
+      bCtx.setLineDash([4, 4]);
+      const [pb1x, pb1y] = worldToCanvas(projB1x, projB1y);
+      const [pb2x, pb2y] = worldToCanvas(projB2x, projB2y);
+      bCtx.beginPath(); bCtx.moveTo(vpx, vpy); bCtx.lineTo(pb1x, pb1y); bCtx.stroke();
+      bCtx.beginPath(); bCtx.moveTo(vpx, vpy); bCtx.lineTo(pb2x, pb2y); bCtx.stroke();
+      bCtx.setLineDash([]);
+
+      // Vector v
+      drawArrow(bCtx, basisCanvas, 0, 0, vecX, vecY, 'rgba(100,220,180,0.95)', 3, 'v');
+
+      // Coordinate labels
+      bCtx.font = '12px monospace';
+      bCtx.fillStyle = 'rgba(255,255,255,0.5)';
+      bCtx.fillText(`[v]std = (${vecX.toFixed(2)}, ${vecY.toFixed(2)})`, 10, h - 30);
+      bCtx.fillStyle = 'rgba(0,255,200,0.7)';
+      bCtx.fillText(`[v]B  = (${nx.toFixed(2)}, ${ny.toFixed(2)})`, 10, h - 12);
+
+      // Change-of-basis matrix
+      bCtx.fillStyle = 'rgba(255,255,255,0.4)';
+      bCtx.font = '11px monospace';
+      bCtx.fillText('P = [b\u2081|b\u2082]', w - 130, 30);
+      bCtx.fillText(`  [${b1[0].toFixed(2)}  ${b2[0].toFixed(2)}]`, w - 130, 46);
+      bCtx.fillText(`  [${b1[1].toFixed(2)}  ${b2[1].toFixed(2)}]`, w - 130, 60);
+    }
+
+    // --- Drag on basis canvas ---
+    let basisDragging = null; // 'vec', 'b1', 'b2'
+
+    function basisMouseDown(wx, wy) {
+      const { b1, b2 } = getBasis();
+      // Check proximity to vector tip, b1 tip, b2 tip
+      const distVec = Math.sqrt((wx-vecX)**2 + (wy-vecY)**2);
+      const distB1 = Math.sqrt((wx-b1[0])**2 + (wy-b1[1])**2);
+      const distB2 = Math.sqrt((wx-b2[0])**2 + (wy-b2[1])**2);
+      const threshold = 0.3;
+
+      if (distB1 < threshold) basisDragging = 'b1';
+      else if (distB2 < threshold) basisDragging = 'b2';
+      else if (distVec < threshold) basisDragging = 'vec';
+      else basisDragging = 'vec'; // default: move vector
+    }
+
+    function basisMouseMove(wx, wy) {
+      if (!basisDragging) return;
+      if (basisDragging === 'vec') {
+        vecX = wx;
+        vecY = wy;
+      } else {
+        // Dragging basis vector → compute angle
+        const angle = Math.atan2(wy, wx);
+        basisAngle = ((angle * 180 / Math.PI) % 360 + 360) % 360;
+        if (basisDragging === 'b2') {
+          basisAngle = ((angle * 180 / Math.PI - 90) % 360 + 360) % 360;
+        }
+        if (basisAngle > 90 && basisAngle < 270) basisAngle = basisAngle > 180 ? 360 : 90;
+        basisAngle = Math.max(0, Math.min(90, basisAngle));
+        document.getElementById('basisAngle').value = basisAngle;
+        document.getElementById('basisAngleVal').textContent = `${Math.round(basisAngle)}\u00B0`;
+      }
+      drawAll();
+    }
+
+    function getCanvasMousePos(e, canvasEl) {
+      const rect = canvasEl.getBoundingClientRect();
+      return [e.clientX - rect.left, e.clientY - rect.top];
+    }
+
+    basisCanvas.addEventListener('mousedown', e => {
+      const [px, py] = getCanvasMousePos(e, basisCanvas);
+      const [wx, wy] = canvasToWorld(px, py);
+      basisMouseDown(wx, wy);
+      basisMouseMove(wx, wy);
+    });
+    basisCanvas.addEventListener('mousemove', e => {
+      if (basisDragging) {
+        const [px, py] = getCanvasMousePos(e, basisCanvas);
+        const [wx, wy] = canvasToWorld(px, py);
+        basisMouseMove(wx, wy);
+      }
+    });
+    basisCanvas.addEventListener('mouseup', () => { basisDragging = null; });
+    basisCanvas.addEventListener('mouseleave', () => { basisDragging = null; });
+
+    basisCanvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const rect = basisCanvas.getBoundingClientRect();
+      const px = e.touches[0].clientX - rect.left;
+      const py = e.touches[0].clientY - rect.top;
+      const [wx, wy] = canvasToWorld(px, py);
+      basisMouseDown(wx, wy);
+      basisMouseMove(wx, wy);
+    }, { passive: false });
+    basisCanvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (basisDragging) {
+        const rect = basisCanvas.getBoundingClientRect();
+        const px = e.touches[0].clientX - rect.left;
+        const py = e.touches[0].clientY - rect.top;
+        const [wx, wy] = canvasToWorld(px, py);
+        basisMouseMove(wx, wy);
+      }
+    }, { passive: false });
+    basisCanvas.addEventListener('touchend', () => { basisDragging = null; });
+
+    // ============================
+    // CANVAS 2: Function Space
+    // ============================
+
+    // --- Preset functions on [0, 2π] ---
+    function sampleFunction(name) {
+      const samples = new Float64Array(NSAMPLES);
+      for (let i = 0; i < NSAMPLES; i++) {
+        const x = 2 * Math.PI * i / NSAMPLES;
+        switch(name) {
+          case 'square':
+            samples[i] = x < Math.PI ? 1 : -1;
+            break;
+          case 'sawtooth':
+            samples[i] = 1 - x / Math.PI;
+            break;
+          case 'triangle':
+            samples[i] = x < Math.PI ? (2*x/Math.PI - 1) : (3 - 2*x/Math.PI);
+            break;
+          case 'step':
+            samples[i] = x < Math.PI ? 0 : 1;
+            break;
+          case 'spike':
+            // Narrow Gaussian-like spike
+            samples[i] = Math.exp(-((x - Math.PI)**2) / 0.2);
+            break;
+        }
+      }
+      return samples;
+    }
+
+    // --- Fourier coefficients via trapezoidal integration ---
+    function computeFourier(samples, maxN) {
+      const N = samples.length;
+      const a = new Float64Array(maxN + 1);
+      const b = new Float64Array(maxN + 1);
+
+      for (let n = 0; n <= maxN; n++) {
+        let sumA = 0, sumB = 0;
+        for (let i = 0; i < N; i++) {
+          const x = 2 * Math.PI * i / N;
+          sumA += samples[i] * Math.cos(n * x);
+          sumB += samples[i] * Math.sin(n * x);
+        }
+        a[n] = 2 * sumA / N;
+        b[n] = 2 * sumB / N;
+      }
+      a[0] /= 2; // a0 convention
+      return { a, b };
+    }
+
+    // --- Fourier reconstruction ---
+    function fourierReconstruct(x, a, b, nTerms) {
+      let val = a[0] / 2;
+      for (let n = 1; n <= nTerms; n++) {
+        val += a[n] * Math.cos(n * x) + b[n] * Math.sin(n * x);
+      }
+      return val;
+    }
+
+    function updateFourier() {
+      functionSamples = sampleFunction(currentFunction);
+      const result = computeFourier(functionSamples, 30);
+      fourierA = result.a;
+      fourierB = result.b;
+    }
+
+    // --- Draw function canvas ---
+    function drawFunctionCanvas() {
+      const w = functionCanvas.width;
+      const h = functionCanvas.height;
+
+      const grad = fCtx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      fCtx.fillStyle = grad;
+      fCtx.fillRect(0, 0, w, h);
+
+      const padL = 50, padR = 20, padT = 20, padB = 30;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      // Find y range
+      let yMin = -1.5, yMax = 1.5;
+
+      function toScreen(xVal, yVal) {
+        const sx = padL + (xVal / (2 * Math.PI)) * plotW;
+        const sy = padT + (1 - (yVal - yMin) / (yMax - yMin)) * plotH;
+        return [sx, sy];
+      }
+
+      // Grid lines
+      fCtx.strokeStyle = 'rgba(255,255,255,0.07)';
+      fCtx.lineWidth = 0.5;
+      for (let xg = 0; xg <= 2 * Math.PI; xg += Math.PI / 2) {
+        const [sx] = toScreen(xg, 0);
+        fCtx.beginPath(); fCtx.moveTo(sx, padT); fCtx.lineTo(sx, padT + plotH); fCtx.stroke();
+      }
+      for (let yg = -1; yg <= 1; yg += 0.5) {
+        const [, sy] = toScreen(0, yg);
+        fCtx.beginPath(); fCtx.moveTo(padL, sy); fCtx.lineTo(padL + plotW, sy); fCtx.stroke();
+      }
+
+      // Zero line
+      fCtx.strokeStyle = 'rgba(255,255,255,0.2)';
+      fCtx.lineWidth = 1;
+      const [, zeroY] = toScreen(0, 0);
+      fCtx.beginPath(); fCtx.moveTo(padL, zeroY); fCtx.lineTo(padL + plotW, zeroY); fCtx.stroke();
+
+      // X axis labels
+      fCtx.fillStyle = 'rgba(255,255,255,0.4)';
+      fCtx.font = '10px monospace';
+      fCtx.textAlign = 'center';
+      const xLabels = [[0, '0'], [Math.PI/2, '\u03C0/2'], [Math.PI, '\u03C0'], [3*Math.PI/2, '3\u03C0/2'], [2*Math.PI, '2\u03C0']];
+      xLabels.forEach(([xv, lbl]) => {
+        const [sx] = toScreen(xv, 0);
+        fCtx.fillText(lbl, sx, padT + plotH + 16);
+      });
+      fCtx.textAlign = 'left';
+
+      // Y axis labels
+      fCtx.textAlign = 'right';
+      [-1, 0, 1].forEach(yv => {
+        const [, sy] = toScreen(0, yv);
+        fCtx.fillText(yv.toString(), padL - 6, sy + 4);
+      });
+      fCtx.textAlign = 'left';
+
+      // Component colors
+      const componentColors = [
+        'rgba(255,100,100,0.35)',
+        'rgba(100,150,255,0.35)',
+        'rgba(255,200,50,0.35)',
+        'rgba(100,255,200,0.35)',
+        'rgba(200,100,255,0.35)',
+        'rgba(255,150,100,0.35)',
+        'rgba(100,255,150,0.35)',
+        'rgba(255,100,200,0.35)',
+      ];
+
+      // Individual components
+      if (showComponents) {
+        for (let n = 1; n <= numTerms; n++) {
+          const color = componentColors[(n - 1) % componentColors.length];
+          fCtx.strokeStyle = color;
+          fCtx.lineWidth = 1;
+          fCtx.beginPath();
+          for (let px = 0; px <= plotW; px++) {
+            const xVal = (px / plotW) * 2 * Math.PI;
+            const yVal = fourierA[n] * Math.cos(n * xVal) + fourierB[n] * Math.sin(n * xVal);
+            const [sx, sy] = toScreen(xVal, yVal);
+            if (px === 0) fCtx.moveTo(sx, sy);
+            else fCtx.lineTo(sx, sy);
+          }
+          fCtx.stroke();
+        }
+      }
+
+      // Original function (white, ghost)
+      fCtx.strokeStyle = 'rgba(255,255,255,0.35)';
+      fCtx.lineWidth = 2;
+      fCtx.beginPath();
+      for (let px = 0; px <= plotW; px++) {
+        const i = Math.floor((px / plotW) * NSAMPLES);
+        const xVal = (px / plotW) * 2 * Math.PI;
+        const yVal = functionSamples[Math.min(i, NSAMPLES - 1)];
+        const [sx, sy] = toScreen(xVal, yVal);
+        if (px === 0) fCtx.moveTo(sx, sy);
+        else fCtx.lineTo(sx, sy);
+      }
+      fCtx.stroke();
+
+      // Reconstruction (green)
+      if (showReconstruction) {
+        fCtx.strokeStyle = '#66bb6a';
+        fCtx.lineWidth = 2;
+        fCtx.beginPath();
+        for (let px = 0; px <= plotW; px++) {
+          const xVal = (px / plotW) * 2 * Math.PI;
+          const yVal = fourierReconstruct(xVal, fourierA, fourierB, numTerms);
+          const [sx, sy] = toScreen(xVal, yVal);
+          if (px === 0) fCtx.moveTo(sx, sy);
+          else fCtx.lineTo(sx, sy);
+        }
+        fCtx.stroke();
+      }
+
+      // Legend
+      fCtx.font = '10px monospace';
+      fCtx.fillStyle = 'rgba(255,255,255,0.35)';
+      fCtx.fillText('original', w - 120, padT + 14);
+      fCtx.fillStyle = '#66bb6a';
+      fCtx.fillText(`${numTerms}-term approx`, w - 120, padT + 28);
+    }
+
+    // --- Draw coefficient bar chart ---
+    function drawCoeffCanvas() {
+      const w = coeffCanvas.width;
+      const h = coeffCanvas.height;
+
+      const grad = cCtx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      cCtx.fillStyle = grad;
+      cCtx.fillRect(0, 0, w, h);
+
+      const padL = 50, padR = 20, padT = 15, padB = 25;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      // Build bar data: a0, then pairs (an, bn) for n=1..numTerms
+      const bars = [];
+      bars.push({ label: 'a\u2080', value: fourierA[0], color: 'rgba(200,180,100,0.8)' });
+      for (let n = 1; n <= numTerms; n++) {
+        bars.push({ label: `a${n}`, value: fourierA[n], color: 'rgba(100,150,255,0.8)' });
+        bars.push({ label: `b${n}`, value: fourierB[n], color: 'rgba(255,167,38,0.8)' });
+      }
+
+      // Y range
+      let maxVal = 0;
+      bars.forEach(b => { maxVal = Math.max(maxVal, Math.abs(b.value)); });
+      maxVal = Math.max(maxVal, 0.5) * 1.2;
+
+      const barW = Math.min(plotW / bars.length - 2, 20);
+      const gap = (plotW - barW * bars.length) / (bars.length + 1);
+      const zeroY = padT + plotH / 2;
+
+      // Zero line
+      cCtx.strokeStyle = 'rgba(255,255,255,0.2)';
+      cCtx.lineWidth = 1;
+      cCtx.beginPath(); cCtx.moveTo(padL, zeroY); cCtx.lineTo(padL + plotW, zeroY); cCtx.stroke();
+
+      // Y axis labels
+      cCtx.fillStyle = 'rgba(255,255,255,0.4)';
+      cCtx.font = '9px monospace';
+      cCtx.textAlign = 'right';
+      const yTicks = [-maxVal, -maxVal/2, 0, maxVal/2, maxVal];
+      yTicks.forEach(yv => {
+        const sy = zeroY - (yv / maxVal) * (plotH / 2);
+        cCtx.fillText(yv.toFixed(1), padL - 4, sy + 3);
+      });
+
+      // Bars
+      bars.forEach((b, i) => {
+        const x = padL + gap + i * (barW + gap);
+        const barH = (b.value / maxVal) * (plotH / 2);
+        cCtx.fillStyle = b.color;
+        if (b.value >= 0) {
+          cCtx.fillRect(x, zeroY - barH, barW, barH);
+        } else {
+          cCtx.fillRect(x, zeroY, barW, -barH);
+        }
+
+        // Label
+        if (bars.length <= 25) {
+          cCtx.fillStyle = 'rgba(255,255,255,0.4)';
+          cCtx.font = '8px monospace';
+          cCtx.textAlign = 'center';
+          cCtx.fillText(b.label, x + barW/2, h - 6);
+          cCtx.textAlign = 'left';
+        }
+      });
+
+      // Legend
+      cCtx.font = '10px monospace';
+      cCtx.fillStyle = 'rgba(200,180,100,0.8)';
+      cCtx.fillText('a\u2080 (DC)', w - 130, padT + 12);
+      cCtx.fillStyle = 'rgba(100,150,255,0.8)';
+      cCtx.fillText('a\u2099 (cosine)', w - 130, padT + 24);
+      cCtx.fillStyle = 'rgba(255,167,38,0.8)';
+      cCtx.fillText('b\u2099 (sine)', w - 130, padT + 36);
+    }
+
+    // --- Update info boxes ---
+    function updateBasisInfo() {
+      const { b1, b2 } = getBasis();
+      const [nx, ny] = getNewCoords();
+      const box = document.getElementById('basisInfo');
+      box.innerHTML = `
+        <div class="info-line"><span class="info-label">Standard coords:</span></div>
+        <div class="info-line">&nbsp; [v]<sub>std</sub> = (${vecX.toFixed(2)}, ${vecY.toFixed(2)})</div>
+        <div class="info-line" style="margin-top:0.3rem"><span class="info-label">New basis coords:</span></div>
+        <div class="info-line">&nbsp; [v]<sub>B</sub> = (${nx.toFixed(2)}, ${ny.toFixed(2)})</div>
+        <div class="info-line" style="margin-top:0.3rem"><span class="info-label">Basis angle:</span> ${Math.round(basisAngle)}\u00B0</div>
+      `;
+    }
+
+    function updateFourierInfo() {
+      const box = document.getElementById('fourierInfo');
+      let html = '<div class="info-line"><span class="info-label">Key coefficients:</span></div>';
+      html += `<div class="info-line">&nbsp; a\u2080 = ${fourierA[0].toFixed(4)}</div>`;
+      const showN = Math.min(numTerms, 4);
+      for (let n = 1; n <= showN; n++) {
+        html += `<div class="info-line">&nbsp; a${n}=${fourierA[n].toFixed(3)}, b${n}=${fourierB[n].toFixed(3)}</div>`;
+      }
+      if (numTerms > 4) {
+        html += `<div class="info-line">&nbsp; ... (${numTerms} terms total)</div>`;
+      }
+
+      // Energy / Parseval
+      let energy = 0;
+      for (let i = 0; i < NSAMPLES; i++) energy += functionSamples[i] ** 2;
+      energy /= NSAMPLES;
+
+      let reconEnergy = fourierA[0]**2 / 4;
+      for (let n = 1; n <= numTerms; n++) {
+        reconEnergy += (fourierA[n]**2 + fourierB[n]**2) / 2;
+      }
+
+      const pct = energy > 0 ? (reconEnergy / energy * 100) : 100;
+      html += `<div class="info-line" style="margin-top:0.3rem"><span class="info-label">Energy captured:</span> ${Math.min(pct, 100).toFixed(1)}%</div>`;
+
+      box.innerHTML = html;
+    }
+
+    // --- Controls ---
+    document.getElementById('basisAngle').addEventListener('input', e => {
+      basisAngle = parseFloat(e.target.value);
+      const label = basisAngle === 0 ? '0\u00B0 (standard basis)' : `${Math.round(basisAngle)}\u00B0`;
+      document.getElementById('basisAngleVal').textContent = label;
+      drawAll();
+    });
+
+    document.getElementById('functionSelect').addEventListener('change', e => {
+      currentFunction = e.target.value;
+      updateFourier();
+      drawAll();
+    });
+
+    document.getElementById('numTerms').addEventListener('input', e => {
+      numTerms = parseInt(e.target.value);
+      document.getElementById('numTermsVal').textContent = `${numTerms} term${numTerms > 1 ? 's' : ''}`;
+      drawAll();
+    });
+
+    document.getElementById('showComponents').addEventListener('change', e => { showComponents = e.target.checked; drawAll(); });
+    document.getElementById('showReconstruction').addEventListener('change', e => { showReconstruction = e.target.checked; drawAll(); });
+    document.getElementById('showAnalogy').addEventListener('change', e => {
+      document.getElementById('analogyTable').style.display = e.target.checked ? '' : 'none';
+      drawAll();
+    });
+
+    // --- Master draw ---
+    function drawAll() {
+      drawBasisCanvas();
+      drawFunctionCanvas();
+      drawCoeffCanvas();
+      updateBasisInfo();
+      updateFourierInfo();
+    }
+
+    // --- Initialize ---
+    updateFourier();
+    drawAll();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fourier Transform</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .canvas-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+    }
+
+    .canvas-wrapper .canvas-label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    #signalCanvas { aspect-ratio: 3 / 1; }
+    #spectrumCanvas { aspect-ratio: 3 / 1; }
+    #componentsCanvas { aspect-ratio: 3 / 1.5; }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.5rem 0.3rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover { background-color: #6b5344; }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover { background-color: #c4bfb4; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .toggle-row input[type="checkbox"] { cursor: pointer; }
+
+    .toggle-row label {
+      font-size: 0.85rem;
+      color: #1a3a3a;
+      cursor: pointer;
+      font-weight: normal;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+    }
+
+    .divider {
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Fourier Transform</h1>
+      <p>Every signal is a sum of sine waves</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Fourier Transform</h1>
+        <div class="article-meta">Interactive Demo | Mathematics & Signal Processing</div>
+      </div>
+
+      <div class="article-body">
+        <h2>What Is the Fourier Transform?</h2>
+        <p>Joseph Fourier discovered in 1807 that any periodic signal can be decomposed into a sum of sine and cosine waves of different frequencies, amplitudes, and phases. The Fourier transform is the tool that performs this decomposition. It takes a signal in the <em>time domain</em> (amplitude vs. time) and converts it to the <em>frequency domain</em> (amplitude vs. frequency), revealing which frequencies are present and how strong each one is.</p>
+
+        <p>Select a preset waveform or <strong>draw your own signal</strong> on the top canvas. The middle canvas shows the frequency spectrum (which sine waves compose it), and the bottom canvas shows the individual components and their sum. Use the slider to control how many terms are used in the reconstruction.</p>
+      </div>
+
+      <div class="demo-container">
+        <div class="canvas-stack">
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Signal (time domain) &mdash; draw here</div>
+            <canvas id="signalCanvas"></canvas>
+          </div>
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Frequency spectrum (magnitude)</div>
+            <canvas id="spectrumCanvas"></canvas>
+          </div>
+          <div class="canvas-wrapper">
+            <div class="canvas-label">Reconstruction from components</div>
+            <canvas id="componentsCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-group">
+            <label>Preset Signal</label>
+            <select id="presetSelect">
+              <option value="square">Square Wave</option>
+              <option value="sawtooth">Sawtooth Wave</option>
+              <option value="triangle">Triangle Wave</option>
+              <option value="pulse">Narrow Pulse</option>
+              <option value="step">Step Function</option>
+              <option value="two-freq">Two Frequencies</option>
+              <option value="chirp">Chirp (Sweep)</option>
+              <option value="noise">Noise</option>
+              <option value="custom" selected>Custom (draw)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Reconstruction Terms: <span id="termsVal">16</span></label>
+            <input type="range" id="termsSlider" min="1" max="128" step="1" value="16">
+          </div>
+
+          <div class="control-group">
+            <label>Signal Frequency: <span id="freqVal">2</span> cycles</label>
+            <input type="range" id="freqSlider" min="1" max="10" step="1" value="2">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="control-group">
+            <div class="toggle-row">
+              <input type="checkbox" id="showComponents" checked>
+              <label for="showComponents">Show individual components</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showReconstruction" checked>
+              <label for="showReconstruction">Show reconstruction sum</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showOriginal" checked>
+              <label for="showOriginal">Show original on reconstruction</label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="button-row">
+            <button onclick="clearDrawing()">Clear Drawing</button>
+          </div>
+
+          <div class="info-box">
+            <strong>Draw on the top canvas</strong> to create a custom signal. The Fourier transform decomposes it into sine waves shown below. Increase the number of terms to improve the reconstruction.
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>How It Works</h2>
+        <p>The Discrete Fourier Transform (DFT) takes N samples of a signal and produces N complex coefficients. Each coefficient X[k] represents a specific frequency component:</p>
+
+        <blockquote>
+          $$X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-i2\pi kn/N}$$
+        </blockquote>
+
+        <p>The magnitude |X[k]| tells you <em>how much</em> of frequency k is present in the signal. The phase angle tells you the offset. The inverse transform reconstructs the signal by summing up sinusoids at each frequency, weighted by these coefficients:</p>
+
+        <blockquote>
+          $$x[n] = \frac{1}{N} \sum_{k=0}^{N-1} X[k] \cdot e^{i2\pi kn/N}$$
+        </blockquote>
+
+        <p>With all N terms, the reconstruction is perfect (the original signal, exactly). With fewer terms, you get an approximation that captures the dominant frequencies first. This is the basis of lossy compression: JPEG images and MP3 audio both work by computing a Fourier-like transform, discarding the small coefficients, and keeping only the ones that matter most.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Square wave:</strong> Select it and watch the reconstruction with 1, 3, 5, 10, 50 terms. The overshoots at the discontinuities never fully disappear&mdash;this is the <em>Gibbs phenomenon</em>.</li>
+          <li><strong>Sawtooth:</strong> Contains all harmonics (integer multiples of the fundamental frequency). More terms = closer approximation.</li>
+          <li><strong>Triangle:</strong> Contains only odd harmonics, and they decay as 1/n&sup2;, so convergence is fast. Even a few terms give a good approximation.</li>
+          <li><strong>Two Frequencies:</strong> The spectrum shows two clean spikes. The signal is a sum of exactly two sine waves and the transform recovers them perfectly.</li>
+          <li><strong>Draw your own:</strong> Sketch any shape. The transform will find the best sinusoidal approximation. Sharp features require many high-frequency terms; smooth curves need very few.</li>
+        </ul>
+
+        <h2>Why It Matters</h2>
+        <p>The Fourier transform is one of the most important mathematical tools ever invented. It is fundamental to:</p>
+        <ul>
+          <li><strong>Audio:</strong> MP3, AAC, and all modern audio codecs use the Modified Discrete Cosine Transform (a variant of the DFT) to compress sound.</li>
+          <li><strong>Images:</strong> JPEG uses the Discrete Cosine Transform on 8&times;8 pixel blocks.</li>
+          <li><strong>Telecommunications:</strong> Wi-Fi, LTE, and 5G all use OFDM (Orthogonal Frequency Division Multiplexing), which is literally an inverse FFT at the transmitter and a forward FFT at the receiver.</li>
+          <li><strong>Physics:</strong> Quantum mechanics is formulated in terms of Fourier duals (position/momentum, time/energy). Heisenberg&rsquo;s uncertainty principle is a direct consequence of Fourier analysis.</li>
+          <li><strong>Medical imaging:</strong> MRI machines measure frequency-domain data and use the inverse Fourier transform to reconstruct images of the body.</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // --- Canvas setup ---
+    const signalCanvas = document.getElementById('signalCanvas');
+    const spectrumCanvas = document.getElementById('spectrumCanvas');
+    const componentsCanvas = document.getElementById('componentsCanvas');
+    const ctxSig = signalCanvas.getContext('2d');
+    const ctxSpec = spectrumCanvas.getContext('2d');
+    const ctxComp = componentsCanvas.getContext('2d');
+
+    const N = 512; // number of samples
+    let signal = new Float64Array(N);
+    let spectrum = []; // array of {re, im, mag, phase}
+    let numTerms = 16;
+    let signalFreq = 2;
+    let showComponents = true;
+    let showReconstruction = true;
+    let showOriginal = true;
+    let isDrawing = false;
+    let lastDrawX = -1;
+    let currentPreset = 'custom';
+
+    function resizeAllCanvases() {
+      [signalCanvas, spectrumCanvas, componentsCanvas].forEach(c => {
+        const rect = c.parentElement.getBoundingClientRect();
+        c.width = rect.width;
+        c.height = c.width / (c === componentsCanvas ? 2 : 3);
+      });
+    }
+    resizeAllCanvases();
+    window.addEventListener('resize', () => { resizeAllCanvases(); drawAll(); });
+
+    // --- DFT ---
+    function computeDFT(sig) {
+      const n = sig.length;
+      const result = [];
+      for (let k = 0; k < n; k++) {
+        let re = 0, im = 0;
+        for (let j = 0; j < n; j++) {
+          const angle = -2 * Math.PI * k * j / n;
+          re += sig[j] * Math.cos(angle);
+          im += sig[j] * Math.sin(angle);
+        }
+        result.push({
+          re: re / n,
+          im: im / n,
+          mag: Math.sqrt(re * re + im * im) / n,
+          phase: Math.atan2(im, re)
+        });
+      }
+      return result;
+    }
+
+    function reconstruct(spec, nTerms, length) {
+      const result = new Float64Array(length);
+      const half = Math.min(nTerms, Math.floor(length / 2));
+      for (let j = 0; j < length; j++) {
+        let val = spec[0].re; // DC component
+        for (let k = 1; k <= half; k++) {
+          const angle = 2 * Math.PI * k * j / length;
+          val += 2 * (spec[k].re * Math.cos(angle) - spec[k].im * Math.sin(angle));
+        }
+        result[j] = val;
+      }
+      return result;
+    }
+
+    function getComponent(spec, k, length) {
+      const result = new Float64Array(length);
+      if (k === 0) {
+        for (let j = 0; j < length; j++) result[j] = spec[0].re;
+        return result;
+      }
+      for (let j = 0; j < length; j++) {
+        const angle = 2 * Math.PI * k * j / length;
+        result[j] = 2 * (spec[k].re * Math.cos(angle) - spec[k].im * Math.sin(angle));
+      }
+      return result;
+    }
+
+    // --- Signal generators ---
+    function generateSignal(type) {
+      const sig = new Float64Array(N);
+      const f = signalFreq;
+      switch (type) {
+        case 'square':
+          for (let i = 0; i < N; i++) {
+            sig[i] = Math.sin(2 * Math.PI * f * i / N) >= 0 ? 1 : -1;
+          }
+          break;
+        case 'sawtooth':
+          for (let i = 0; i < N; i++) {
+            const t = (f * i / N) % 1;
+            sig[i] = 2 * t - 1;
+          }
+          break;
+        case 'triangle':
+          for (let i = 0; i < N; i++) {
+            const t = (f * i / N) % 1;
+            sig[i] = t < 0.5 ? 4 * t - 1 : 3 - 4 * t;
+          }
+          break;
+        case 'pulse':
+          for (let i = 0; i < N; i++) {
+            const t = (f * i / N) % 1;
+            sig[i] = t < 0.1 ? 1 : 0;
+          }
+          break;
+        case 'step':
+          for (let i = 0; i < N; i++) {
+            sig[i] = i < N / 2 ? -1 : 1;
+          }
+          break;
+        case 'two-freq':
+          for (let i = 0; i < N; i++) {
+            sig[i] = 0.7 * Math.sin(2 * Math.PI * f * i / N) +
+                     0.3 * Math.sin(2 * Math.PI * (f * 3 + 1) * i / N);
+          }
+          break;
+        case 'chirp':
+          for (let i = 0; i < N; i++) {
+            const t = i / N;
+            const freq = 1 + t * 20;
+            sig[i] = Math.sin(2 * Math.PI * freq * t);
+          }
+          break;
+        case 'noise':
+          for (let i = 0; i < N; i++) {
+            sig[i] = (Math.random() - 0.5) * 2;
+          }
+          break;
+        default:
+          break;
+      }
+      return sig;
+    }
+
+    // --- Drawing ---
+    function getDrawPos(e) {
+      const rect = signalCanvas.getBoundingClientRect();
+      const scaleX = signalCanvas.width / rect.width;
+      const scaleY = signalCanvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function drawToSignal(pos) {
+      const sampleX = Math.floor(pos.x / signalCanvas.width * N);
+      const value = 1 - 2 * (pos.y / signalCanvas.height);
+      const clampedVal = Math.max(-1, Math.min(1, value));
+
+      if (lastDrawX >= 0 && Math.abs(sampleX - lastDrawX) > 1) {
+        // Interpolate
+        const start = Math.min(lastDrawX, sampleX);
+        const end = Math.max(lastDrawX, sampleX);
+        const startVal = signal[Math.max(0, Math.min(N - 1, lastDrawX))];
+        for (let i = start; i <= end && i < N; i++) {
+          if (i >= 0) {
+            const t = (i - start) / (end - start);
+            signal[i] = startVal + (clampedVal - startVal) * t;
+          }
+        }
+      } else if (sampleX >= 0 && sampleX < N) {
+        signal[sampleX] = clampedVal;
+      }
+      lastDrawX = sampleX;
+    }
+
+    signalCanvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      lastDrawX = -1;
+      document.getElementById('presetSelect').value = 'custom';
+      currentPreset = 'custom';
+      const pos = getDrawPos(e);
+      drawToSignal(pos);
+      updateSpectrum();
+      drawAll();
+    });
+
+    signalCanvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      drawToSignal(getDrawPos(e));
+      updateSpectrum();
+      drawAll();
+    });
+
+    signalCanvas.addEventListener('mouseup', () => { isDrawing = false; lastDrawX = -1; });
+    signalCanvas.addEventListener('mouseleave', () => { isDrawing = false; lastDrawX = -1; });
+
+    signalCanvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isDrawing = true;
+      lastDrawX = -1;
+      document.getElementById('presetSelect').value = 'custom';
+      currentPreset = 'custom';
+      drawToSignal(getDrawPos(e));
+      updateSpectrum();
+      drawAll();
+    }, { passive: false });
+
+    signalCanvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (!isDrawing) return;
+      drawToSignal(getDrawPos(e));
+      updateSpectrum();
+      drawAll();
+    }, { passive: false });
+
+    signalCanvas.addEventListener('touchend', () => { isDrawing = false; lastDrawX = -1; });
+
+    // --- Controls ---
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      currentPreset = e.target.value;
+      if (currentPreset !== 'custom') {
+        signal = generateSignal(currentPreset);
+        updateSpectrum();
+        drawAll();
+      }
+    });
+
+    document.getElementById('termsSlider').addEventListener('input', (e) => {
+      numTerms = parseInt(e.target.value);
+      document.getElementById('termsVal').textContent = numTerms;
+      drawAll();
+    });
+
+    document.getElementById('freqSlider').addEventListener('input', (e) => {
+      signalFreq = parseInt(e.target.value);
+      document.getElementById('freqVal').textContent = signalFreq;
+      if (currentPreset !== 'custom') {
+        signal = generateSignal(currentPreset);
+        updateSpectrum();
+        drawAll();
+      }
+    });
+
+    document.getElementById('showComponents').addEventListener('change', (e) => {
+      showComponents = e.target.checked;
+      drawAll();
+    });
+
+    document.getElementById('showReconstruction').addEventListener('change', (e) => {
+      showReconstruction = e.target.checked;
+      drawAll();
+    });
+
+    document.getElementById('showOriginal').addEventListener('change', (e) => {
+      showOriginal = e.target.checked;
+      drawAll();
+    });
+
+    function clearDrawing() {
+      signal.fill(0);
+      currentPreset = 'custom';
+      document.getElementById('presetSelect').value = 'custom';
+      updateSpectrum();
+      drawAll();
+    }
+
+    // --- Compute ---
+    function updateSpectrum() {
+      spectrum = computeDFT(signal);
+    }
+
+    // --- Drawing functions ---
+    function drawBackground(ctx, canvas) {
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSignalCanvas() {
+      const c = signalCanvas;
+      const ctx = ctxSig;
+      drawBackground(ctx, c);
+
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 0.5;
+      const midY = c.height / 2;
+      ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(c.width, midY); ctx.stroke();
+      for (let i = 0; i <= 4; i++) {
+        const x = i * c.width / 4;
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke();
+      }
+
+      // Zero line
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(c.width, midY); ctx.stroke();
+
+      // Signal
+      ctx.strokeStyle = '#4fc3f7';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < N; i++) {
+        const x = i / N * c.width;
+        const y = midY - signal[i] * midY * 0.85;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function drawSpectrumCanvas() {
+      const c = spectrumCanvas;
+      const ctx = ctxSpec;
+      drawBackground(ctx, c);
+
+      if (spectrum.length === 0) return;
+
+      // Find max magnitude (skip DC)
+      let maxMag = 0;
+      const half = Math.floor(N / 2);
+      for (let k = 0; k <= half; k++) {
+        if (spectrum[k].mag > maxMag) maxMag = spectrum[k].mag;
+      }
+      if (maxMag < 1e-10) maxMag = 1;
+
+      // Draw bars
+      const binsToShow = Math.min(half, 64);
+      const barW = c.width / binsToShow;
+
+      for (let k = 0; k < binsToShow; k++) {
+        const mag = spectrum[k].mag;
+        const h = (mag / maxMag) * c.height * 0.85;
+        const x = k * barW;
+        const y = c.height - h;
+
+        const inRange = k <= numTerms;
+        ctx.fillStyle = inRange ? 'rgba(255, 167, 38, 0.8)' : 'rgba(255, 167, 38, 0.2)';
+        ctx.fillRect(x + 1, y, barW - 2, h);
+      }
+
+      // Axis
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, c.height - 1);
+      ctx.lineTo(c.width, c.height - 1);
+      ctx.stroke();
+
+      // Frequency labels
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      for (let k = 0; k < binsToShow; k += Math.max(1, Math.floor(binsToShow / 8))) {
+        ctx.fillText(k, k * barW + barW / 2, c.height - 4);
+      }
+    }
+
+    function drawComponentsCanvas() {
+      const c = componentsCanvas;
+      const ctx = ctxComp;
+      drawBackground(ctx, c);
+
+      if (spectrum.length === 0) return;
+
+      const midY = c.height / 2;
+
+      // Zero line
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(c.width, midY); ctx.stroke();
+
+      // Original signal (ghost)
+      if (showOriginal) {
+        ctx.strokeStyle = 'rgba(79, 195, 247, 0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < N; i++) {
+          const x = i / N * c.width;
+          const y = midY - signal[i] * midY * 0.85;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      // Individual components
+      if (showComponents) {
+        const compColors = [
+          'rgba(244, 67, 54, 0.4)', 'rgba(233, 30, 99, 0.4)',
+          'rgba(156, 39, 176, 0.4)', 'rgba(103, 58, 183, 0.4)',
+          'rgba(63, 81, 181, 0.4)', 'rgba(33, 150, 243, 0.4)',
+          'rgba(0, 188, 212, 0.4)', 'rgba(0, 150, 136, 0.4)',
+          'rgba(76, 175, 80, 0.4)', 'rgba(139, 195, 74, 0.4)',
+          'rgba(205, 220, 57, 0.4)', 'rgba(255, 235, 59, 0.4)'
+        ];
+
+        const maxToShow = Math.min(numTerms, 12);
+        // Sort by magnitude to show strongest first
+        const indices = [];
+        for (let k = 1; k <= Math.min(numTerms, Math.floor(N / 2)); k++) {
+          indices.push({ k, mag: spectrum[k].mag });
+        }
+        indices.sort((a, b) => b.mag - a.mag);
+        const topIndices = indices.slice(0, maxToShow);
+
+        for (let ci = 0; ci < topIndices.length; ci++) {
+          const comp = getComponent(spectrum, topIndices[ci].k, N);
+          ctx.strokeStyle = compColors[ci % compColors.length];
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let i = 0; i < N; i++) {
+            const x = i / N * c.width;
+            const y = midY - comp[i] * midY * 0.85;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      }
+
+      // Reconstruction
+      if (showReconstruction) {
+        const recon = reconstruct(spectrum, numTerms, N);
+        ctx.strokeStyle = '#66bb6a';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i < N; i++) {
+          const x = i / N * c.width;
+          const y = midY - recon[i] * midY * 0.85;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawAll() {
+      drawSignalCanvas();
+      drawSpectrumCanvas();
+      drawComponentsCanvas();
+    }
+
+    // --- Init ---
+    // Start with a square wave
+    currentPreset = 'square';
+    document.getElementById('presetSelect').value = 'square';
+    signal = generateSignal('square');
+    updateSpectrum();
+    drawAll();
+  </script>
+</body>
+</html>

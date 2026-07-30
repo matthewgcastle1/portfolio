@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Transformations</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    #canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .matrix-entry {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .matrix-entry label {
+      font-size: 0.75rem;
+      color: #5a5a5a;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .matrix-entry input[type="number"] {
+      width: 100%;
+      padding: 0.3rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      font-family: monospace;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .matrix-entry input[type="range"] {
+      width: 100%;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.5rem 0.3rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.78rem;
+      transition: background-color 0.3s;
+      min-width: 0;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    button.active {
+      background-color: #4a7a4a;
+    }
+
+    button.active:hover {
+      background-color: #3a6a3a;
+    }
+
+    .preset-param {
+      margin-top: 0.4rem;
+    }
+
+    .preset-param label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .toggle-row label {
+      font-size: 0.85rem;
+      color: #1a3a3a;
+      cursor: pointer;
+      font-weight: normal;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 0.8rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+    }
+
+    .info-box .info-line {
+      margin-bottom: 0.2rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+
+    .info-box .info-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .divider {
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Matrix Transformations</h1>
+      <p>Visualizing linear algebra in the plane</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Matrix Transformations</h1>
+        <div class="article-meta">Interactive Demo | Linear Algebra</div>
+      </div>
+
+      <div class="article-body">
+        <h2>What Is a Linear Transformation?</h2>
+        <p>A linear transformation is a function from $\mathbb{R}^2$ to $\mathbb{R}^2$ that preserves addition and scalar multiplication. Geometrically, it maps straight lines to straight lines and fixes the origin. Every such transformation can be represented by a $2 \times 2$ matrix. The columns of the matrix tell you where the standard basis vectors $\mathbf{e}_1 = (1, 0)$ and $\mathbf{e}_2 = (0, 1)$ end up. Once you know where the basis goes, you know where everything goes.</p>
+
+        <p>Use the controls to manipulate the matrix entries directly, or choose a preset transformation. Watch how the shape and basis vectors change. The ghost shape shows the original; the bright shape shows the result.</p>
+      </div>
+
+      <div class="demo-container">
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label>Matrix</label>
+            <div class="matrix-grid">
+              <div class="matrix-entry">
+                <label>a</label>
+                <input type="number" id="ma" value="1" step="0.1">
+                <input type="range" id="maSlider" min="-3" max="3" step="0.05" value="1">
+              </div>
+              <div class="matrix-entry">
+                <label>b</label>
+                <input type="number" id="mb" value="0" step="0.1">
+                <input type="range" id="mbSlider" min="-3" max="3" step="0.05" value="0">
+              </div>
+              <div class="matrix-entry">
+                <label>c</label>
+                <input type="number" id="mc" value="0" step="0.1">
+                <input type="range" id="mcSlider" min="-3" max="3" step="0.05" value="0">
+              </div>
+              <div class="matrix-entry">
+                <label>d</label>
+                <input type="number" id="md" value="1" step="0.1">
+                <input type="range" id="mdSlider" min="-3" max="3" step="0.05" value="1">
+              </div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Presets</label>
+            <div class="button-row">
+              <button class="secondary" onclick="applyPreset('identity')">Identity</button>
+              <button class="secondary" onclick="applyPreset('rotate')">Rotate</button>
+              <button class="secondary" onclick="applyPreset('scale')">Scale</button>
+            </div>
+            <div class="button-row">
+              <button class="secondary" onclick="applyPreset('hshear')">H-Shear</button>
+              <button class="secondary" onclick="applyPreset('vshear')">V-Shear</button>
+              <button class="secondary" onclick="applyPreset('reflectx')">Reflect X</button>
+            </div>
+            <div class="button-row">
+              <button class="secondary" onclick="applyPreset('reflecty')">Reflect Y</button>
+              <button class="secondary" onclick="applyPreset('reflectyx')">Reflect y=x</button>
+              <button class="secondary" onclick="applyPreset('projectx')">Proj X</button>
+            </div>
+            <div class="button-row">
+              <button class="secondary" onclick="applyPreset('projecty')">Proj Y</button>
+            </div>
+
+            <div class="preset-param" id="rotateParam" style="display:none;">
+              <label>Angle: <span id="rotateAngleVal">45</span>&deg;</label>
+              <input type="range" id="rotateAngle" min="0" max="360" step="1" value="45">
+            </div>
+            <div class="preset-param" id="scaleParam" style="display:none;">
+              <label>Scale X: <span id="scaleXVal">2.0</span></label>
+              <input type="range" id="scaleX" min="-3" max="3" step="0.05" value="2">
+              <label>Scale Y: <span id="scaleYVal">2.0</span></label>
+              <input type="range" id="scaleY" min="-3" max="3" step="0.05" value="2">
+            </div>
+            <div class="preset-param" id="shearParam" style="display:none;">
+              <label>k: <span id="shearKVal">1.0</span></label>
+              <input type="range" id="shearK" min="-3" max="3" step="0.05" value="1">
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="control-group">
+            <label>Shape</label>
+            <select id="shapeSelect">
+              <option value="square">Unit Square</option>
+              <option value="fshape" selected>F-Shape</option>
+              <option value="arrow">Arrow</option>
+              <option value="house">House</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="toggle-row">
+              <input type="checkbox" id="showEigen" checked>
+              <label for="showEigen">Show eigenvectors</label>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="showLabels" checked>
+              <label for="showLabels">Show labels</label>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="control-group">
+            <label>Compose</label>
+            <div class="button-row">
+              <button onclick="composeTransform()">Apply &amp; Chain</button>
+              <button class="secondary" onclick="resetCompose()">Reset Chain</button>
+            </div>
+          </div>
+
+          <div class="info-box" id="infoBox">
+            <div class="info-line" id="infoLabel">Identity</div>
+            <div class="info-line" id="infoDet">det = 1.00</div>
+            <div class="info-line" id="infoArea">Area scale: 1.00&times;</div>
+            <div class="info-line" id="infoInvert">Invertible: Yes</div>
+            <div class="info-line" id="infoEigen">Eigenvalues: 1, 1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>How 2&times;2 Matrices Represent Transformations</h2>
+        <p>A $2 \times 2$ matrix $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$ acts on a vector $(x, y)$ by producing $(ax + by,\; cx + dy)$. The first column $\begin{bmatrix} a \\ c \end{bmatrix}$ is where the basis vector $\mathbf{e}_1 = (1, 0)$ lands. The second column $\begin{bmatrix} b \\ d \end{bmatrix}$ is where $\mathbf{e}_2 = (0, 1)$ lands. This is the key insight: to understand what a matrix does, just look at where it sends the two basis vectors. Everything else follows by linearity.</p>
+
+        <p>Watch the colored arrows in the visualization. The red arrow is the transformed $\mathbf{e}_1$; the blue arrow is the transformed $\mathbf{e}_2$. Their coordinates are exactly the columns of the matrix.</p>
+
+        <h2>The Determinant</h2>
+        <p>The determinant of $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$ is $ad - bc$. Geometrically, it measures two things:</p>
+        <ul>
+          <li><strong>Area scaling:</strong> The absolute value |det| tells you by what factor areas are multiplied. A determinant of 2 means areas double; a determinant of 0.5 means areas halve; a determinant of 0 means the transformation collapses everything onto a line or a point (the matrix is not invertible).</li>
+          <li><strong>Orientation:</strong> If det &gt; 0, the transformation preserves orientation (counterclockwise stays counterclockwise). If det &lt; 0, it reverses orientation (a reflection is involved).</li>
+        </ul>
+
+        <h2>Eigenvectors and Eigenvalues</h2>
+        <p>An eigenvector of a matrix A is a nonzero vector <strong>v</strong> such that A<strong>v</strong> = &lambda;<strong>v</strong> for some scalar &lambda; (the eigenvalue). Geometrically, eigenvectors are directions that the transformation merely scales, without rotating. The eigenvalue tells you the scale factor along that direction.</p>
+
+        <p>Not every 2&times;2 matrix has real eigenvectors. A pure rotation, for instance, does not scale any direction&mdash;it rotates everything&mdash;so its eigenvalues are complex. When eigenvectors exist and are real, they are shown as dashed lines in the visualization.</p>
+
+        <h2>Composition of Transformations</h2>
+        <p>Applying transformation B and then transformation A is the same as applying the single transformation AB (matrix multiplication). Matrix multiplication is associative but <em>not</em> commutative: AB &ne; BA in general. Use the "Apply &amp; Chain" button to compose transformations and see this non-commutativity in action. Try rotating then shearing, versus shearing then rotating&mdash;the results are different.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Rotation:</strong> Click Rotate and drag the angle slider. Watch the basis vectors trace a circle. The determinant stays 1 (area is preserved).</li>
+          <li><strong>Shear:</strong> Click H-Shear and increase k. One basis vector stays fixed; the other slides. The determinant stays 1 (shears preserve area).</li>
+          <li><strong>Reflection:</strong> Click Reflect X. The determinant is &minus;1 (orientation reverses). Use the F-Shape to see the mirror effect clearly.</li>
+          <li><strong>Projection:</strong> Click Proj X. The determinant is 0 (the transformation is not invertible&mdash;it collapses a dimension).</li>
+          <li><strong>Scaling:</strong> Try negative scale factors. Negative x-scale mirrors horizontally; both negative is a 180&deg; rotation.</li>
+          <li><strong>Composition:</strong> Apply a rotation, then chain a shear on top. Compare with shearing first, then rotating. The order matters.</li>
+          <li><strong>Eigenvectors:</strong> Enable the eigenvector display and try different transformations. Notice that reflections have two real eigenvectors; rotations (except 0&deg; and 180&deg;) have none.</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = canvas.width;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); });
+
+    // --- Math utilities ---
+    function transformPoint(x, y, m) {
+      return [m[0] * x + m[1] * y, m[2] * x + m[3] * y];
+    }
+
+    function multiplyMatrices(a, b) {
+      return [
+        a[0] * b[0] + a[1] * b[2],
+        a[0] * b[1] + a[1] * b[3],
+        a[2] * b[0] + a[3] * b[2],
+        a[2] * b[1] + a[3] * b[3]
+      ];
+    }
+
+    function computeEigen(m) {
+      // Characteristic polynomial: lambda^2 - trace*lambda + det = 0
+      const a = m[0], b = m[1], c = m[2], d = m[3];
+      const trace = a + d;
+      const det = a * d - b * c;
+      const disc = trace * trace - 4 * det;
+
+      if (disc < -1e-10) {
+        // Complex eigenvalues
+        const realPart = trace / 2;
+        const imagPart = Math.sqrt(-disc) / 2;
+        return {
+          real: false,
+          values: [{ re: realPart, im: imagPart }, { re: realPart, im: -imagPart }],
+          vectors: []
+        };
+      }
+
+      const sqrtDisc = Math.sqrt(Math.max(0, disc));
+      const l1 = (trace + sqrtDisc) / 2;
+      const l2 = (trace - sqrtDisc) / 2;
+
+      const vectors = [];
+      for (const l of [l1, l2]) {
+        // (A - lI)v = 0
+        const r0x = a - l, r0y = b;
+        const r1x = c, r1y = d - l;
+        let vx, vy;
+        if (Math.abs(r0x) > 1e-10 || Math.abs(r0y) > 1e-10) {
+          vx = -r0y;
+          vy = r0x;
+        } else if (Math.abs(r1x) > 1e-10 || Math.abs(r1y) > 1e-10) {
+          vx = -r1y;
+          vy = r1x;
+        } else {
+          // Identity-like: every vector is an eigenvector
+          vx = 1; vy = 0;
+        }
+        const len = Math.sqrt(vx * vx + vy * vy);
+        if (len > 1e-10) {
+          vectors.push([vx / len, vy / len]);
+        }
+      }
+
+      return { real: true, values: [{ re: l1, im: 0 }, { re: l2, im: 0 }], vectors };
+    }
+
+    // --- Coordinate conversion ---
+    const WORLD_RANGE = 3.5;
+
+    function worldToCanvas(wx, wy) {
+      const cx = (wx / WORLD_RANGE + 1) / 2 * canvas.width;
+      const cy = (1 - wy / WORLD_RANGE) / 2 * canvas.height;
+      return [cx, cy];
+    }
+
+    function canvasToWorld(cx, cy) {
+      const wx = (cx / canvas.width * 2 - 1) * WORLD_RANGE;
+      const wy = (1 - cy / canvas.height * 2) * WORLD_RANGE;
+      return [wx, wy];
+    }
+
+    // --- Shapes ---
+    const shapes = {
+      square: [
+        [0, 0], [1, 0], [1, 1], [0, 1]
+      ],
+      fshape: [
+        [0, 0], [1, 0], [1, 0.25],
+        [0.25, 0.25], [0.25, 0.5], [0.75, 0.5],
+        [0.75, 0.75], [0.25, 0.75],
+        [0.25, 1.25], [0, 1.25]
+      ],
+      arrow: [
+        [0, 0.2], [0.7, 0.2], [0.7, 0],
+        [1, 0.35], [0.7, 0.7], [0.7, 0.5], [0, 0.5]
+      ],
+      house: [
+        [0, 0], [1, 0], [1, 0.7],
+        [0.5, 1.1], [0, 0.7]
+      ]
+    };
+
+    // --- State ---
+    let currentMatrix = [1, 0, 0, 1]; // [a, b, c, d] row-major: [[a,b],[c,d]]
+    let displayMatrix = [1, 0, 0, 1]; // what's currently rendered (for animation)
+    let targetMatrix = [1, 0, 0, 1];
+    let composeBase = [1, 0, 0, 1]; // accumulated composition
+    let animating = false;
+    let animStart = 0;
+    let animDuration = 600;
+    let animFrom = [1, 0, 0, 1];
+    let currentShape = 'fshape';
+    let showEigen = true;
+    let showLabels = true;
+    let currentPreset = null;
+    let currentPresetLabel = 'Identity';
+    let suppressSliderSync = false;
+
+    // --- Easing ---
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function lerpMatrix(a, b, t) {
+      return [
+        a[0] + (b[0] - a[0]) * t,
+        a[1] + (b[1] - a[1]) * t,
+        a[2] + (b[2] - a[2]) * t,
+        a[3] + (b[3] - a[3]) * t
+      ];
+    }
+
+    // --- Animation ---
+    function animateToTarget() {
+      animFrom = displayMatrix.slice();
+      animStart = performance.now();
+      animating = true;
+    }
+
+    function setMatrixImmediate(m) {
+      currentMatrix = m.slice();
+      targetMatrix = m.slice();
+      displayMatrix = m.slice();
+      animating = false;
+      updateInfo();
+    }
+
+    function setMatrixAnimated(m) {
+      targetMatrix = m.slice();
+      currentMatrix = m.slice();
+      animateToTarget();
+      updateSlidersFromMatrix();
+      updateInfo();
+    }
+
+    // --- Controls: bidirectional sync ---
+    const ids = ['a', 'b', 'c', 'd'];
+    const numInputs = ids.map(id => document.getElementById('m' + id));
+    const sliderInputs = ids.map(id => document.getElementById('m' + id + 'Slider'));
+
+    function updateSlidersFromMatrix() {
+      suppressSliderSync = true;
+      for (let i = 0; i < 4; i++) {
+        const v = currentMatrix[i];
+        numInputs[i].value = parseFloat(v.toFixed(4));
+        sliderInputs[i].value = v;
+      }
+      suppressSliderSync = false;
+    }
+
+    function onMatrixInputChange(index, value, animate) {
+      if (suppressSliderSync) return;
+      const v = parseFloat(value);
+      if (isNaN(v)) return;
+      currentMatrix[index] = v;
+      targetMatrix[index] = v;
+      if (animate) {
+        animateToTarget();
+      } else {
+        displayMatrix[index] = v;
+      }
+      // Sync the other control
+      suppressSliderSync = true;
+      numInputs[index].value = parseFloat(v.toFixed(4));
+      sliderInputs[index].value = v;
+      suppressSliderSync = false;
+      currentPreset = null;
+      currentPresetLabel = 'Custom';
+      updateInfo();
+    }
+
+    // Number inputs: animate on change
+    numInputs.forEach((el, i) => {
+      el.addEventListener('change', () => onMatrixInputChange(i, el.value, true));
+    });
+
+    // Sliders: immediate update (no animation) during drag
+    sliderInputs.forEach((el, i) => {
+      el.addEventListener('input', () => onMatrixInputChange(i, el.value, false));
+    });
+
+    // --- Presets ---
+    function hideAllPresetParams() {
+      document.getElementById('rotateParam').style.display = 'none';
+      document.getElementById('scaleParam').style.display = 'none';
+      document.getElementById('shearParam').style.display = 'none';
+    }
+
+    function applyPreset(name) {
+      hideAllPresetParams();
+      currentPreset = name;
+      let m;
+      switch (name) {
+        case 'identity':
+          m = [1, 0, 0, 1];
+          currentPresetLabel = 'Identity';
+          break;
+        case 'rotate': {
+          document.getElementById('rotateParam').style.display = 'block';
+          const angle = parseFloat(document.getElementById('rotateAngle').value) * Math.PI / 180;
+          m = [Math.cos(angle), -Math.sin(angle), Math.sin(angle), Math.cos(angle)];
+          currentPresetLabel = 'Rotation (' + document.getElementById('rotateAngle').value + '\u00B0)';
+          break;
+        }
+        case 'scale': {
+          document.getElementById('scaleParam').style.display = 'block';
+          const sx = parseFloat(document.getElementById('scaleX').value);
+          const sy = parseFloat(document.getElementById('scaleY').value);
+          m = [sx, 0, 0, sy];
+          currentPresetLabel = 'Scale (' + sx.toFixed(1) + ', ' + sy.toFixed(1) + ')';
+          break;
+        }
+        case 'hshear': {
+          document.getElementById('shearParam').style.display = 'block';
+          const k = parseFloat(document.getElementById('shearK').value);
+          m = [1, k, 0, 1];
+          currentPresetLabel = 'Horizontal Shear (k=' + k.toFixed(1) + ')';
+          break;
+        }
+        case 'vshear': {
+          document.getElementById('shearParam').style.display = 'block';
+          const k = parseFloat(document.getElementById('shearK').value);
+          m = [1, 0, k, 1];
+          currentPresetLabel = 'Vertical Shear (k=' + k.toFixed(1) + ')';
+          break;
+        }
+        case 'reflectx':
+          m = [1, 0, 0, -1];
+          currentPresetLabel = 'Reflect over X-axis';
+          break;
+        case 'reflecty':
+          m = [-1, 0, 0, 1];
+          currentPresetLabel = 'Reflect over Y-axis';
+          break;
+        case 'reflectyx':
+          m = [0, 1, 1, 0];
+          currentPresetLabel = 'Reflect over y=x';
+          break;
+        case 'projectx':
+          m = [1, 0, 0, 0];
+          currentPresetLabel = 'Project onto X-axis';
+          break;
+        case 'projecty':
+          m = [0, 0, 0, 1];
+          currentPresetLabel = 'Project onto Y-axis';
+          break;
+        default:
+          m = [1, 0, 0, 1];
+          currentPresetLabel = 'Identity';
+      }
+      setMatrixAnimated(m);
+    }
+
+    // Preset parameter sliders
+    document.getElementById('rotateAngle').addEventListener('input', (e) => {
+      document.getElementById('rotateAngleVal').textContent = e.target.value;
+      if (currentPreset === 'rotate') applyPreset('rotate');
+    });
+
+    document.getElementById('scaleX').addEventListener('input', (e) => {
+      document.getElementById('scaleXVal').textContent = parseFloat(e.target.value).toFixed(1);
+      if (currentPreset === 'scale') applyPreset('scale');
+    });
+
+    document.getElementById('scaleY').addEventListener('input', (e) => {
+      document.getElementById('scaleYVal').textContent = parseFloat(e.target.value).toFixed(1);
+      if (currentPreset === 'scale') applyPreset('scale');
+    });
+
+    document.getElementById('shearK').addEventListener('input', (e) => {
+      document.getElementById('shearKVal').textContent = parseFloat(e.target.value).toFixed(1);
+      if (currentPreset === 'hshear') applyPreset('hshear');
+      if (currentPreset === 'vshear') applyPreset('vshear');
+    });
+
+    // Shape selector
+    document.getElementById('shapeSelect').addEventListener('change', (e) => {
+      currentShape = e.target.value;
+    });
+
+    // Toggles
+    document.getElementById('showEigen').addEventListener('change', (e) => {
+      showEigen = e.target.checked;
+    });
+
+    document.getElementById('showLabels').addEventListener('change', (e) => {
+      showLabels = e.target.checked;
+    });
+
+    // --- Compose ---
+    function composeTransform() {
+      composeBase = multiplyMatrices(currentMatrix, composeBase);
+      setMatrixAnimated([1, 0, 0, 1]);
+      currentPresetLabel = 'Composed';
+    }
+
+    function resetCompose() {
+      composeBase = [1, 0, 0, 1];
+      currentPresetLabel = currentPreset ? currentPresetLabel : 'Identity';
+      updateInfo();
+    }
+
+    // --- Info display ---
+    function updateInfo() {
+      const m = currentMatrix;
+      const total = multiplyMatrices(m, composeBase);
+      const det = total[0] * total[3] - total[1] * total[2];
+      const eigen = computeEigen(total);
+
+      document.getElementById('infoLabel').textContent = currentPresetLabel;
+      document.getElementById('infoDet').textContent = 'det = ' + det.toFixed(3);
+      document.getElementById('infoArea').textContent = 'Area scale: ' + Math.abs(det).toFixed(3) + '\u00D7' +
+        (det < -1e-10 ? ' (flipped)' : '');
+      document.getElementById('infoInvert').textContent = 'Invertible: ' + (Math.abs(det) > 1e-10 ? 'Yes' : 'No');
+
+      let eigenStr;
+      if (eigen.real) {
+        const l1 = eigen.values[0].re;
+        const l2 = eigen.values[1].re;
+        eigenStr = '\u03BB = ' + l1.toFixed(3) + ', ' + l2.toFixed(3);
+      } else {
+        const re = eigen.values[0].re;
+        const im = Math.abs(eigen.values[0].im);
+        eigenStr = '\u03BB = ' + re.toFixed(2) + ' \u00B1 ' + im.toFixed(2) + 'i';
+      }
+      document.getElementById('infoEigen').textContent = eigenStr;
+    }
+
+    // --- Drawing ---
+    function drawGrid() {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.lineWidth = 0.5;
+
+      for (let i = -3; i <= 3; i++) {
+        const [x0, y0] = worldToCanvas(i, -WORLD_RANGE);
+        const [x1, y1] = worldToCanvas(i, WORLD_RANGE);
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+
+        const [x2, y2] = worldToCanvas(-WORLD_RANGE, i);
+        const [x3, y3] = worldToCanvas(WORLD_RANGE, i);
+        ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
+      }
+
+      // Axes (brighter)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 1;
+      const [ox0, oy0] = worldToCanvas(-WORLD_RANGE, 0);
+      const [ox1, oy1] = worldToCanvas(WORLD_RANGE, 0);
+      ctx.beginPath(); ctx.moveTo(ox0, oy0); ctx.lineTo(ox1, oy1); ctx.stroke();
+
+      const [ox2, oy2] = worldToCanvas(0, -WORLD_RANGE);
+      const [ox3, oy3] = worldToCanvas(0, WORLD_RANGE);
+      ctx.beginPath(); ctx.moveTo(ox2, oy2); ctx.lineTo(ox3, oy3); ctx.stroke();
+
+      // Axis labels
+      if (showLabels) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'center';
+        for (let i = -3; i <= 3; i++) {
+          if (i === 0) continue;
+          const [lx, ly] = worldToCanvas(i, 0);
+          ctx.fillText(i, lx, ly + 14);
+          const [lx2, ly2] = worldToCanvas(0, i);
+          ctx.fillText(i, lx2 - 12, ly2 + 4);
+        }
+      }
+    }
+
+    function drawShape(pts, matrix, color, alpha, fill) {
+      if (pts.length < 2) return;
+      const transformed = pts.map(p => {
+        const [tx, ty] = transformPoint(p[0], p[1], matrix);
+        return worldToCanvas(tx, ty);
+      });
+
+      ctx.beginPath();
+      ctx.moveTo(transformed[0][0], transformed[0][1]);
+      for (let i = 1; i < transformed.length; i++) {
+        ctx.lineTo(transformed[i][0], transformed[i][1]);
+      }
+      ctx.closePath();
+
+      if (fill) {
+        ctx.fillStyle = color.replace(')', ', ' + alpha * 0.3 + ')').replace('rgb', 'rgba');
+        ctx.fill();
+      }
+      ctx.strokeStyle = color.replace(')', ', ' + alpha + ')').replace('rgb', 'rgba');
+      ctx.lineWidth = fill ? 2 : 1;
+      ctx.stroke();
+    }
+
+    function drawBasisVector(matrix, col, color, label) {
+      // col 0 = e1 = (1,0), col 1 = e2 = (0,1)
+      const ex = col === 0 ? 1 : 0;
+      const ey = col === 0 ? 0 : 1;
+      const [tx, ty] = transformPoint(ex, ey, matrix);
+      const [ox, oy] = worldToCanvas(0, 0);
+      const [ex2, ey2] = worldToCanvas(tx, ty);
+
+      // Arrow body
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ex2, ey2);
+      ctx.stroke();
+
+      // Arrowhead
+      const dx = ex2 - ox;
+      const dy = ey2 - oy;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len > 5) {
+        const ux = dx / len;
+        const uy = dy / len;
+        const headLen = 10;
+        const headWidth = 5;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(ex2, ey2);
+        ctx.lineTo(ex2 - ux * headLen + uy * headWidth, ey2 - uy * headLen - ux * headWidth);
+        ctx.lineTo(ex2 - ux * headLen - uy * headWidth, ey2 - uy * headLen + ux * headWidth);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Label
+      if (showLabels && len > 15) {
+        ctx.fillStyle = color;
+        ctx.font = 'bold 13px monospace';
+        ctx.textAlign = 'center';
+        const labelOffset = 15;
+        const lx = ex2 + (dx / len) * labelOffset;
+        const ly = ey2 + (dy / len) * labelOffset;
+        ctx.fillText(label, lx, ly);
+      }
+    }
+
+    function drawEigenvectors(matrix) {
+      const total = multiplyMatrices(matrix, composeBase);
+      const eigen = computeEigen(total);
+      if (!eigen.real || eigen.vectors.length === 0) return;
+
+      ctx.setLineDash([6, 4]);
+      ctx.lineWidth = 1.5;
+
+      const eigenColors = ['rgba(255, 200, 50, 0.7)', 'rgba(50, 220, 200, 0.7)'];
+
+      for (let i = 0; i < eigen.vectors.length; i++) {
+        const v = eigen.vectors[i];
+        const scale = WORLD_RANGE;
+        const [x0, y0] = worldToCanvas(-v[0] * scale, -v[1] * scale);
+        const [x1, y1] = worldToCanvas(v[0] * scale, v[1] * scale);
+
+        ctx.strokeStyle = eigenColors[i];
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+
+        if (showLabels) {
+          const [lx, ly] = worldToCanvas(v[0] * (scale * 0.85), v[1] * (scale * 0.85));
+          ctx.fillStyle = eigenColors[i];
+          ctx.font = '11px monospace';
+          ctx.textAlign = 'center';
+          const lStr = '\u03BB=' + eigen.values[i].re.toFixed(2);
+          ctx.fillText(lStr, lx, ly - 8);
+        }
+      }
+
+      ctx.setLineDash([]);
+    }
+
+    function draw() {
+      // Background
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#16213e');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawGrid();
+
+      const shapePts = shapes[currentShape];
+      const effectiveMatrix = multiplyMatrices(displayMatrix, composeBase);
+
+      // Ghost original shape
+      drawShape(shapePts, composeBase, 'rgb(255, 255, 255)', 0.15, true);
+
+      // Ghost basis vectors (faded)
+      drawBasisVector(composeBase, 0, 'rgba(255, 100, 100, 0.25)', '');
+      drawBasisVector(composeBase, 1, 'rgba(100, 150, 255, 0.25)', '');
+
+      // Eigenvectors (behind the transformed shape)
+      if (showEigen) {
+        drawEigenvectors(displayMatrix);
+      }
+
+      // Transformed shape
+      drawShape(shapePts, effectiveMatrix, 'rgb(100, 220, 180)', 0.9, true);
+
+      // Transformed basis vectors
+      drawBasisVector(effectiveMatrix, 0, 'rgba(255, 100, 100, 0.9)', 'e\u2081');
+      drawBasisVector(effectiveMatrix, 1, 'rgba(100, 150, 255, 0.9)', 'e\u2082');
+    }
+
+    // --- Main loop ---
+    function animate(now) {
+      if (animating) {
+        const elapsed = now - animStart;
+        const t = Math.min(1, elapsed / animDuration);
+        const easedT = easeInOutCubic(t);
+        displayMatrix = lerpMatrix(animFrom, targetMatrix, easedT);
+        if (t >= 1) {
+          displayMatrix = targetMatrix.slice();
+          animating = false;
+        }
+      }
+
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    // --- Init ---
+    updateSlidersFromMatrix();
+    updateInfo();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

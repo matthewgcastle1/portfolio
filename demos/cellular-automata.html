@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cellular Automata</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    #canvas {
+      background: #1a1a2e;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #1a3a3a;
+      font-size: 0.9rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid #d4cfc4;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: white;
+    }
+
+    .value-display {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.6rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    button.active {
+      background-color: #4a7a4a;
+    }
+
+    button.active:hover {
+      background-color: #3a6a3a;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 1rem;
+      border-radius: 3px;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      border-left: 3px solid #8b7355;
+    }
+
+    .stats {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #5a5a5a;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #f9f7f3;
+      border-radius: 3px;
+    }
+
+    .divider {
+      border-top: 1px solid #e0d9ce;
+      margin: 1rem 0;
+    }
+
+    .rule-code {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #2c2c2c;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Cellular Automata</h1>
+      <p>Simple rules, complex emergent behavior</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Cellular Automata</h1>
+        <div class="article-meta">Interactive Demo | Mathematics & Computer Science</div>
+      </div>
+
+      <div class="article-body">
+        <h2>What Are Cellular Automata?</h2>
+        <p>A cellular automaton is a grid of cells, each in one of a finite number of states. At each time step, every cell updates its state based on a simple rule that considers only the cell's current state and the states of its immediate neighbors. No cell knows anything about the global state of the grid. There is no central controller. Yet from these purely local rules, large-scale patterns emerge: spirals, fractals, waves, and structures of striking complexity.</p>
+
+        <p>The concept was invented by John von Neumann and Stanislaw Ulam in the 1940s. Von Neumann was trying to understand self-replication: could a machine build a copy of itself? He showed that a cellular automaton could, in principle, contain a universal constructor capable of building any pattern, including a copy of itself. The most famous cellular automaton, John Conway's Game of Life (1970), demonstrated that a simple two-state rule on a square grid could produce structures that move, grow, reproduce, and even perform computation.</p>
+
+        <h2>How These Automata Work</h2>
+        <p>The automata below use a square grid where each cell has a state represented by a number (0, 1, 2, ...). At each step, a rule computes a new value for each cell based on its neighbors. The rule used here is modular arithmetic: sum the values of the cell and its four cardinal neighbors (up, down, left, right), then take the result modulo N (the number of states). Different values of N, different initial patterns, and different neighborhood definitions produce radically different behavior.</p>
+
+        <p>There is a subtle but important distinction between two update modes:</p>
+
+        <div class="rule-code">
+          <strong>In-Place Update:</strong> The grid is modified as we scan through it. When computing cell (5, 3), the cells to its left and above have already been updated to their new values, while cells to its right and below still hold their old values. This asymmetry makes the evolution less predictable and more complex, because each cell is computed from a mixture of old and new states.
+        </div>
+
+        <div class="rule-code">
+          <strong>Double-Buffered Update:</strong> A snapshot of the grid is taken before the step. All cells read from the snapshot and write to the live grid. Every cell is computed from the same consistent state. This is the standard approach and produces more symmetric, predictable patterns.
+        </div>
+
+        <h2>Interactive Visualization</h2>
+        <p>Use the controls to change the rule, the number of states, the initial pattern, and the update mode. Click Step to advance one generation, or Play to watch the automaton evolve continuously.</p>
+      </div>
+
+      <div class="demo-container">
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label for="ruleSelect">Rule</label>
+            <select id="ruleSelect">
+              <option value="modsum">Modular Sum (neighbors + self)</option>
+              <option value="modsumonly">Modular Sum (neighbors only)</option>
+              <option value="modxor">XOR Automaton</option>
+              <option value="rps">Rock-Paper-Scissors</option>
+              <option value="life">Conway's Game of Life</option>
+              <option value="wolfram">1D Wolfram (Rule 30)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="numStates">States: <span class="value-display" id="statesValue">3</span></label>
+            <input type="range" id="numStates" min="2" max="12" step="1" value="3">
+          </div>
+
+          <div class="control-group">
+            <label for="gridSize">Grid Size: <span class="value-display" id="gridSizeValue">128</span></label>
+            <input type="range" id="gridSize" min="32" max="256" step="2" value="128">
+          </div>
+
+          <div class="control-group">
+            <label for="initPattern">Initial Pattern</label>
+            <select id="initPattern">
+              <option value="modstripe">Modular Stripes (i % N)</option>
+              <option value="modweave">Modular Weave (i%7 - i%5)</option>
+              <option value="random">Random</option>
+              <option value="center">Center Seed</option>
+              <option value="diagonal">Diagonal</option>
+              <option value="checker">Checkerboard</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="updateMode">Update Mode</label>
+            <select id="updateMode">
+              <option value="inplace">In-Place (asymmetric)</option>
+              <option value="buffered">Double-Buffered (symmetric)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="colorScheme">Colors</label>
+            <select id="colorScheme">
+              <option value="classic">Red / White / Blue</option>
+              <option value="heat">Heat Map</option>
+              <option value="neon">Neon</option>
+              <option value="earth">Earth Tones</option>
+              <option value="mono">Monochrome</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="speed">Speed: <span class="value-display" id="speedValue">10</span> steps/sec</label>
+            <input type="range" id="speed" min="1" max="60" step="1" value="10">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="button-row">
+            <button onclick="stepOnce()">Step</button>
+            <button id="playBtn" onclick="togglePlay()">Play</button>
+          </div>
+          <div class="button-row">
+            <button class="secondary" onclick="resetAutomaton()">Reset</button>
+            <button class="secondary" onclick="randomizeAll()">Randomize</button>
+          </div>
+
+          <div class="stats" id="stats">Generation: 0</div>
+
+          <div class="info-box" id="ruleInfo">
+            <strong>Modular Sum:</strong> Each cell becomes (self + up + down + left + right) mod N. Simple arithmetic, surprising patterns.
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>The Rules</h2>
+
+        <p><strong>Modular Sum</strong> is the simplest rule: add the cell's value to its four cardinal neighbors, take the result modulo N. With 3 states and the "Modular Stripes" initial pattern, this produces the patterns from the original automata above. Switch between in-place and double-buffered modes to see how the update order changes the outcome dramatically.</p>
+
+        <p><strong>XOR Automaton</strong> replaces addition with bitwise XOR. XOR (exclusive or) outputs 1 when inputs differ and 0 when they match. XOR automata tend to produce fractal-like, self-similar patterns reminiscent of Sierpinski triangles. They are reversible: XOR-ing again with the same value returns to the original.</p>
+
+        <p><strong>Rock-Paper-Scissors</strong> simulates a spatial competition. Each cell is one of N species. A cell is "eaten" by the next species in the cycle (species 0 beats N-1, species 1 beats 0, species 2 beats 1, and so on). If enough of a cell's neighbors are its predator, it is converted. This rule produces traveling spiral waves that chase each other across the grid, a phenomenon observed in real biological systems like competing bacterial colonies.</p>
+
+        <p><strong>Conway's Game of Life</strong> is the most famous cellular automaton. Cells are either alive (1) or dead (0). A live cell survives if it has 2 or 3 live neighbors; otherwise it dies. A dead cell becomes alive if it has exactly 3 live neighbors. From these two rules, an extraordinary zoo of patterns emerges: stable "still lifes," oscillating "blinkers," moving "gliders," and self-replicating "guns" that shoot gliders across the grid.</p>
+
+        <p><strong>1D Wolfram (Rule 30)</strong> is a one-dimensional automaton displayed as a two-dimensional image: each row is one generation, with time flowing downward. Each cell looks at itself and its two immediate neighbors (3 cells, 8 possible configurations) and applies Rule 30 to determine the next state. Rule 30 is notable because it generates apparent randomness from a single seed cell. Stephen Wolfram used it as a random number generator.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li>Start with <strong>Modular Sum, 3 states, Modular Stripes, In-Place</strong> to see the original automaton. Then switch to Double-Buffered mode and compare.</li>
+          <li>Increase the number of states to 5, 7, or 12 and watch how the patterns change.</li>
+          <li>Try <strong>Rock-Paper-Scissors with 5+ states and Random init</strong> for spiral waves.</li>
+          <li>Run <strong>Game of Life with Random init</strong> and watch structures self-organize. Look for gliders (small shapes that move diagonally).</li>
+          <li>Set <strong>Wolfram Rule 30, Center Seed</strong> and step through to watch a fractal-like pattern grow from a single cell.</li>
+          <li>Try every combination. The parameter space is large and most of it has never been explored.</li>
+        </ul>
+
+        <h2>Why Simple Rules Produce Complex Behavior</h2>
+        <p>Cellular automata are existence proofs that complexity does not require complex rules. A three-state modular sum is about as simple as a rule can get, yet it generates patterns that no one would predict from reading the rule alone. Conway's Game of Life has two rules and produces structures capable of universal computation (you can build a Turing machine inside it). Wolfram's Rule 30 has one rule operating on three cells and generates output indistinguishable from randomness.</p>
+
+        <p>The complexity comes from interaction. Each cell's behavior is trivial in isolation. But each cell's output becomes its neighbors' input on the next step, and their outputs become its input on the step after that. Information propagates, interferes, amplifies, and cancels across the grid. The result is emergent behavior: global patterns that exist in the system but are not written into any individual cell's rule. No cell "knows" it is part of a spiral or a glider. The structure exists only at the level of the whole.</p>
+
+        <p>This is the same principle that governs flocking birds, ant colonies, market economies, and neural networks. Local rules, no central controller, complex global behavior. Cellular automata are the simplest possible demonstration of the principle.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let sideLength = 128;
+    let numStates = 3;
+    let grid, gridOld;
+    let generation = 0;
+    let playing = false;
+    let playInterval = null;
+    let rule = 'modsum';
+    let updateMode = 'inplace';
+    let initPattern = 'modstripe';
+    let colorScheme = 'classic';
+    let speed = 10;
+
+    // Color palettes
+    function getColor(value, maxStates) {
+      const t = maxStates <= 1 ? 0 : value / (maxStates - 1);
+      switch (colorScheme) {
+        case 'classic': {
+          const colors = ['#2244aa', '#ffffff', '#cc2222', '#22aa44', '#aa44cc',
+                          '#cc8822', '#22aaaa', '#aa2266', '#66aa22', '#4444cc', '#cc4488', '#888888'];
+          return colors[value % colors.length];
+        }
+        case 'heat': {
+          if (value === 0) return '#0a0a2e';
+          const r = Math.min(255, Math.floor(t * 510));
+          const g = Math.min(255, Math.max(0, Math.floor((t - 0.4) * 425)));
+          const b = Math.max(0, Math.floor((1 - t) * 200));
+          return `rgb(${r},${g},${b})`;
+        }
+        case 'neon': {
+          const hue = (value * 360 / maxStates) % 360;
+          return `hsl(${hue}, 100%, ${value === 0 ? 8 : 55}%)`;
+        }
+        case 'earth': {
+          const earthy = ['#2c1810', '#5c3a21', '#8b6914', '#a0892c', '#6b8e23',
+                          '#4a7c59', '#2f6b5e', '#8b7355', '#a0522d', '#6b4423', '#d2b48c', '#3c6e47'];
+          return earthy[value % earthy.length];
+        }
+        case 'mono': {
+          const v = Math.floor((1 - t) * 240);
+          return `rgb(${v},${v},${v})`;
+        }
+        default:
+          return '#000';
+      }
+    }
+
+    function getVal(g, x, y) {
+      if (x < 0 || x >= sideLength || y < 0 || y >= sideLength) return 0;
+      return g[y * sideLength + x];
+    }
+
+    function setVal(x, y, v) {
+      if (x >= 0 && x < sideLength && y >= 0 && y < sideLength) {
+        grid[y * sideLength + x] = v;
+      }
+    }
+
+    function initialize() {
+      const size = sideLength * sideLength;
+      grid = new Uint8ClampedArray(size);
+      gridOld = new Uint8ClampedArray(size);
+      generation = 0;
+
+      if (rule === 'wolfram') {
+        // For Wolfram rules, only init the first row
+        for (let i = 0; i < size; i++) grid[i] = 0;
+        if (initPattern === 'center' || initPattern === 'modstripe' || initPattern === 'modweave') {
+          grid[Math.floor(sideLength / 2)] = 1;
+        } else if (initPattern === 'random') {
+          for (let x = 0; x < sideLength; x++) {
+            grid[x] = Math.random() < 0.3 ? 1 : 0;
+          }
+        } else if (initPattern === 'diagonal') {
+          for (let x = 0; x < sideLength; x++) {
+            grid[x] = x % 2;
+          }
+        } else if (initPattern === 'checker') {
+          for (let x = 0; x < sideLength; x++) {
+            grid[x] = x % 3 === 0 ? 1 : 0;
+          }
+        }
+        copyGrid();
+        return;
+      }
+
+      switch (initPattern) {
+        case 'modstripe':
+          for (let i = 0; i < size; i++) grid[i] = i % numStates;
+          break;
+        case 'modweave':
+          for (let i = 0; i < size; i++) {
+            const v = i % 7 - i % 5;
+            grid[i] = ((v % numStates) + numStates) % numStates;
+          }
+          break;
+        case 'random':
+          for (let i = 0; i < size; i++) grid[i] = Math.floor(Math.random() * numStates);
+          break;
+        case 'center': {
+          for (let i = 0; i < size; i++) grid[i] = 0;
+          const cx = Math.floor(sideLength / 2);
+          const cy = Math.floor(sideLength / 2);
+          const r = Math.max(3, Math.floor(sideLength / 20));
+          for (let dy = -r; dy <= r; dy++) {
+            for (let dx = -r; dx <= r; dx++) {
+              if (dx * dx + dy * dy <= r * r) {
+                const idx = (cy + dy) * sideLength + (cx + dx);
+                if (idx >= 0 && idx < size) grid[idx] = (Math.abs(dx) + Math.abs(dy)) % numStates || 1;
+              }
+            }
+          }
+          break;
+        }
+        case 'diagonal':
+          for (let y = 0; y < sideLength; y++)
+            for (let x = 0; x < sideLength; x++)
+              grid[y * sideLength + x] = (x + y) % numStates;
+          break;
+        case 'checker':
+          for (let y = 0; y < sideLength; y++)
+            for (let x = 0; x < sideLength; x++)
+              grid[y * sideLength + x] = ((x + y) % 2 === 0) ? 0 : (1 % numStates || 0);
+          break;
+      }
+      copyGrid();
+    }
+
+    function copyGrid() {
+      gridOld.set(grid);
+    }
+
+    function stepOnce() {
+      if (rule === 'wolfram') {
+        stepWolfram();
+      } else if (rule === 'life') {
+        stepLife();
+      } else {
+        stepGrid();
+      }
+      generation++;
+      render();
+      document.getElementById('stats').textContent = `Generation: ${generation}`;
+    }
+
+    function stepGrid() {
+      const readGrid = updateMode === 'buffered' ? gridOld : grid;
+
+      function readVal(x, y) {
+        if (x < 0 || x >= sideLength || y < 0 || y >= sideLength) return 0;
+        return readGrid[y * sideLength + x];
+      }
+
+      for (let y = 0; y < sideLength; y++) {
+        for (let x = 0; x < sideLength; x++) {
+          const self = readVal(x, y);
+          const up = readVal(x, y - 1);
+          const down = readVal(x, y + 1);
+          const left = readVal(x - 1, y);
+          const right = readVal(x + 1, y);
+
+          let newVal;
+          switch (rule) {
+            case 'modsum':
+              newVal = (self + up + down + left + right) % numStates;
+              break;
+            case 'modsumonly':
+              newVal = (up + down + left + right) % numStates;
+              break;
+            case 'modxor':
+              newVal = (self ^ up ^ down ^ left ^ right) % numStates;
+              break;
+            case 'rps': {
+              const predator = (self + 1) % numStates;
+              let predCount = 0;
+              if (up === predator) predCount++;
+              if (down === predator) predCount++;
+              if (left === predator) predCount++;
+              if (right === predator) predCount++;
+              // Also check diagonals for richer dynamics
+              const ul = readVal(x - 1, y - 1);
+              const ur = readVal(x + 1, y - 1);
+              const dl = readVal(x - 1, y + 1);
+              const dr = readVal(x + 1, y + 1);
+              if (ul === predator) predCount++;
+              if (ur === predator) predCount++;
+              if (dl === predator) predCount++;
+              if (dr === predator) predCount++;
+              newVal = predCount >= 3 ? predator : self;
+              break;
+            }
+            default:
+              newVal = (self + up + down + left + right) % numStates;
+          }
+          setVal(x, y, newVal);
+        }
+      }
+      if (updateMode === 'buffered') copyGrid();
+    }
+
+    function stepLife() {
+      const readGrid = gridOld;
+      function readVal(x, y) {
+        if (x < 0 || x >= sideLength || y < 0 || y >= sideLength) return 0;
+        return readGrid[y * sideLength + x];
+      }
+
+      for (let y = 0; y < sideLength; y++) {
+        for (let x = 0; x < sideLength; x++) {
+          const self = readVal(x, y);
+          const neighbors = readVal(x-1,y-1) + readVal(x,y-1) + readVal(x+1,y-1) +
+                            readVal(x-1,y)                     + readVal(x+1,y) +
+                            readVal(x-1,y+1) + readVal(x,y+1) + readVal(x+1,y+1);
+          let newVal;
+          if (self === 1) {
+            newVal = (neighbors === 2 || neighbors === 3) ? 1 : 0;
+          } else {
+            newVal = (neighbors === 3) ? 1 : 0;
+          }
+          setVal(x, y, newVal);
+        }
+      }
+      copyGrid();
+    }
+
+    // Wolfram 1D automaton rendered top-to-bottom
+    let wolframRow = 0;
+    function stepWolfram() {
+      if (wolframRow >= sideLength - 1) return;
+      const ruleNum = 30;
+      const currentRow = wolframRow;
+      const nextRow = wolframRow + 1;
+
+      for (let x = 0; x < sideLength; x++) {
+        const l = x > 0 ? grid[currentRow * sideLength + (x - 1)] : 0;
+        const c = grid[currentRow * sideLength + x];
+        const r = x < sideLength - 1 ? grid[currentRow * sideLength + (x + 1)] : 0;
+        const pattern = (l << 2) | (c << 1) | r;
+        const newVal = (ruleNum >> pattern) & 1;
+        grid[nextRow * sideLength + x] = newVal;
+      }
+      wolframRow = nextRow;
+      copyGrid();
+    }
+
+    function render() {
+      const cellSize = canvas.width / sideLength;
+      const imgData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imgData.data;
+
+      // Pre-compute colors for each state
+      const effectiveStates = (rule === 'life' || rule === 'wolfram') ? 2 : numStates;
+      const colorCache = [];
+      for (let s = 0; s < effectiveStates; s++) {
+        const hex = getColor(s, effectiveStates);
+        colorCache.push(hexToRGB(hex));
+      }
+
+      for (let gy = 0; gy < sideLength; gy++) {
+        for (let gx = 0; gx < sideLength; gx++) {
+          const val = grid[gy * sideLength + gx];
+          const rgb = colorCache[val % colorCache.length];
+          const px0 = Math.floor(gx * cellSize);
+          const py0 = Math.floor(gy * cellSize);
+          const px1 = Math.floor((gx + 1) * cellSize);
+          const py1 = Math.floor((gy + 1) * cellSize);
+
+          for (let py = py0; py < py1; py++) {
+            for (let px = px0; px < px1; px++) {
+              const idx = (py * canvas.width + px) * 4;
+              data[idx] = rgb[0];
+              data[idx + 1] = rgb[1];
+              data[idx + 2] = rgb[2];
+              data[idx + 3] = 255;
+            }
+          }
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    function hexToRGB(hex) {
+      if (hex.startsWith('rgb')) {
+        const m = hex.match(/(\d+)/g);
+        return m ? [parseInt(m[0]), parseInt(m[1]), parseInt(m[2])] : [0, 0, 0];
+      }
+      if (hex.startsWith('hsl')) {
+        const m = hex.match(/[\d.]+/g);
+        if (!m) return [0, 0, 0];
+        return hslToRGB(parseFloat(m[0]), parseFloat(m[1]), parseFloat(m[2]));
+      }
+      hex = hex.replace('#', '');
+      return [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
+    }
+
+    function hslToRGB(h, s, l) {
+      s /= 100; l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r, g, b;
+      if (h < 60) { r = c; g = x; b = 0; }
+      else if (h < 120) { r = x; g = c; b = 0; }
+      else if (h < 180) { r = 0; g = c; b = x; }
+      else if (h < 240) { r = 0; g = x; b = c; }
+      else if (h < 300) { r = x; g = 0; b = c; }
+      else { r = c; g = 0; b = x; }
+      return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+    }
+
+    function togglePlay() {
+      playing = !playing;
+      const btn = document.getElementById('playBtn');
+      if (playing) {
+        btn.textContent = 'Pause';
+        btn.classList.add('active');
+        playInterval = setInterval(stepOnce, 1000 / speed);
+      } else {
+        btn.textContent = 'Play';
+        btn.classList.remove('active');
+        clearInterval(playInterval);
+      }
+    }
+
+    function resetAutomaton() {
+      if (playing) togglePlay();
+      wolframRow = 0;
+      initialize();
+      generation = 0;
+      render();
+      document.getElementById('stats').textContent = `Generation: ${generation}`;
+    }
+
+    function randomizeAll() {
+      if (playing) togglePlay();
+      numStates = Math.floor(Math.random() * 8) + 2;
+      const rules = ['modsum', 'modsumonly', 'modxor', 'rps'];
+      rule = rules[Math.floor(Math.random() * rules.length)];
+      const inits = ['modstripe', 'modweave', 'random', 'center', 'diagonal'];
+      initPattern = inits[Math.floor(Math.random() * inits.length)];
+      updateMode = Math.random() < 0.5 ? 'inplace' : 'buffered';
+      const colors = ['classic', 'heat', 'neon', 'earth', 'mono'];
+      colorScheme = colors[Math.floor(Math.random() * colors.length)];
+
+      document.getElementById('numStates').value = numStates;
+      document.getElementById('statesValue').textContent = numStates;
+      document.getElementById('ruleSelect').value = rule;
+      document.getElementById('initPattern').value = initPattern;
+      document.getElementById('updateMode').value = updateMode;
+      document.getElementById('colorScheme').value = colorScheme;
+      updateRuleInfo();
+
+      resetAutomaton();
+    }
+
+    function updateRuleInfo() {
+      const info = document.getElementById('ruleInfo');
+      switch (rule) {
+        case 'modsum':
+          info.innerHTML = '<strong>Modular Sum:</strong> Each cell becomes (self + up + down + left + right) mod N. Simple arithmetic, surprising patterns.';
+          break;
+        case 'modsumonly':
+          info.innerHTML = '<strong>Modular Sum (neighbors only):</strong> Each cell becomes (up + down + left + right) mod N. Self-value is excluded from the sum.';
+          break;
+        case 'modxor':
+          info.innerHTML = '<strong>XOR Automaton:</strong> Each cell becomes (self XOR up XOR down XOR left XOR right) mod N. Tends to produce fractal, self-similar patterns.';
+          break;
+        case 'rps':
+          info.innerHTML = '<strong>Rock-Paper-Scissors:</strong> N species in a cyclic hierarchy. If 3+ of your 8 neighbors are your predator, you are consumed. Produces spiral waves.';
+          break;
+        case 'life':
+          info.innerHTML = '<strong>Game of Life:</strong> Alive with 2-3 neighbors survives. Dead with exactly 3 neighbors is born. Everything else dies. States and update mode are fixed.';
+          break;
+        case 'wolfram':
+          info.innerHTML = '<strong>Wolfram Rule 30:</strong> 1D automaton. Each row is one generation. A cell looks at itself and two neighbors (8 patterns) and applies Rule 30. Generates apparent randomness from a single seed.';
+          break;
+      }
+    }
+
+    // Wire up controls
+    document.getElementById('ruleSelect').addEventListener('change', (e) => {
+      rule = e.target.value;
+      updateRuleInfo();
+      if (rule === 'life') {
+        numStates = 2;
+        document.getElementById('numStates').value = 2;
+        document.getElementById('statesValue').textContent = '2';
+        updateMode = 'buffered';
+        document.getElementById('updateMode').value = 'buffered';
+      }
+      if (rule === 'wolfram') {
+        numStates = 2;
+        document.getElementById('numStates').value = 2;
+        document.getElementById('statesValue').textContent = '2';
+      }
+      resetAutomaton();
+    });
+
+    document.getElementById('numStates').addEventListener('input', (e) => {
+      numStates = parseInt(e.target.value);
+      document.getElementById('statesValue').textContent = numStates;
+      resetAutomaton();
+    });
+
+    document.getElementById('gridSize').addEventListener('input', (e) => {
+      sideLength = parseInt(e.target.value);
+      document.getElementById('gridSizeValue').textContent = sideLength;
+      resetAutomaton();
+    });
+
+    document.getElementById('initPattern').addEventListener('change', (e) => {
+      initPattern = e.target.value;
+      resetAutomaton();
+    });
+
+    document.getElementById('updateMode').addEventListener('change', (e) => {
+      updateMode = e.target.value;
+      resetAutomaton();
+    });
+
+    document.getElementById('colorScheme').addEventListener('change', (e) => {
+      colorScheme = e.target.value;
+      render();
+    });
+
+    document.getElementById('speed').addEventListener('input', (e) => {
+      speed = parseInt(e.target.value);
+      document.getElementById('speedValue').textContent = speed;
+      if (playing) {
+        clearInterval(playInterval);
+        playInterval = setInterval(stepOnce, 1000 / speed);
+      }
+    });
+
+    // Set canvas resolution
+    canvas.width = 512;
+    canvas.height = 512;
+
+    // Init
+    initialize();
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matthew Castle</title>
+<style>
+  :root {
+    --board: #1f2d29;
+    --board-2: #17211e;
+    --board-3: #263a34;
+    --chalk: #eef1ea;
+    --chalk-soft: #b7c2ba;
+    --chalk-dust: #7c8a82;
+    --gold: #e0b84a;
+    --gold-dim: #a9863a;
+    --coral: #e0794a;
+    --sky: #6fb8c9;
+    --rule: rgba(238, 241, 234, 0.14);
+    --max: 880px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--board);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(238,241,234,0.05), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(238,241,234,0.015) 0px, rgba(238,241,234,0.015) 1px, transparent 1px, transparent 3px);
+    color: var(--chalk);
+    font-family: Baskerville, "Big Caslon", Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.68;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  }
+
+  a { color: var(--gold); text-decoration-color: rgba(224,184,74,0.45); text-underline-offset: 3px; }
+  a:hover { color: #f0cc6e; }
+  a:focus-visible, button:focus-visible, .anim-card:focus-visible {
+    outline: 2px solid var(--gold); outline-offset: 3px;
+  }
+
+  h1, h2, h3 { font-family: Baskerville, "Big Caslon", Georgia, "Times New Roman", serif; text-wrap: balance; margin: 0; }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+  /* ---------------- Hero ---------------- */
+
+  .hero {
+    padding: 96px 0 64px;
+    text-align: center;
+  }
+
+  .hero .kicker {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-size: clamp(46px, 9vw, 84px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .hero .role {
+    margin-top: 18px;
+    font-size: 19px;
+    font-style: italic;
+    color: var(--chalk-soft);
+  }
+
+  .hero p.lede {
+    margin: 22px auto 0;
+    max-width: 52ch;
+    color: var(--chalk-soft);
+    font-size: 16.5px;
+  }
+
+  .contact-row {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 26px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 13.5px;
+  }
+  .contact-row a { color: var(--chalk); border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+  .contact-row a:hover { color: var(--gold); border-color: var(--gold); }
+
+  .looking-for {
+    margin: 20px auto 0;
+    max-width: 52ch;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+  }
+
+  .resume-row {
+    margin-top: 26px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .resume-btn {
+    display: inline-block;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 13px;
+    color: var(--board);
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 11px 20px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background .25s ease, color .25s ease, transform .25s ease;
+  }
+  .resume-btn:hover { background: #f0cc6e; color: var(--board); transform: translateY(-1px); }
+  .resume-btn.alt {
+    background: transparent;
+    color: var(--gold);
+  }
+  .resume-btn.alt:hover { background: rgba(224,184,74,0.1); color: #f0cc6e; }
+
+  .scroll-hint {
+    display: block;
+    margin-top: 46px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--chalk-dust);
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); opacity: .6; }
+    50% { transform: translateY(6px); opacity: 1; }
+  }
+
+  /* ---------------- Section chrome ---------------- */
+
+  section { padding: 60px 0; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+  .section-head .label {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .section-head .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .section-head h2 { font-size: 26px; }
+  .section-sub {
+    color: var(--chalk-soft);
+    max-width: 60ch;
+    margin: -14px 0 28px;
+    font-size: 15.5px;
+  }
+
+  hr.chalk {
+    border: none;
+    height: 1px;
+    background: var(--rule);
+    margin: 0;
+  }
+
+  /* ---------------- Live demo showcase ---------------- */
+
+  .anim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 780px) {
+    .anim-grid { grid-template-columns: 1fr; }
+  }
+
+  .anim-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--board-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .anim-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold-dim);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  }
+  .anim-card canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: var(--board-3); }
+  .anim-card .cap {
+    padding: 14px 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .anim-card .cap h3 { font-size: 16px; }
+  .anim-card .cap .go {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--gold);
+    white-space: nowrap;
+    opacity: .75;
+  }
+  .anim-card:hover .cap .go { opacity: 1; }
+
+  .see-all {
+    margin-top: 26px;
+    text-align: center;
+  }
+  .see-all a {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 13px;
+    border: 1px solid var(--gold-dim);
+    padding: 10px 20px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .see-all a:hover { background: rgba(224,184,74,0.08); }
+
+  /* ---------------- Experience ---------------- */
+
+  .entry + .entry { margin-top: 34px; }
+  .entry-head {
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 16px;
+  }
+  .entry-head h3 { font-size: 19px; }
+  .entry-org { color: var(--sky); font-style: italic; }
+  .entry-dates {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12.5px; color: var(--chalk-dust); white-space: nowrap;
+  }
+  .entry ul { margin: 10px 0 0; padding-left: 20px; color: var(--chalk-soft); }
+  .entry li + li { margin-top: 6px; }
+  .entry li::marker { color: var(--gold-dim); }
+
+  /* ---------------- Projects ---------------- */
+
+  .project-grid { display: grid; gap: 16px; }
+  .project {
+    border: 1px solid var(--rule);
+    background: var(--board-2);
+    padding: 20px 24px;
+    border-radius: 3px;
+  }
+  .project h3 { font-size: 17px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .project h3 .src { font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace; font-size: 12px; font-weight: 400; }
+  .project p { color: var(--chalk-soft); font-size: 15px; margin: 0; }
+
+  /* ---------------- Skills ---------------- */
+
+  .skill-group + .skill-group { margin-top: 20px; }
+  .skill-group-label {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--chalk-dust); margin-bottom: 10px;
+  }
+  .skills-list { display: flex; flex-wrap: wrap; gap: 9px; }
+  .skill {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12.5px; color: var(--chalk-soft);
+    border: 1px solid var(--rule); padding: 5px 11px; border-radius: 2px;
+  }
+
+  /* ---------------- Education ---------------- */
+
+  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+  @media (max-width: 620px) { .edu-grid { grid-template-columns: 1fr; gap: 28px; } }
+  .edu-grid h3 { font-size: 16px; margin-bottom: 6px; }
+  .edu-grid .entry-org { display: block; margin-bottom: 6px; }
+  .edu-grid ul { margin: 8px 0 0; padding-left: 20px; color: var(--chalk-soft); font-size: 15px; }
+  .edu-grid li::marker { color: var(--gold-dim); }
+
+  footer {
+    padding: 40px 0 70px;
+    text-align: center;
+    color: var(--chalk-dust);
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    font-size: 12px;
+  }
+  footer a { color: var(--chalk-dust); }
+  footer a:hover { color: var(--gold); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .scroll-hint { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Austin, Texas</span>
+    <h1>Matthew Castle</h1>
+    <p class="role">Software Engineer</p>
+    <p class="lede">Four and a half years building backend infrastructure, APIs, and zero-trust security systems at Trend Micro, with a mathematics degree underneath it. I work from first principles, communicate clearly, and try to use good judgment about what actually matters. Outside of work I build the simulations below.</p>
+    <p class="looking-for">Currently looking for backend, data, or infrastructure engineering roles &mdash; Austin-based, open to remote.</p>
+    <div class="contact-row">
+      <a href="mailto:matthewgcastle@gmail.com">matthewgcastle@gmail.com</a>
+      <a href="https://www.linkedin.com/in/matthew-castle/" target="_blank" rel="noopener">linkedin.com/in/matthew-castle</a>
+      <a href="https://github.com/matthewgcastle1" target="_blank" rel="noopener">github.com/matthewgcastle1</a>
+    </div>
+    <div class="resume-row">
+      <a class="resume-btn" href="Matthew_Castle_Resume.pdf" download>Download Resume &mdash; Simple Layout</a>
+      <a class="resume-btn alt" href="MatthewCastleResume2.pdf" download>Download Resume &mdash; Block Layout</a>
+    </div>
+    <span class="scroll-hint">&darr; scroll</span>
+  </div>
+</header>
+
+<hr class="chalk">
+
+<main>
+  <section class="wrap">
+    <div class="section-head"><span class="label">Live</span><span class="rule"></span><h2>A few things, running right now</h2></div>
+    <p class="section-sub">Small, uncontrolled versions of three of the thirteen interactive demos. Click any of them for the full version with all the knobs.</p>
+
+    <div class="anim-grid">
+      <a class="anim-card" href="demos/double-pendulum.html">
+        <canvas id="pendulumCanvas" width="360" height="360" aria-label="Animated double pendulum, chaotic motion"></canvas>
+        <div class="cap"><h3>Double Pendulum</h3><span class="go mono">explore &rarr;</span></div>
+      </a>
+      <a class="anim-card" href="demos/sorting-algorithms.html">
+        <canvas id="sortCanvas" width="360" height="360" aria-label="Animated bars sorting themselves"></canvas>
+        <div class="cap"><h3>Sorting Algorithms</h3><span class="go mono">explore &rarr;</span></div>
+      </a>
+      <a class="anim-card" href="demos/cellular-automata.html">
+        <canvas id="lifeCanvas" width="360" height="360" aria-label="Conway's Game of Life running continuously"></canvas>
+        <div class="cap"><h3>Cellular Automata</h3><span class="go mono">explore &rarr;</span></div>
+      </a>
+    </div>
+
+    <div class="see-all"><a href="demos.html">See all 13 demos &rarr;</a></div>
+  </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><span class="label">Since 2021</span><span class="rule"></span><h2>Experience</h2></div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div><h3>Software Engineer</h3><span class="entry-org">Trend Micro &mdash; Austin, TX</span></div>
+        <div class="entry-dates">10/2021 &ndash; 01/2026</div>
+      </div>
+      <ul>
+        <li>Maintained ETL pipelines and databases in the ZTSA backend, resolving data integrity and performance issues</li>
+        <li>Designed and implemented RESTful APIs for internal services and customer-facing product features</li>
+        <li>Diagnosed and resolved complex customer issues by tracing failures across distributed systems</li>
+        <li>Debugged distributed systems handling large volumes of network traffic, ensuring high performance and reliability</li>
+        <li>Designed and maintained cloud infrastructure supporting ZTSA</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div><h3>Research &amp; Development Intern</h3><span class="entry-org">Trend Micro &mdash; Austin, TX</span></div>
+        <div class="entry-dates">06/2021 &ndash; 08/2021</div>
+      </div>
+      <ul>
+        <li>Collaborated on a four-person team to build a web app that dynamically visualizes AWS account assets and their relationships as an interactive graph</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><span class="label">Elsewhere</span><span class="rule"></span><h2>Other Projects</h2></div>
+    <div class="project-grid">
+      <div class="project">
+        <h3>Numerical Methods Library <span class="src"><a href="https://github.com/matthewgcastle1/num_methods" target="_blank" rel="noopener">source &rarr;</a></span></h3>
+        <p>A Python library for efficient numerical algorithms, mostly dealing with matrix operations and finding numerical solutions to differential equations.</p>
+      </div>
+      <div class="project">
+        <h3>AI Interview Platform</h3>
+        <p>A tool that generates interview questions and simulates a job interview based on a candidate's resume and a target job description.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>Tools</h2></div>
+
+    <div class="skill-group">
+      <div class="skill-group-label">Languages</div>
+      <div class="skills-list">
+        <span class="skill">Python</span><span class="skill">Go</span><span class="skill">Java</span>
+        <span class="skill">JavaScript</span><span class="skill">SQL</span><span class="skill">C</span>
+        <span class="skill">R</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-label">Systems &amp; Infrastructure</div>
+      <div class="skills-list">
+        <span class="skill">Linux</span><span class="skill">Git</span><span class="skill">AWS</span>
+        <span class="skill">Docker</span><span class="skill">Kubernetes</span><span class="skill">Azure</span>
+        <span class="skill">HTTP</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-label">Databases</div>
+      <div class="skills-list">
+        <span class="skill">DynamoDB</span><span class="skill">MySQL</span><span class="skill">JDBC</span>
+        <span class="skill">Cosmos DB</span><span class="skill">Aurora DB</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-label">Data &amp; Security</div>
+      <div class="skills-list">
+        <span class="skill">Math</span><span class="skill">Statistics</span><span class="skill">Data Analysis</span>
+        <span class="skill">Networking Fundamentals</span><span class="skill">Network Security</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-label">Communication</div>
+      <div class="skills-list">
+        <span class="skill">Technical Writing</span><span class="skill">Presenting Technical Material</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>Education &amp; Awards</h2></div>
+    <div class="edu-grid">
+      <div>
+        <h3>Bachelor of Arts, Mathematics <span class="entry-dates" style="font-weight:400;">&mdash; 05/2021</span></h3>
+        <span class="entry-org">University of Oklahoma &mdash; Norman, OK</span>
+        <ul><li>Minors in Computer Science and Physics</li><li>GPA: 3.83</li></ul>
+      </div>
+      <div>
+        <h3>Awards</h3>
+        <ul><li>3-time Texas High School State Champion in Mathematics</li><li>National Merit Scholar</li></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Matthew Castle &middot; Austin, TX &middot; <a href="mailto:matthewgcastle@gmail.com">matthewgcastle@gmail.com</a>
+</footer>
+
+<script>
+(function () {
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function setupCanvas(id) {
+    var canvas = document.getElementById(id);
+    var ctx = canvas.getContext("2d");
+    var size = canvas.width; // square, css scales it
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.scale(dpr, dpr);
+    return { canvas: canvas, ctx: ctx, size: size };
+  }
+
+  var COLORS = { chalk: "#eef1ea", gold: "#e0b84a", coral: "#e0794a", sky: "#6fb8c9", board: "#263a34" };
+
+  /* ---------------- Double pendulum ---------------- */
+  (function () {
+    var c = setupCanvas("pendulumCanvas");
+    var ctx = c.ctx, size = c.size;
+    var g = 9.8, L1 = 1.0, L2 = 1.0, m1 = 1.0, m2 = 1.0;
+    var a1 = Math.PI * 0.62, a2 = Math.PI * 0.9, a1v = 0, a2v = 0;
+    var trail = [];
+    var maxTrail = reduceMotion ? 260 : 220;
+    var scale = size / 2.6;
+    var originX = size / 2, originY = size / 2.5;
+
+    function step() {
+      var num1 = -g * (2 * m1 + m2) * Math.sin(a1);
+      var num2 = -m2 * g * Math.sin(a1 - 2 * a2);
+      var num3 = -2 * Math.sin(a1 - a2) * m2 * (a2v * a2v * L2 + a1v * a1v * L1 * Math.cos(a1 - a2));
+      var den = L1 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
+      var a1a = (num1 + num2 + num3) / den;
+
+      var num4 = 2 * Math.sin(a1 - a2) * (a1v * a1v * L1 * (m1 + m2) + g * (m1 + m2) * Math.cos(a1) + a2v * a2v * L2 * m2 * Math.cos(a1 - a2));
+      var den2 = L2 * (2 * m1 + m2 - m2 * Math.cos(2 * a1 - 2 * a2));
+      var a2a = num4 / den2;
+
+      var dt = 0.045;
+      a1v += a1a * dt; a2v += a2a * dt;
+      a1 += a1v * dt; a2 += a2v * dt;
+
+      var x1 = originX + L1 * scale * Math.sin(a1);
+      var y1 = originY + L1 * scale * Math.cos(a1);
+      var x2 = x1 + L2 * scale * Math.sin(a2);
+      var y2 = y1 + L2 * scale * Math.cos(a2);
+      trail.push([x2, y2]);
+      if (trail.length > maxTrail) trail.shift();
+      return [x1, y1, x2, y2];
+    }
+
+    function draw(pts) {
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = COLORS.board;
+      ctx.fillRect(0, 0, size, size);
+
+      for (var i = 1; i < trail.length; i++) {
+        var alpha = i / trail.length;
+        ctx.strokeStyle = COLORS.sky;
+        ctx.globalAlpha = alpha * 0.55;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(trail[i - 1][0], trail[i - 1][1]);
+        ctx.lineTo(trail[i][0], trail[i][1]);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = "rgba(238,241,234,0.55)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY); ctx.lineTo(pts[0], pts[1]); ctx.lineTo(pts[2], pts[3]);
+      ctx.stroke();
+
+      ctx.fillStyle = COLORS.chalk;
+      ctx.beginPath(); ctx.arc(originX, originY, 3, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(pts[0], pts[1], 5, 0, 7); ctx.fill();
+      ctx.fillStyle = COLORS.gold;
+      ctx.beginPath(); ctx.arc(pts[2], pts[3], 6.5, 0, 7); ctx.fill();
+    }
+
+    function loop() { draw(step()); if (!reduceMotion) requestAnimationFrame(loop); }
+    if (reduceMotion) { var p; for (var i = 0; i < 180; i++) p = step(); draw(p); }
+    else loop();
+  })();
+
+  /* ---------------- Sorting algorithms ---------------- */
+  (function () {
+    var c = setupCanvas("sortCanvas");
+    var ctx = c.ctx, size = c.size;
+    var n = 26;
+    var arr, gen, hi = [];
+
+    function shuffled() {
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(i + 1);
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    function* quickSort(a, lo, hi0) {
+      if (lo === undefined) { lo = 0; hi0 = a.length - 1; }
+      if (lo < hi0) {
+        var pivot = a[hi0], i = lo - 1;
+        for (var j = lo; j < hi0; j++) {
+          yield { a: a, mark: [j, hi0] };
+          if (a[j] < pivot) {
+            i++;
+            var t = a[i]; a[i] = a[j]; a[j] = t;
+            yield { a: a, mark: [i, j] };
+          }
+        }
+        var t2 = a[i + 1]; a[i + 1] = a[hi0]; a[hi0] = t2;
+        yield { a: a, mark: [i + 1, hi0] };
+        yield* quickSort(a, lo, i);
+        yield* quickSort(a, i + 2, hi0);
+      }
+    }
+
+    function restart() {
+      arr = shuffled();
+      gen = quickSort(arr.slice());
+      hi = [];
+    }
+    restart();
+
+    function draw() {
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = COLORS.board;
+      ctx.fillRect(0, 0, size, size);
+      var pad = 18, w = (size - pad * 2) / n, gap = 3;
+      for (var i = 0; i < arr.length; i++) {
+        var h = (arr[i] / n) * (size - pad * 2);
+        var x = pad + i * w;
+        var y = size - pad - h;
+        ctx.fillStyle = hi.indexOf(i) !== -1 ? COLORS.gold : COLORS.coral;
+        ctx.globalAlpha = hi.indexOf(i) !== -1 ? 1 : 0.72;
+        ctx.fillRect(x, y, w - gap, h);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    var pauseUntil = 0;
+    function tick(ts) {
+      if (ts < pauseUntil) { if (!reduceMotion) requestAnimationFrame(tick); return; }
+      var res = gen.next();
+      if (res.done) {
+        pauseUntil = ts + 1400;
+        hi = [];
+        draw();
+        setTimeout(restart, reduceMotion ? 0 : 1400);
+      } else {
+        arr = res.value.a;
+        hi = res.value.mark;
+        draw();
+      }
+      if (!reduceMotion) requestAnimationFrame(tick);
+    }
+
+    if (reduceMotion) {
+      for (var i = 0; i < 400; i++) { var r = gen.next(); if (r.done) break; arr = r.value.a; }
+      draw();
+    } else {
+      requestAnimationFrame(tick);
+    }
+  })();
+
+  /* ---------------- Cellular automata (Conway's Life) ---------------- */
+  (function () {
+    var c = setupCanvas("lifeCanvas");
+    var ctx = c.ctx, size = c.size;
+    var cols = 34, rows = 34;
+    var cell = size / cols;
+    var grid, stableCount = 0, prevPop = -1;
+
+    function seed() {
+      grid = [];
+      for (var y = 0; y < rows; y++) {
+        var row = [];
+        for (var x = 0; x < cols; x++) row.push(Math.random() < 0.24 ? 1 : 0);
+        grid.push(row);
+      }
+      stableCount = 0; prevPop = -1;
+    }
+    seed();
+
+    function neighbors(g, x, y) {
+      var n = 0;
+      for (var dy = -1; dy <= 1; dy++) {
+        for (var dx = -1; dx <= 1; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          var nx = (x + dx + cols) % cols, ny = (y + dy + rows) % rows;
+          n += g[ny][nx];
+        }
+      }
+      return n;
+    }
+
+    function step() {
+      var next = [];
+      var pop = 0;
+      for (var y = 0; y < rows; y++) {
+        var row = [];
+        for (var x = 0; x < cols; x++) {
+          var n = neighbors(grid, x, y);
+          var alive = grid[y][x];
+          var willLive = alive ? (n === 2 || n === 3) : (n === 3);
+          row.push(willLive ? 1 : 0);
+          if (willLive) pop++;
+        }
+        next.push(row);
+      }
+      grid = next;
+      if (pop === prevPop) stableCount++; else stableCount = 0;
+      prevPop = pop;
+      if (pop === 0 || stableCount > 12) seed();
+    }
+
+    function draw() {
+      ctx.fillStyle = COLORS.board;
+      ctx.fillRect(0, 0, size, size);
+      for (var y = 0; y < rows; y++) {
+        for (var x = 0; x < cols; x++) {
+          if (grid[y][x]) {
+            ctx.fillStyle = ((x + y) % 2 === 0) ? COLORS.sky : COLORS.gold;
+            ctx.globalAlpha = 0.9;
+            ctx.fillRect(x * cell + 1, y * cell + 1, cell - 2, cell - 2);
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    var last = 0, interval = 140;
+    function loop(ts) {
+      if (ts - last > interval) { step(); draw(); last = ts; }
+      if (!reduceMotion) requestAnimationFrame(loop);
+    }
+    if (reduceMotion) {
+      for (var i = 0; i < 30; i++) step();
+      draw();
+    } else {
+      requestAnimationFrame(loop);
+    }
+  })();
+})();
+</script>
+</body>
+</html>
