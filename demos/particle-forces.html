@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Particle Forces: Gravity &amp; Electromagnetism</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+  <style>
+    .demo-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    #canvas {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      cursor: crosshair;
+    }
+
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid #e0d9ce;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1a3a3a;
+      font-size: 0.95rem;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .value-display {
+      font-size: 0.85rem;
+      color: #5a5a5a;
+      font-family: monospace;
+    }
+
+    .charge-value.positive { color: #c0530f; }
+    .charge-value.negative { color: #1f5fa8; }
+    .charge-value.neutral { color: #5a5a5a; }
+
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #8b7355;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #6b5344;
+    }
+
+    button.secondary {
+      background-color: #d4cfc4;
+      color: #1a3a3a;
+    }
+
+    button.secondary:hover {
+      background-color: #c4bfb4;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .preset-grid button {
+      font-size: 0.82rem;
+      padding: 0.6rem 0.4rem;
+    }
+
+    .info-box {
+      background-color: #f5f1e8;
+      padding: 1rem;
+      border-radius: 3px;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-left: 3px solid #8b7355;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: #5a5a5a;
+      margin-top: 0.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #5a5a5a;
+      margin-top: 0.3rem;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Particle Forces</h1>
+      <p>Gravity and electromagnetism, side by side</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../demos.html">&larr; Home</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Particle Forces: Gravity &amp; Electromagnetism</h1>
+        <div class="article-meta">Interactive Demo | Physics &amp; N-Body Simulation</div>
+      </div>
+
+      <div class="article-body">
+        <p>Every particle here carries two properties: a <strong>mass</strong>, which determines how strongly gravity pulls it toward every other particle, and a <strong>charge</strong>, which determines how strongly it pushes or pulls via the electromagnetic force. Gravity is always attractive. Electromagnetism is attractive between opposite charges and repulsive between like charges. Give particles both properties at once and you get motion neither force produces alone&mdash;orbits that spiral, pairs that repel until gravity finally wins, three-body chaos with a electromagnetic twist.</p>
+
+        <p>There is no closed-form solution once you have more than two bodies. Instead, the simulation does what physics engines actually do: compute the net force on every particle from every other particle, then take a very small step forward in time. Repeat sixty times a second and the trajectory emerges from nothing but pairwise forces and Newton&rsquo;s second law.</p>
+
+        <h2>Try It</h2>
+        <p><strong>Click and drag</strong> on the canvas to place a new particle&mdash;the drag direction and length set its launch velocity, like a slingshot. Adjust mass and charge with the sliders before placing. <strong>Click an existing particle</strong> (without dragging) to remove it. Try the presets below for configurations that are already balanced into orbits.</p>
+      </div>
+
+      <div class="demo-container">
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+          <div class="control-group">
+            <label>New Particle: Mass</label>
+            <input type="range" id="massSlider" min="1" max="20" step="0.5" value="5">
+            <div class="value-display" id="massValue">5.0</div>
+          </div>
+
+          <div class="control-group">
+            <label>New Particle: Charge</label>
+            <input type="range" id="chargeSlider" min="-10" max="10" step="0.5" value="0">
+            <div class="value-display charge-value neutral" id="chargeValue">0.0 (neutral)</div>
+          </div>
+
+          <div class="control-group">
+            <label>Gravity Constant $G$</label>
+            <input type="range" id="gSlider" min="0" max="4000" step="50" value="800">
+            <div class="value-display" id="gValue">800</div>
+          </div>
+
+          <div class="control-group">
+            <label>Coulomb Constant $k_e$</label>
+            <input type="range" id="keSlider" min="0" max="4000" step="50" value="1200">
+            <div class="value-display" id="keValue">1200</div>
+          </div>
+
+          <div class="control-group">
+            <label>Simulation Speed</label>
+            <input type="range" id="speedSlider" min="0.25" max="2.5" step="0.25" value="1">
+            <div class="value-display" id="speedValue">1.0&times;</div>
+          </div>
+
+          <button id="pauseBtn" class="secondary">Pause</button>
+          <button id="trailsBtn" class="secondary">Trails: On</button>
+          <button id="clearBtn">Clear All</button>
+
+          <div class="control-group" style="margin-top: 1.5rem;">
+            <label>Presets</label>
+            <div class="preset-grid">
+              <button class="secondary" id="presetBinary">Binary Orbit</button>
+              <button class="secondary" id="presetThree">Three-Body</button>
+              <button class="secondary" id="presetCharged">Charged Pair</button>
+              <button class="secondary" id="presetChaos">Mixed Chaos</button>
+            </div>
+          </div>
+
+          <div class="stat-row"><span>Particles</span><span id="countStat">0</span></div>
+
+          <div class="info-box">
+            <div class="legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#e8620f;"></span> Positive charge</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#4f8bc9;"></span> Negative charge</div>
+              <div class="legend-item"><span class="legend-dot" style="background:#c9c2b4;"></span> Neutral (mass only)</div>
+            </div>
+            <div style="margin-top: 0.6rem;">Particle size scales with mass. Drag to launch with velocity; a short click removes.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-body" style="margin-top: 2rem;">
+        <h2>The Physics</h2>
+        <p>Two inverse-square laws govern this simulation. Newton&rsquo;s law of gravitation says every pair of masses attracts:</p>
+        <blockquote>$$\vec F_g = \frac{G m_1 m_2}{r^2}\,\hat r$$</blockquote>
+        <p>Coulomb&rsquo;s law says every pair of charges pushes or pulls depending on sign:</p>
+        <blockquote>$$\vec F_e = \frac{k_e q_1 q_2}{r^2}\,\hat r$$</blockquote>
+        <p>Both are central forces that fall off as $1/r^2$, which is what lets them combine into a single pairwise update. For particles $i$ and $j$ separated by $\vec r_{ij} = \vec r_j - \vec r_i$, the net force on $i$ from $j$ is:</p>
+        <blockquote>$$\vec F_{ij} = \frac{G m_i m_j - k_e q_i q_j}{r^3}\,\vec r_{ij}$$</blockquote>
+        <p>When the gravitational term dominates, the pair attracts regardless of charge. When like charges are large enough, the $k_e q_i q_j$ term flips the sign and the pair repels instead&mdash;this is exactly how the simulation produces both orbiting pairs and particles that fly apart from the same piece of code.</p>
+
+        <h2>Numerical Integration</h2>
+        <p>With three or more bodies, these equations have no closed-form solution (this is the same n-body problem behind the <a href="../writing/millennium-prize-problems.html" style="color: #8b7355;">Millennium Prize</a> era work on orbital dynamics). The simulation sums the pairwise forces on every particle each frame, divides by mass to get acceleration, then advances with semi-implicit (symplectic) Euler integration&mdash;update velocity from the current acceleration, then update position from the new velocity:</p>
+        <blockquote>$$\vec v_i \leftarrow \vec v_i + \vec a_i \, \Delta t \qquad\qquad \vec r_i \leftarrow \vec r_i + \vec v_i \, \Delta t$$</blockquote>
+        <p>This is the same family of method described in the <a href="../writing/numerical-methods.html" style="color: #8b7355;">numerical methods article</a>&mdash;simpler than Runge-Kutta, but symplectic integrators like this one conserve energy far better than plain (explicit) Euler over long orbital runs, which is why orbits here stay roughly circular instead of slowly spiraling into the void.</p>
+        <p>One more detail matters: as $r \to 0$, both force laws blow up toward infinity, which would send close-passing particles flying off at absurd speed. The simulation adds a small <em>softening length</em> $\epsilon$, replacing $r^2$ with $r^2 + \epsilon^2$ in every force calculation. This caps the force at close range&mdash;a standard trick borrowed directly from real astrophysical n-body simulations, where softening prevents stars from unphysically slingshotting on close encounters.</p>
+
+        <h2>What to Try</h2>
+        <ul>
+          <li><strong>Binary Orbit:</strong> Two equal masses, tuned to a stable circular orbit around their shared center. Pure gravity, no charge.</li>
+          <li><strong>Charged Pair:</strong> Same setup, but attraction now comes entirely from opposite charges instead of mass&mdash;electromagnetism can produce the same orbital shapes gravity does.</li>
+          <li><strong>Three-Body:</strong> Three masses in a triangle. Even small asymmetries eventually break the pattern into something unpredictable.</li>
+          <li><strong>Mixed Chaos:</strong> A cluster with random mass <em>and</em> charge. Watch how same-charge particles get flung to the edges while massive neutral ones sink toward the center.</li>
+          <li><strong>Build your own:</strong> Set charge to a large negative value, mass low, and drop several particles near each other with no initial velocity&mdash;watch them scatter on pure repulsion, then dial charge back toward zero and increase mass to watch gravity take back over.</li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = canvas.width;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); });
+
+    let G = 800;
+    let KE = 1200;
+    const SOFTENING = 14;
+    const SOFTENING2 = SOFTENING * SOFTENING;
+    let speedMult = 1;
+    let running = true;
+    let trailsOn = true;
+    const MAX_TRAIL = 90;
+
+    let particles = [];
+    let nextId = 1;
+
+    function makeParticle(x, y, vx, vy, m, q) {
+      return { id: nextId++, x, y, vx, vy, m, q, trail: [] };
+    }
+
+    function radiusOf(p) {
+      return 4 + Math.sqrt(Math.max(p.m, 0.1)) * 2.4;
+    }
+
+    function colorOf(p) {
+      if (p.q > 0.05) return '#e8620f';
+      if (p.q < -0.05) return '#4f8bc9';
+      return '#c9c2b4';
+    }
+
+    // --- Physics step ---
+    function step(dt) {
+      const n = particles.length;
+      const ax = new Array(n).fill(0);
+      const ay = new Array(n).fill(0);
+
+      for (let i = 0; i < n; i++) {
+        const pi = particles[i];
+        for (let j = i + 1; j < n; j++) {
+          const pj = particles[j];
+          const dx = pj.x - pi.x;
+          const dy = pj.y - pi.y;
+          const r2 = dx * dx + dy * dy + SOFTENING2;
+          const r3 = r2 * Math.sqrt(r2);
+          const coeff = (G * pi.m * pj.m - KE * pi.q * pj.q) / r3;
+          const fx = coeff * dx;
+          const fy = coeff * dy;
+          ax[i] += fx / pi.m;
+          ay[i] += fy / pi.m;
+          ax[j] -= fx / pj.m;
+          ay[j] -= fy / pj.m;
+        }
+      }
+
+      for (let i = 0; i < n; i++) {
+        const p = particles[i];
+        p.vx += ax[i] * dt;
+        p.vy += ay[i] * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        if (trailsOn) {
+          p.trail.push({ x: p.x, y: p.y });
+          if (p.trail.length > MAX_TRAIL) p.trail.shift();
+        } else if (p.trail.length) {
+          p.trail.length = 0;
+        }
+      }
+    }
+
+    // --- Drawing ---
+    function draw() {
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < canvas.width; i += 50) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 50) {
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+      }
+
+      for (const p of particles) {
+        if (trailsOn && p.trail.length > 1) {
+          const col = colorOf(p);
+          for (let i = 1; i < p.trail.length; i++) {
+            const alpha = (i / p.trail.length) * 0.45;
+            ctx.strokeStyle = col;
+            ctx.globalAlpha = alpha;
+            ctx.lineWidth = 1.3;
+            ctx.beginPath();
+            ctx.moveTo(p.trail[i - 1].x, p.trail[i - 1].y);
+            ctx.lineTo(p.trail[i].x, p.trail[i].y);
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      for (const p of particles) {
+        const r = radiusOf(p);
+        ctx.fillStyle = colorOf(p);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      if (dragStart) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(dragStart.x, dragStart.y);
+        ctx.lineTo(dragCurrent.x, dragCurrent.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        const previewM = parseFloat(document.getElementById('massSlider').value);
+        const previewQ = parseFloat(document.getElementById('chargeSlider').value);
+        const rPrev = 4 + Math.sqrt(Math.max(previewM, 0.1)) * 2.4;
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = previewQ > 0.05 ? '#e8620f' : (previewQ < -0.05 ? '#4f8bc9' : '#c9c2b4');
+        ctx.beginPath();
+        ctx.arc(dragStart.x, dragStart.y, rPrev, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      if (particles.length === 0 && !dragStart) {
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.font = '14px Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click and drag to place a particle, or try a preset', canvas.width / 2, canvas.height / 2);
+      }
+
+      document.getElementById('countStat').textContent = particles.length;
+    }
+
+    function animate() {
+      if (running) {
+        const substeps = 6;
+        const dt = (1 / 60 / substeps) * speedMult;
+        for (let i = 0; i < substeps; i++) step(dt);
+      }
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    // --- Controls ---
+    function updateChargeLabel() {
+      const q = parseFloat(document.getElementById('chargeSlider').value);
+      const el = document.getElementById('chargeValue');
+      el.textContent = q.toFixed(1) + (q > 0.05 ? ' (positive)' : q < -0.05 ? ' (negative)' : ' (neutral)');
+      el.className = 'value-display charge-value ' + (q > 0.05 ? 'positive' : q < -0.05 ? 'negative' : 'neutral');
+    }
+
+    document.getElementById('massSlider').addEventListener('input', (e) => {
+      document.getElementById('massValue').textContent = parseFloat(e.target.value).toFixed(1);
+    });
+    document.getElementById('chargeSlider').addEventListener('input', updateChargeLabel);
+    document.getElementById('gSlider').addEventListener('input', (e) => {
+      G = parseFloat(e.target.value);
+      document.getElementById('gValue').textContent = G;
+    });
+    document.getElementById('keSlider').addEventListener('input', (e) => {
+      KE = parseFloat(e.target.value);
+      document.getElementById('keValue').textContent = KE;
+    });
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      speedMult = parseFloat(e.target.value);
+      document.getElementById('speedValue').textContent = speedMult.toFixed(2) + '×';
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', (e) => {
+      running = !running;
+      e.target.textContent = running ? 'Pause' : 'Resume';
+    });
+    document.getElementById('trailsBtn').addEventListener('click', (e) => {
+      trailsOn = !trailsOn;
+      e.target.textContent = 'Trails: ' + (trailsOn ? 'On' : 'Off');
+      if (!trailsOn) particles.forEach(p => p.trail.length = 0);
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      particles = [];
+    });
+
+    // --- Presets ---
+    function centerXY() {
+      return { cx: canvas.width / 2, cy: canvas.height / 2 };
+    }
+
+    document.getElementById('presetBinary').addEventListener('click', () => {
+      particles = [];
+      G = 800; KE = 0;
+      document.getElementById('gSlider').value = G; document.getElementById('gValue').textContent = G;
+      document.getElementById('keSlider').value = KE; document.getElementById('keValue').textContent = KE;
+      const { cx, cy } = centerXY();
+      const m = 10, sep = 140;
+      const v = Math.sqrt((G * m) / (4 * sep)); // circular orbit speed about COM
+      particles.push(makeParticle(cx - sep / 2, cy, 0, v, m, 0));
+      particles.push(makeParticle(cx + sep / 2, cy, 0, -v, m, 0));
+    });
+
+    document.getElementById('presetThree').addEventListener('click', () => {
+      particles = [];
+      G = 900; KE = 0;
+      document.getElementById('gSlider').value = G; document.getElementById('gValue').textContent = G;
+      document.getElementById('keSlider').value = KE; document.getElementById('keValue').textContent = KE;
+      const { cx, cy } = centerXY();
+      const m = 9, radius = 130;
+      for (let i = 0; i < 3; i++) {
+        const ang = (i / 3) * Math.PI * 2;
+        const x = cx + radius * Math.cos(ang);
+        const y = cy + radius * Math.sin(ang);
+        const speed = Math.sqrt((G * m) / (radius * 2.6));
+        const vx = -speed * Math.sin(ang);
+        const vy = speed * Math.cos(ang);
+        particles.push(makeParticle(x, y, vx, vy, m, 0));
+      }
+    });
+
+    document.getElementById('presetCharged').addEventListener('click', () => {
+      particles = [];
+      G = 0; KE = 1000;
+      document.getElementById('gSlider').value = G; document.getElementById('gValue').textContent = G;
+      document.getElementById('keSlider').value = KE; document.getElementById('keValue').textContent = KE;
+      const { cx, cy } = centerXY();
+      const q = 8, m = 6, sep = 140;
+      const v = Math.sqrt((KE * q * q) / (4 * sep * m));
+      particles.push(makeParticle(cx - sep / 2, cy, 0, v, m, q));
+      particles.push(makeParticle(cx + sep / 2, cy, 0, -v, m, -q));
+    });
+
+    document.getElementById('presetChaos').addEventListener('click', () => {
+      particles = [];
+      G = 500; KE = 900;
+      document.getElementById('gSlider').value = G; document.getElementById('gValue').textContent = G;
+      document.getElementById('keSlider').value = KE; document.getElementById('keValue').textContent = KE;
+      const { cx, cy } = centerXY();
+      const n = 6;
+      for (let i = 0; i < n; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const rad = 60 + Math.random() * 120;
+        const x = cx + rad * Math.cos(ang);
+        const y = cy + rad * Math.sin(ang);
+        const m = 2 + Math.random() * 8;
+        const q = (Math.random() - 0.5) * 14;
+        const vx = (Math.random() - 0.5) * 30;
+        const vy = (Math.random() - 0.5) * 30;
+        particles.push(makeParticle(x, y, vx, vy, m, q));
+      }
+    });
+
+    // --- Mouse / touch: place or remove particles ---
+    let dragStart = null;
+    let dragCurrent = null;
+    let dragStartTime = 0;
+    let hitParticle = null;
+
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function findParticleAt(x, y) {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        const r = radiusOf(p) + 4;
+        const dx = p.x - x, dy = p.y - y;
+        if (dx * dx + dy * dy < r * r) return p;
+      }
+      return null;
+    }
+
+    function onDown(e) {
+      e.preventDefault();
+      const pos = getMousePos(e);
+      hitParticle = findParticleAt(pos.x, pos.y);
+      dragStart = pos;
+      dragCurrent = pos;
+      dragStartTime = performance.now();
+    }
+
+    function onMove(e) {
+      if (!dragStart) return;
+      e.preventDefault();
+      dragCurrent = getMousePos(e);
+    }
+
+    function onUp(e) {
+      if (!dragStart) return;
+      const pos = dragCurrent || dragStart;
+      const dx = pos.x - dragStart.x;
+      const dy = pos.y - dragStart.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const elapsed = performance.now() - dragStartTime;
+
+      if (hitParticle && dist < 6) {
+        particles = particles.filter(p => p !== hitParticle);
+      } else if (dist >= 6 || elapsed > 250) {
+        const m = parseFloat(document.getElementById('massSlider').value);
+        const q = parseFloat(document.getElementById('chargeSlider').value);
+        const vx = dx * 3.2;
+        const vy = dy * 3.2;
+        particles.push(makeParticle(dragStart.x, dragStart.y, vx, vy, m, q));
+      } else if (!hitParticle) {
+        const m = parseFloat(document.getElementById('massSlider').value);
+        const q = parseFloat(document.getElementById('chargeSlider').value);
+        particles.push(makeParticle(dragStart.x, dragStart.y, 0, 0, m, q));
+      }
+
+      dragStart = null;
+      dragCurrent = null;
+      hitParticle = null;
+    }
+
+    canvas.addEventListener('mousedown', onDown);
+    canvas.addEventListener('mousemove', onMove);
+    canvas.addEventListener('mouseup', onUp);
+    canvas.addEventListener('mouseleave', () => { dragStart = null; dragCurrent = null; hitParticle = null; });
+    canvas.addEventListener('touchstart', onDown, { passive: false });
+    canvas.addEventListener('touchmove', onMove, { passive: false });
+    canvas.addEventListener('touchend', onUp);
+
+    // --- Init ---
+    updateChargeLabel();
+    document.getElementById('presetBinary').click();
+    animate();
+  </script>
+</body>
+</html>

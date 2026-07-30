@@ -79,15 +79,13 @@
       <a href="index.html">&larr; Home</a>
     </nav>
 
-    <div class="article-list" id="articleList">
-      <a href="demos/quaternions-vs-euler.html" class="article-item" data-tags="math,physics,linear-algebra">
-        <div class="section-label">Mathematics</div>
-        <h2>Quaternions vs. Euler Angles</h2>
-        <div class="article-meta">Two ways to represent a rotation, and why one of them breaks</div>
-        <div class="article-excerpt">Drive the same 3D object with roll/pitch/yaw sliders on one side and the equivalent quaternion on the other. Push pitch toward &plusmn;90&deg; and watch gimbal lock happen live &mdash; roll and yaw collapse onto the same axis. Then animate between two orientations and compare an Euler-angle path against a quaternion SLERP, side by side.</div>
-        <div class="cta-button">Explore &rarr;</div>
-      </a>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search demos...">
+    </div>
 
+    <div class="tag-filters" id="tagFilters"></div>
+
+    <div class="article-list" id="articleList">
       <a href="demos/newton-fractals.html" class="article-item" data-tags="math,complex-analysis,chaos">
         <div class="section-label">Mathematics</div>
         <h2>Newton Fractals</h2>
@@ -96,11 +94,11 @@
         <div class="cta-button">Explore &rarr;</div>
       </a>
 
-      <a href="demos/julia-mandelbrot.html" class="article-item" data-tags="math,complex-analysis,chaos">
-        <div class="section-label">Mathematics</div>
-        <h2>Julia Sets &amp; the Mandelbrot Set</h2>
-        <div class="article-meta">One tiny formula, iterated, colored by how fast it escapes</div>
-        <div class="article-excerpt">The same rule, z &rarr; z&sup2; + c, produces both pictures: the Mandelbrot set on the left (c varies, z starts at 0) and a Julia set on the right (c is fixed, z varies). Click anywhere on the Mandelbrot to pick a new c and watch its Julia set change instantly. Pan and zoom either one independently.</div>
+      <a href="demos/double-pendulum.html" class="article-item" data-tags="physics,chaos">
+        <div class="section-label">Physics</div>
+        <h2>Double Pendulum</h2>
+        <div class="article-meta">Chaos from simplicity</div>
+        <div class="article-excerpt">A pendulum hanging from another pendulum. The single pendulum is predictable; the double pendulum is chaotic. Drag the bobs to set a starting position, adjust masses and lengths, and watch the lower bob trace wild, unpredictable paths. Tiny changes in starting angle produce completely different trajectories within seconds. Integrated with RK4 and explained with the full Lagrangian equations of motion.</div>
         <div class="cta-button">Explore &rarr;</div>
       </a>
 
@@ -112,11 +110,19 @@
         <div class="cta-button">Explore &rarr;</div>
       </a>
 
-      <a href="demos/double-pendulum.html" class="article-item" data-tags="physics,chaos">
+      <a href="demos/particle-forces.html" class="article-item" data-tags="physics,chaos">
         <div class="section-label">Physics</div>
-        <h2>Double Pendulum</h2>
-        <div class="article-meta">Chaos from simplicity</div>
-        <div class="article-excerpt">A pendulum hanging from another pendulum. The single pendulum is predictable; the double pendulum is chaotic. Drag the bobs to set a starting position, adjust masses and lengths, and watch the lower bob trace wild, unpredictable paths. Tiny changes in starting angle produce completely different trajectories within seconds. Integrated with RK4 and explained with the full Lagrangian equations of motion.</div>
+        <h2>Particle Forces: Gravity &amp; Electromagnetism</h2>
+        <div class="article-meta">Two inverse-square laws, one n-body simulation</div>
+        <div class="article-excerpt">Place particles with a mass and a charge&mdash;positive, negative, or neutral&mdash;and watch gravity and the electromagnetic force act simultaneously. Gravity always attracts; charge attracts or repels depending on sign. Click-drag to launch a particle like a slingshot, or load a preset: a gravity-only binary orbit, a three-body dance, an orbit held together by opposite charges instead of mass, or a mixed cluster where both forces compete at once.</div>
+        <div class="cta-button">Explore &rarr;</div>
+      </a>
+
+      <a href="demos/julia-mandelbrot.html" class="article-item" data-tags="math,complex-analysis,chaos">
+        <div class="section-label">Mathematics</div>
+        <h2>Julia Sets &amp; the Mandelbrot Set</h2>
+        <div class="article-meta">One tiny formula, iterated, colored by how fast it escapes</div>
+        <div class="article-excerpt">The same rule, z &rarr; z&sup2; + c, produces both pictures: the Mandelbrot set on the left (c varies, z starts at 0) and a Julia set on the right (c is fixed, z varies). Click anywhere on the Mandelbrot to pick a new c and watch its Julia set change instantly. Pan and zoom either one independently.</div>
         <div class="cta-button">Explore &rarr;</div>
       </a>
 
@@ -149,6 +155,14 @@
         <h2>Fourier Transform</h2>
         <div class="article-meta">Every signal is a sum of sine waves</div>
         <div class="article-excerpt">Draw a signal or choose a preset waveform (square, sawtooth, triangle, chirp) and watch it decompose into individual sine waves in real time. The frequency spectrum shows which components are present; the reconstruction canvas shows how adding them back together approximates the original. Control the number of terms to see convergence and the Gibbs phenomenon at discontinuities.</div>
+        <div class="cta-button">Explore &rarr;</div>
+      </a>
+
+      <a href="demos/quaternions-vs-euler.html" class="article-item" data-tags="math,physics,linear-algebra">
+        <div class="section-label">Mathematics</div>
+        <h2>Quaternions vs. Euler Angles</h2>
+        <div class="article-meta">Two ways to represent a rotation, and why one of them breaks</div>
+        <div class="article-excerpt">Drive the same 3D object with roll/pitch/yaw sliders on one side and the equivalent quaternion on the other. Push pitch toward &plusmn;90&deg; and watch gimbal lock happen live &mdash; roll and yaw collapse onto the same axis. Then animate between two orientations and compare an Euler-angle path against a quaternion SLERP, side by side.</div>
         <div class="cta-button">Explore &rarr;</div>
       </a>
 
