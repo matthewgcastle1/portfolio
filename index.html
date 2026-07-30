@@ -6,17 +6,21 @@
 <title>Matthew Castle</title>
 <style>
   :root {
-    --board: #1f2d29;
-    --board-2: #17211e;
-    --board-3: #263a34;
-    --chalk: #eef1ea;
-    --chalk-soft: #b7c2ba;
-    --chalk-dust: #7c8a82;
-    --gold: #e0b84a;
-    --gold-dim: #a9863a;
-    --coral: #e0794a;
-    --sky: #6fb8c9;
-    --rule: rgba(238, 241, 234, 0.14);
+    --bg: #fefaf5;
+    --bg-card: #ffffff;
+    --bg-tint: #fdefdf;
+    --panel-dark: #14181f;
+    --panel-dark-2: #1c222b;
+    --panel-rule: rgba(255,255,255,0.09);
+    --ink: #22190f;
+    --ink-soft: #5f5548;
+    --ink-dust: #7a6a56;
+    --orange: #e8620f;
+    --orange-dim: #c14e0a;
+    --orange-bright: #f3853a;
+    --blue: #1f5fa8;
+    --blue-soft: #4f8bc9;
+    --rule: #efe0cd;
     --max: 880px;
   }
 
@@ -26,14 +30,14 @@
 
   body {
     margin: 0;
-    background: var(--board);
+    background: var(--bg);
     background-image:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(238,241,234,0.05), transparent 60%),
-      repeating-linear-gradient(0deg, rgba(238,241,234,0.015) 0px, rgba(238,241,234,0.015) 1px, transparent 1px, transparent 3px);
-    color: var(--chalk);
+      radial-gradient(ellipse 900px 460px at 12% -8%, rgba(232,98,15,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 420px at 96% 8%, rgba(31,95,168,0.07), transparent 60%);
+    color: var(--ink);
     font-family: Baskerville, "Big Caslon", Georgia, "Times New Roman", serif;
-    font-size: 17px;
-    line-height: 1.68;
+    font-size: 19px;
+    line-height: 1.66;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -41,70 +45,70 @@
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
   }
 
-  a { color: var(--gold); text-decoration-color: rgba(224,184,74,0.45); text-underline-offset: 3px; }
-  a:hover { color: #f0cc6e; }
+  a { color: var(--blue); text-decoration-color: rgba(31,95,168,0.35); text-underline-offset: 3px; }
+  a:hover { color: var(--orange); text-decoration-color: rgba(232,98,15,0.4); }
   a:focus-visible, button:focus-visible, .anim-card:focus-visible {
-    outline: 2px solid var(--gold); outline-offset: 3px;
+    outline: 2px solid var(--orange); outline-offset: 3px;
   }
 
-  h1, h2, h3 { font-family: Baskerville, "Big Caslon", Georgia, "Times New Roman", serif; text-wrap: balance; margin: 0; }
+  h1, h2, h3 { font-family: Baskerville, "Big Caslon", Georgia, "Times New Roman", serif; text-wrap: balance; margin: 0; color: var(--ink); }
 
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
 
   /* ---------------- Hero ---------------- */
 
   .hero {
-    padding: 40px 0 20px;
+    padding: 44px 0 22px;
     text-align: center;
   }
 
   .hero .kicker {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--orange-dim);
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
   }
 
   .hero h1 {
-    font-size: clamp(28px, 5.5vw, 46px);
+    font-size: clamp(32px, 6vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.01em;
   }
 
   .hero .role {
-    margin-top: 6px;
-    font-size: 15.5px;
+    margin-top: 8px;
+    font-size: 17px;
     font-style: italic;
-    color: var(--chalk-soft);
+    color: var(--blue);
   }
 
   .contact-row {
-    margin-top: 16px;
+    margin-top: 18px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px 22px;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13px;
+    font-size: 14.5px;
   }
-  .contact-row a { color: var(--chalk); border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
-  .contact-row a:hover { color: var(--gold); border-color: var(--gold); }
+  .contact-row a { color: var(--ink-soft); border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+  .contact-row a:hover { color: var(--orange); border-color: var(--orange); }
 
   .looking-for {
-    margin: 10px auto 0;
+    margin: 12px auto 0;
     max-width: 52ch;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12.5px;
-    color: var(--gold);
+    font-size: 14px;
+    color: var(--orange-dim);
     letter-spacing: 0.01em;
   }
 
   .resume-row {
-    margin-top: 14px;
+    margin-top: 16px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -114,30 +118,30 @@
   .resume-btn {
     display: inline-block;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13px;
-    color: var(--board);
-    background: var(--gold);
-    border: 1px solid var(--gold);
-    padding: 11px 20px;
+    font-size: 14px;
+    color: #ffffff;
+    background: var(--orange-dim);
+    border: 1px solid var(--orange-dim);
+    padding: 12px 21px;
     border-radius: 2px;
     text-decoration: none;
     transition: background .25s ease, color .25s ease, transform .25s ease;
   }
-  .resume-btn:hover { background: #f0cc6e; color: var(--board); transform: translateY(-1px); }
+  .resume-btn:hover { background: #9c3f08; border-color: #9c3f08; color: #fff; transform: translateY(-1px); }
   .resume-btn.alt {
     background: transparent;
-    color: var(--gold);
+    color: var(--orange-dim);
   }
-  .resume-btn.alt:hover { background: rgba(224,184,74,0.1); color: #f0cc6e; }
+  .resume-btn.alt:hover { background: rgba(232,98,15,0.08); color: var(--orange-dim); }
 
   .scroll-hint {
     display: block;
-    margin-top: 20px;
+    margin-top: 22px;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 11.5px;
+    font-size: 12.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--chalk-dust);
+    color: var(--ink-dust);
     animation: bob 2.4s ease-in-out infinite;
   }
   @keyframes bob {
@@ -147,39 +151,40 @@
 
   /* ---------------- Section chrome ---------------- */
 
-  section { padding: 40px 0; }
-  section:first-of-type { padding-top: 26px; }
+  section { padding: 44px 0; }
+  section:first-of-type { padding-top: 28px; }
 
   .section-head {
     display: flex;
     align-items: baseline;
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
   }
   .section-head .label {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--gold-dim);
+    color: var(--blue);
+    white-space: nowrap;
   }
   .section-head .rule {
     flex: 1;
     height: 1px;
     background: var(--rule);
   }
-  .section-head h2 { font-size: 24px; }
+  .section-head h2 { font-size: 27px; }
   .section-sub {
-    color: var(--chalk-soft);
+    color: var(--ink-soft);
     max-width: 60ch;
-    margin: -8px 0 18px;
-    font-size: 15px;
+    margin: -10px 0 20px;
+    font-size: 16.5px;
   }
 
   .intro-line {
     max-width: 70ch;
-    color: var(--chalk-soft);
-    font-size: 16px;
+    color: var(--ink-soft);
+    font-size: 18px;
   }
 
   hr.chalk {
@@ -204,32 +209,32 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    background: var(--board-2);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-rule);
+    border-radius: 4px;
     overflow: hidden;
     transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
   }
   .anim-card:hover {
     transform: translateY(-4px);
-    border-color: var(--gold-dim);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    border-color: var(--orange);
+    box-shadow: 0 18px 40px rgba(232,98,15,0.18);
   }
-  .anim-card canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: var(--board-3); }
+  .anim-card canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; background: var(--panel-dark); }
   .anim-card .cap {
-    padding: 14px 16px 16px;
+    padding: 13px 14px 15px;
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 10px;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--panel-dark-2);
   }
-  .anim-card .cap h3 { font-size: 16px; }
+  .anim-card .cap h3 { font-size: 16.5px; color: #fdf8f2; }
   .anim-card .cap .go {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 11.5px;
-    color: var(--gold);
+    font-size: 12px;
+    color: var(--orange-bright);
     white-space: nowrap;
-    opacity: .75;
+    opacity: .85;
   }
   .anim-card:hover .cap .go { opacity: 1; }
 
@@ -239,13 +244,14 @@
   }
   .see-all a {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13px;
-    border: 1px solid var(--gold-dim);
+    font-size: 14px;
+    color: var(--orange-dim);
+    border: 1px solid var(--orange-dim);
     padding: 10px 20px;
     border-radius: 2px;
     display: inline-block;
   }
-  .see-all a:hover { background: rgba(224,184,74,0.08); }
+  .see-all a:hover { background: rgba(232,98,15,0.08); color: var(--orange-dim); }
 
   /* ---------------- Experience ---------------- */
 
@@ -253,73 +259,73 @@
   .entry-head {
     display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 16px;
   }
-  .entry-head h3 { font-size: 19px; }
-  .entry-org { color: var(--sky); font-style: italic; }
+  .entry-head h3 { font-size: 21px; }
+  .entry-org { color: var(--blue); font-style: italic; }
   .entry-dates {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12.5px; color: var(--chalk-dust); white-space: nowrap;
+    font-size: 13.5px; color: var(--ink-dust); white-space: nowrap;
   }
-  .entry ul { margin: 10px 0 0; padding-left: 20px; color: var(--chalk-soft); }
+  .entry ul { margin: 10px 0 0; padding-left: 20px; color: var(--ink-soft); }
   .entry li + li { margin-top: 6px; }
-  .entry li::marker { color: var(--gold-dim); }
+  .entry li::marker { color: var(--orange-dim); }
 
   /* ---------------- Projects ---------------- */
 
   .project-grid { display: grid; gap: 16px; }
   .project {
     border: 1px solid var(--rule);
-    background: var(--board-2);
+    background: var(--bg-card);
     padding: 20px 24px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
-  .project h3 { font-size: 17px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .project h3 .src { font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace; font-size: 12px; font-weight: 400; }
-  .project p { color: var(--chalk-soft); font-size: 15px; margin: 0; }
+  .project h3 { font-size: 19px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .project h3 .src { font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace; font-size: 13px; font-weight: 400; }
+  .project p { color: var(--ink-soft); font-size: 16.5px; margin: 0; }
 
   /* ---------------- Skills ---------------- */
 
   .skill-group + .skill-group { margin-top: 20px; }
   .skill-group-label {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--chalk-dust); margin-bottom: 10px;
+    font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-dust); margin-bottom: 10px;
   }
   .skills-list { display: flex; flex-wrap: wrap; gap: 9px; }
   .skill {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12.5px; color: var(--chalk-soft);
-    border: 1px solid var(--rule); padding: 5px 11px; border-radius: 2px;
+    font-size: 13.5px; color: var(--ink-soft); background: var(--bg-tint);
+    border: 1px solid var(--rule); padding: 5px 12px; border-radius: 2px;
   }
 
   /* ---------------- Education ---------------- */
 
   .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
   @media (max-width: 620px) { .edu-grid { grid-template-columns: 1fr; gap: 28px; } }
-  .edu-grid h3 { font-size: 16px; margin-bottom: 6px; }
+  .edu-grid h3 { font-size: 17.5px; margin-bottom: 6px; }
   .edu-grid .entry-org { display: block; margin-bottom: 6px; }
-  .edu-grid ul { margin: 8px 0 0; padding-left: 20px; color: var(--chalk-soft); font-size: 15px; }
-  .edu-grid li::marker { color: var(--gold-dim); }
+  .edu-grid ul { margin: 8px 0 0; padding-left: 20px; color: var(--ink-soft); font-size: 16px; }
+  .edu-grid li::marker { color: var(--orange-dim); }
 
   footer {
     padding: 40px 0 70px;
     text-align: center;
-    color: var(--chalk-dust);
+    color: var(--ink-dust);
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12px;
+    font-size: 13px;
   }
-  footer a { color: var(--chalk-dust); }
-  footer a:hover { color: var(--gold); }
+  footer a { color: var(--ink-dust); }
+  footer a:hover { color: var(--orange); }
   .footer-btn {
     display: inline-block;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12.5px;
-    color: var(--gold) !important;
-    border: 1px solid var(--gold-dim);
+    font-size: 13.5px;
+    color: var(--orange-dim) !important;
+    border: 1px solid var(--orange-dim);
     padding: 9px 18px;
     border-radius: 2px;
     transition: background .25s ease;
   }
-  .footer-btn:hover { background: rgba(224,184,74,0.08); color: #f0cc6e !important; }
+  .footer-btn:hover { background: rgba(232,98,15,0.08); color: var(--orange-dim) !important; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -352,7 +358,7 @@
 
 <main>
   <section class="wrap">
-    <div class="section-head"><span class="label">Live</span><span class="rule"></span><h2>A few things, running right now</h2></div>
+    <div class="section-head"><h2>A few things, running right now</h2><span class="rule"></span><span class="label">Live</span></div>
     <p class="section-sub">Small, uncontrolled versions of three of the thirteen interactive demos. Click any of them for the full version with all the knobs.</p>
 
     <div class="anim-grid">
@@ -376,14 +382,14 @@
   <hr class="chalk">
 
   <section class="wrap">
-    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>About</h2></div>
+    <div class="section-head"><h2>About</h2><span class="rule"></span><span class="label">&nbsp;</span></div>
     <p class="intro-line">Four and a half years building backend infrastructure, APIs, and zero-trust security systems at Trend Micro, with a mathematics degree (minors in physics and computer science) underneath it. I work from first principles, communicate clearly, and try to use good judgment about what actually matters.</p>
   </section>
 
   <hr class="chalk">
 
   <section class="wrap">
-    <div class="section-head"><span class="label">Since 2021</span><span class="rule"></span><h2>Experience</h2></div>
+    <div class="section-head"><h2>Experience</h2><span class="rule"></span><span class="label">Since 2021</span></div>
 
     <div class="entry">
       <div class="entry-head">
@@ -413,7 +419,7 @@
   <hr class="chalk">
 
   <section class="wrap">
-    <div class="section-head"><span class="label">Elsewhere</span><span class="rule"></span><h2>Other Projects</h2></div>
+    <div class="section-head"><h2>Other Projects</h2><span class="rule"></span><span class="label">Elsewhere</span></div>
     <div class="project-grid">
       <div class="project">
         <h3>Numerical Methods Library <span class="src"><a href="https://github.com/matthewgcastle1/num_methods" target="_blank" rel="noopener">source &rarr;</a></span></h3>
@@ -429,7 +435,7 @@
   <hr class="chalk">
 
   <section class="wrap">
-    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>Tools</h2></div>
+    <div class="section-head"><h2>Tools</h2><span class="rule"></span><span class="label">&nbsp;</span></div>
 
     <div class="skill-group">
       <div class="skill-group-label">Languages</div>
@@ -476,7 +482,7 @@
   <hr class="chalk">
 
   <section class="wrap">
-    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>Education &amp; Awards</h2></div>
+    <div class="section-head"><h2>Education &amp; Awards</h2><span class="rule"></span><span class="label">&nbsp;</span></div>
     <div class="edu-grid">
       <div>
         <h3>Bachelor of Arts, Mathematics <span class="entry-dates" style="font-weight:400;">&mdash; 05/2021</span></h3>
@@ -512,7 +518,7 @@
     return { canvas: canvas, ctx: ctx, size: size };
   }
 
-  var COLORS = { chalk: "#eef1ea", gold: "#e0b84a", coral: "#e0794a", sky: "#6fb8c9", board: "#263a34" };
+  var COLORS = { chalk: "#fdf8f2", gold: "#f3853a", coral: "#e8620f", sky: "#4f8bc9", board: "#14181f" };
 
   /* ---------------- Double pendulum ---------------- */
   (function () {
