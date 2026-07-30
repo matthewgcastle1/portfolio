@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Python</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+    .code-block .decorator { color: #dcdcaa; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Introduction to Python</h1>
+      <p>The language that reads like pseudocode and runs like a Swiss army knife</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Introduction to Python: Readable, Powerful, Everywhere</h1>
+        <div class="article-meta">Computer Science</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Why Python</h2>
+
+        <p>Guido van Rossum started Python in 1989 as a hobby project over Christmas break. He wanted a language that was easy to read, easy to teach, and powerful enough to get real work done. He named it after Monty Python. Thirty-five years later, it is the most widely taught programming language in the world and the backbone of the artificial intelligence revolution.</p>
+
+        <p>Python&rsquo;s design philosophy is captured in a document called The Zen of Python. You can read it by typing <code>import this</code> in a Python interpreter. The most important lines:</p>
+
+        <div class="quote-box">
+          <p>&ldquo;Readability counts.&rdquo;</p>
+          <div class="attribution">&mdash; The Zen of Python</div>
+        </div>
+
+        <div class="quote-box">
+          <p>&ldquo;Simple is better than complex. Complex is better than complicated.&rdquo;</p>
+          <div class="attribution">&mdash; The Zen of Python</div>
+        </div>
+
+        <p>Python achieves readability through significant whitespace (indentation is syntax), minimal punctuation (no semicolons, no braces for blocks), and a standard library so comprehensive it is described as &ldquo;batteries included.&rdquo; The result is a language where a beginner can write useful programs on day one and an expert can build production systems without fighting the language.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. Hello, World</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="builtin">print</span>(<span class="string">"Hello, World"</span>)</div>
+
+        <p>That is the entire program. No imports, no main function, no class wrapper, no semicolons. Save it as <code>hello.py</code> and run it:</p>
+
+        <div class="code-block">$ python3 hello.py
+Hello, World</div>
+
+        <p>Or use the interactive REPL:</p>
+
+        <div class="code-block">$ python3
+&gt;&gt;&gt; <span class="number">2</span> + <span class="number">2</span>
+4
+&gt;&gt;&gt; <span class="string">"hello"</span>.<span class="func">upper</span>()
+'HELLO'
+&gt;&gt;&gt; [x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">5</span>)]
+[0, 1, 4, 9, 16]</div>
+
+        <p>The REPL (Read-Eval-Print Loop) is one of Python&rsquo;s best features for learning and experimentation. Type an expression, see the result immediately. No compilation step, no boilerplate. This instant feedback loop is why Python is the most popular first language in computer science education.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. Variables and Types</h2>
+        <!-- ============================================================ -->
+
+        <p>Python is dynamically typed. You do not declare types; the interpreter infers them at runtime.</p>
+
+        <div class="code-block">x = <span class="number">42</span>              <span class="comment"># int</span>
+pi = <span class="number">3.14159</span>         <span class="comment"># float</span>
+name = <span class="string">"Python"</span>      <span class="comment"># str</span>
+active = <span class="keyword">True</span>        <span class="comment"># bool</span>
+nothing = <span class="keyword">None</span>       <span class="comment"># NoneType (Python's null)</span>
+
+<span class="comment"># Variables can change type (duck typing)</span>
+x = <span class="string">"now I'm a string"</span>
+x = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]         <span class="comment"># now a list</span>
+
+<span class="comment"># Check types</span>
+<span class="builtin">print</span>(<span class="builtin">type</span>(x))         <span class="comment"># &lt;class 'list'&gt;</span>
+<span class="builtin">print</span>(<span class="builtin">isinstance</span>(x, <span class="builtin">list</span>))  <span class="comment"># True</span></div>
+
+        <p>Python follows &ldquo;duck typing&rdquo;: if it walks like a duck and quacks like a duck, it is a duck. The interpreter does not care what type a variable is. It cares whether the variable supports the operation you are performing on it. Call <code>.upper()</code> on anything that has an <code>upper</code> method; it does not matter whether it is a <code>str</code> or a custom class.</p>
+
+        <h3>Numeric Types</h3>
+
+        <div class="code-block"><span class="comment"># Integers have arbitrary precision (no overflow!)</span>
+big = <span class="number">2</span> ** <span class="number">1000</span>      <span class="comment"># works fine, hundreds of digits</span>
+
+<span class="comment"># Float division vs integer division</span>
+<span class="number">7</span> / <span class="number">2</span>                <span class="comment"># 3.5 (true division)</span>
+<span class="number">7</span> // <span class="number">2</span>               <span class="comment"># 3 (floor division)</span>
+<span class="number">7</span> % <span class="number">2</span>                <span class="comment"># 1 (modulo)</span>
+
+<span class="comment"># Exponentiation</span>
+<span class="number">2</span> ** <span class="number">10</span>              <span class="comment"># 1024</span>
+
+<span class="comment"># Complex numbers are built in</span>
+z = <span class="number">3</span> + <span class="number">4</span>j
+z.real               <span class="comment"># 3.0</span>
+z.imag               <span class="comment"># 4.0</span>
+<span class="builtin">abs</span>(z)               <span class="comment"># 5.0 (magnitude)</span></div>
+
+        <p>Python integers never overflow. They grow to arbitrary size. This is unusual among programming languages and means you never need to worry about integer overflow bugs. The tradeoff is performance: big-integer arithmetic is slower than fixed-width integers in C or Go.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. Strings</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment"># String literals (single or double quotes, no difference)</span>
+s1 = <span class="string">'hello'</span>
+s2 = <span class="string">"hello"</span>
+
+<span class="comment"># Triple quotes for multi-line strings</span>
+s3 = <span class="string">"""This is
+a multi-line
+string."""</span>
+
+<span class="comment"># f-strings (Python 3.6+): the best string formatting</span>
+name = <span class="string">"World"</span>
+n = <span class="number">42</span>
+<span class="builtin">print</span>(<span class="string">f"Hello, <span class="keyword">{</span>name<span class="keyword">}</span>! The answer is <span class="keyword">{</span>n<span class="keyword">}</span>."</span>)
+<span class="builtin">print</span>(<span class="string">f"Two plus two is <span class="keyword">{</span><span class="number">2</span> + <span class="number">2</span><span class="keyword">}</span>"</span>)  <span class="comment"># expressions work</span>
+<span class="builtin">print</span>(<span class="string">f"Pi is <span class="keyword">{</span><span class="number">3.14159</span>:.2f<span class="keyword">}</span>"</span>)     <span class="comment"># "Pi is 3.14"</span>
+
+<span class="comment"># Slicing (works like Go/Rust, but supports negative indices)</span>
+s = <span class="string">"Hello, World"</span>
+s[<span class="number">0</span>:<span class="number">5</span>]        <span class="comment"># "Hello"</span>
+s[<span class="number">7</span>:]         <span class="comment"># "World"</span>
+s[:<span class="number">5</span>]         <span class="comment"># "Hello"</span>
+s[-<span class="number">5</span>:]        <span class="comment"># "World" (negative indices count from the end)</span>
+s[::-<span class="number">1</span>]       <span class="comment"># "dlroW ,olleH" (reverse)</span>
+
+<span class="comment"># Strings are immutable</span>
+<span class="comment"># s[0] = "h"  # TypeError!</span>
+
+<span class="comment"># Common methods</span>
+<span class="string">"hello world"</span>.<span class="func">split</span>()          <span class="comment"># ["hello", "world"]</span>
+<span class="string">", "</span>.<span class="func">join</span>([<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>])    <span class="comment"># "a, b, c"</span>
+<span class="string">"  hello  "</span>.<span class="func">strip</span>()            <span class="comment"># "hello"</span>
+<span class="string">"hello"</span>.<span class="func">replace</span>(<span class="string">"l"</span>, <span class="string">"r"</span>)    <span class="comment"># "herro"</span>
+<span class="string">"hello"</span>.<span class="func">startswith</span>(<span class="string">"he"</span>)     <span class="comment"># True</span>
+<span class="string">"42"</span>.<span class="func">isdigit</span>()                <span class="comment"># True</span></div>
+
+        <p>f-strings are Python&rsquo;s best feature for string formatting. They are readable, fast, and support arbitrary expressions inside the braces. Before f-strings, Python had <code>%</code> formatting and <code>.format()</code>; both still work, but f-strings are superior in almost every case.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. Data Structures</h2>
+        <!-- ============================================================ -->
+
+        <h3>Lists</h3>
+
+        <p>Python lists are dynamic arrays (like Java&rsquo;s <code>ArrayList</code> or Go&rsquo;s slices). They are ordered, mutable, and can hold mixed types (though you usually keep them homogeneous).</p>
+
+        <div class="code-block"><span class="comment"># Creating lists</span>
+nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+empty = []
+mixed = [<span class="number">1</span>, <span class="string">"two"</span>, <span class="number">3.0</span>, <span class="keyword">True</span>]
+
+<span class="comment"># Indexing and slicing (same as strings)</span>
+nums[<span class="number">0</span>]          <span class="comment"># 1</span>
+nums[-<span class="number">1</span>]         <span class="comment"># 5</span>
+nums[<span class="number">1</span>:<span class="number">3</span>]        <span class="comment"># [2, 3]</span>
+
+<span class="comment"># Mutating</span>
+nums.<span class="func">append</span>(<span class="number">6</span>)         <span class="comment"># [1, 2, 3, 4, 5, 6]</span>
+nums.<span class="func">extend</span>([<span class="number">7</span>, <span class="number">8</span>])   <span class="comment"># [1, 2, 3, 4, 5, 6, 7, 8]</span>
+nums.<span class="func">insert</span>(<span class="number">0</span>, <span class="number">0</span>)     <span class="comment"># [0, 1, 2, 3, 4, 5, 6, 7, 8]</span>
+nums.<span class="func">pop</span>()              <span class="comment"># removes and returns 8</span>
+nums.<span class="func">remove</span>(<span class="number">3</span>)         <span class="comment"># removes first occurrence of 3</span>
+
+<span class="comment"># Sorting</span>
+nums.<span class="func">sort</span>()                        <span class="comment"># in-place</span>
+<span class="builtin">sorted</span>(nums, reverse=<span class="keyword">True</span>)       <span class="comment"># returns new sorted list</span>
+<span class="builtin">sorted</span>(words, key=<span class="builtin">len</span>)           <span class="comment"># sort by length</span>
+
+<span class="comment"># Useful operations</span>
+<span class="builtin">len</span>(nums)            <span class="comment"># length</span>
+<span class="number">3</span> <span class="keyword">in</span> nums            <span class="comment"># membership test: True</span>
+<span class="builtin">sum</span>(nums)             <span class="comment"># sum of all elements</span>
+<span class="builtin">min</span>(nums), <span class="builtin">max</span>(nums) <span class="comment"># min and max</span></div>
+
+        <h3>Tuples</h3>
+
+        <p>Tuples are immutable lists. Use them when the data should not change: coordinates, return values, dictionary keys.</p>
+
+        <div class="code-block"><span class="comment"># Creating tuples</span>
+point = (<span class="number">3</span>, <span class="number">4</span>)
+rgb = (<span class="number">255</span>, <span class="number">128</span>, <span class="number">0</span>)
+single = (<span class="number">42</span>,)       <span class="comment"># trailing comma required for single-element tuples</span>
+
+<span class="comment"># Unpacking (one of Python's best features)</span>
+x, y = point          <span class="comment"># x = 3, y = 4</span>
+r, g, b = rgb         <span class="comment"># r = 255, g = 128, b = 0</span>
+
+<span class="comment"># Swap without a temp variable</span>
+a, b = b, a
+
+<span class="comment"># Unpacking in loops</span>
+pairs = [(<span class="string">"Alice"</span>, <span class="number">30</span>), (<span class="string">"Bob"</span>, <span class="number">25</span>), (<span class="string">"Carol"</span>, <span class="number">35</span>)]
+<span class="keyword">for</span> name, age <span class="keyword">in</span> pairs:
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>name<span class="keyword">}</span> is <span class="keyword">{</span>age<span class="keyword">}</span>"</span>)</div>
+
+        <h3>Dictionaries</h3>
+
+        <p>Dictionaries are hash maps. They are Python&rsquo;s most important data structure after lists.</p>
+
+        <div class="code-block"><span class="comment"># Creating dicts</span>
+ages = {<span class="string">"Alice"</span>: <span class="number">30</span>, <span class="string">"Bob"</span>: <span class="number">25</span>, <span class="string">"Carol"</span>: <span class="number">35</span>}
+empty = {}
+
+<span class="comment"># Access</span>
+ages[<span class="string">"Alice"</span>]          <span class="comment"># 30</span>
+ages.<span class="func">get</span>(<span class="string">"Eve"</span>, <span class="number">0</span>)     <span class="comment"># 0 (default if missing; avoids KeyError)</span>
+
+<span class="comment"># Insert / update</span>
+ages[<span class="string">"Dave"</span>] = <span class="number">28</span>
+
+<span class="comment"># Delete</span>
+<span class="keyword">del</span> ages[<span class="string">"Bob"</span>]
+
+<span class="comment"># Iteration</span>
+<span class="keyword">for</span> name <span class="keyword">in</span> ages:                     <span class="comment"># keys</span>
+    <span class="builtin">print</span>(name)
+<span class="keyword">for</span> name, age <span class="keyword">in</span> ages.<span class="func">items</span>():      <span class="comment"># key-value pairs</span>
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>name<span class="keyword">}</span>: <span class="keyword">{</span>age<span class="keyword">}</span>"</span>)
+<span class="keyword">for</span> age <span class="keyword">in</span> ages.<span class="func">values</span>():            <span class="comment"># values only</span>
+    <span class="builtin">print</span>(age)
+
+<span class="comment"># Check membership</span>
+<span class="string">"Alice"</span> <span class="keyword">in</span> ages        <span class="comment"># True</span>
+
+<span class="comment"># Dict comprehension</span>
+squares = {x: x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">6</span>)}
+<span class="comment"># {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}</span></div>
+
+        <h3>Sets</h3>
+
+        <div class="code-block"><span class="comment"># Creating sets</span>
+primes = {<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">11</span>}
+evens = {<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>, <span class="number">10</span>}
+
+<span class="comment"># Set operations</span>
+primes & evens         <span class="comment"># {2} — intersection</span>
+primes | evens         <span class="comment"># {2, 3, 4, 5, 6, 7, 8, 10, 11} — union</span>
+primes - evens         <span class="comment"># {3, 5, 7, 11} — difference</span>
+primes ^ evens         <span class="comment"># {3, 4, 5, 6, 7, 8, 10, 11} — symmetric difference</span>
+
+<span class="comment"># Membership testing (O(1) average, unlike lists which are O(n))</span>
+<span class="number">7</span> <span class="keyword">in</span> primes            <span class="comment"># True</span>
+
+<span class="comment"># Deduplication</span>
+<span class="builtin">list</span>(<span class="builtin">set</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>]))  <span class="comment"># [1, 2, 3]</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. Control Flow</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment"># if / elif / else</span>
+<span class="keyword">if</span> x &gt; <span class="number">0</span>:
+    <span class="builtin">print</span>(<span class="string">"positive"</span>)
+<span class="keyword">elif</span> x == <span class="number">0</span>:
+    <span class="builtin">print</span>(<span class="string">"zero"</span>)
+<span class="keyword">else</span>:
+    <span class="builtin">print</span>(<span class="string">"negative"</span>)
+
+<span class="comment"># for loops</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">5</span>):         <span class="comment"># 0, 1, 2, 3, 4</span>
+    <span class="builtin">print</span>(i)
+
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">2</span>, <span class="number">10</span>, <span class="number">3</span>): <span class="comment"># 2, 5, 8 (start, stop, step)</span>
+    <span class="builtin">print</span>(i)
+
+<span class="comment"># enumerate: index + value (much better than range(len(...)))</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+<span class="keyword">for</span> i, fruit <span class="keyword">in</span> <span class="builtin">enumerate</span>(fruits):
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>i<span class="keyword">}</span>: <span class="keyword">{</span>fruit<span class="keyword">}</span>"</span>)
+
+<span class="comment"># zip: iterate over multiple sequences in parallel</span>
+names = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>]
+scores = [<span class="number">95</span>, <span class="number">87</span>]
+<span class="keyword">for</span> name, score <span class="keyword">in</span> <span class="builtin">zip</span>(names, scores):
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>name<span class="keyword">}</span>: <span class="keyword">{</span>score<span class="keyword">}</span>"</span>)
+
+<span class="comment"># while loop</span>
+<span class="keyword">while</span> x &gt; <span class="number">0</span>:
+    x -= <span class="number">1</span></div>
+
+        <h3>The for/else Clause</h3>
+
+        <p>This is unusual. Python&rsquo;s <code>for</code> loop has an optional <code>else</code> clause that runs only if the loop completed without hitting a <code>break</code>.</p>
+
+        <div class="code-block"><span class="comment"># Search for a prime factor</span>
+n = <span class="number">97</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">2</span>, <span class="builtin">int</span>(n**<span class="number">0.5</span>) + <span class="number">1</span>):
+    <span class="keyword">if</span> n % i == <span class="number">0</span>:
+        <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>n<span class="keyword">}</span> is divisible by <span class="keyword">{</span>i<span class="keyword">}</span>"</span>)
+        <span class="keyword">break</span>
+<span class="keyword">else</span>:
+    <span class="comment"># This runs if the loop did NOT break</span>
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>n<span class="keyword">}</span> is prime"</span>)</div>
+
+        <h3>Match/Case (Python 3.10+)</h3>
+
+        <div class="code-block"><span class="keyword">match</span> command:
+    <span class="keyword">case</span> <span class="string">"quit"</span>:
+        <span class="builtin">print</span>(<span class="string">"Goodbye"</span>)
+    <span class="keyword">case</span> <span class="string">"help"</span>:
+        <span class="func">show_help</span>()
+    <span class="keyword">case</span> [<span class="string">"go"</span>, direction]:           <span class="comment"># destructuring!</span>
+        <span class="func">move</span>(direction)
+    <span class="keyword">case</span> {<span class="string">"action"</span>: action, <span class="string">"target"</span>: target}:  <span class="comment"># dict matching!</span>
+        <span class="func">perform</span>(action, target)
+    <span class="keyword">case</span> _:
+        <span class="builtin">print</span>(<span class="string">"Unknown command"</span>)</div>
+
+        <p>Python&rsquo;s <code>match</code> is more powerful than a switch statement. It does structural pattern matching: you can match on types, destructure sequences and dictionaries, and bind variables in the match arms.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Functions</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment"># Basic function</span>
+<span class="keyword">def</span> <span class="func">add</span>(a, b):
+    <span class="keyword">return</span> a + b
+
+<span class="comment"># Default arguments</span>
+<span class="keyword">def</span> <span class="func">greet</span>(name, greeting=<span class="string">"Hello"</span>):
+    <span class="keyword">return</span> <span class="string">f"<span class="keyword">{</span>greeting<span class="keyword">}</span>, <span class="keyword">{</span>name<span class="keyword">}</span>!"</span>
+
+<span class="func">greet</span>(<span class="string">"Alice"</span>)              <span class="comment"># "Hello, Alice!"</span>
+<span class="func">greet</span>(<span class="string">"Alice"</span>, <span class="string">"Hey"</span>)      <span class="comment"># "Hey, Alice!"</span>
+
+<span class="comment"># *args and **kwargs</span>
+<span class="keyword">def</span> <span class="func">flexible</span>(*args, **kwargs):
+    <span class="builtin">print</span>(<span class="string">f"args: <span class="keyword">{</span>args<span class="keyword">}</span>"</span>)         <span class="comment"># tuple of positional args</span>
+    <span class="builtin">print</span>(<span class="string">f"kwargs: <span class="keyword">{</span>kwargs<span class="keyword">}</span>"</span>)     <span class="comment"># dict of keyword args</span>
+
+<span class="func">flexible</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, x=<span class="number">10</span>, y=<span class="number">20</span>)
+<span class="comment"># args: (1, 2, 3)</span>
+<span class="comment"># kwargs: {'x': 10, 'y': 20}</span>
+
+<span class="comment"># Type hints (optional, not enforced at runtime)</span>
+<span class="keyword">def</span> <span class="func">divide</span>(a: <span class="type">float</span>, b: <span class="type">float</span>) -&gt; <span class="type">float</span>:
+    <span class="keyword">return</span> a / b
+
+<span class="comment"># Lambda (anonymous functions)</span>
+square = <span class="keyword">lambda</span> x: x ** <span class="number">2</span>
+<span class="builtin">sorted</span>(words, key=<span class="keyword">lambda</span> w: <span class="builtin">len</span>(w))</div>
+
+        <h3>Docstrings</h3>
+
+        <div class="code-block"><span class="keyword">def</span> <span class="func">binary_search</span>(arr, target):
+    <span class="string">"""Search for target in a sorted array.
+
+    Args:
+        arr: A sorted list of comparable elements.
+        target: The element to search for.
+
+    Returns:
+        The index of target, or -1 if not found.
+    """</span>
+    lo, hi = <span class="number">0</span>, <span class="builtin">len</span>(arr) - <span class="number">1</span>
+    <span class="keyword">while</span> lo &lt;= hi:
+        mid = (lo + hi) // <span class="number">2</span>
+        <span class="keyword">if</span> arr[mid] == target:
+            <span class="keyword">return</span> mid
+        <span class="keyword">elif</span> arr[mid] &lt; target:
+            lo = mid + <span class="number">1</span>
+        <span class="keyword">else</span>:
+            hi = mid - <span class="number">1</span>
+    <span class="keyword">return</span> -<span class="number">1</span></div>
+
+        <p>Docstrings are the first string literal in a function, class, or module. They become the <code>__doc__</code> attribute and are used by <code>help()</code> and documentation generators. Use them.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Comprehensions and Generators</h2>
+        <!-- ============================================================ -->
+
+        <p>Comprehensions are Python&rsquo;s most elegant feature. They replace explicit loops with concise, readable expressions.</p>
+
+        <div class="code-block"><span class="comment"># List comprehension</span>
+squares = [x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">10</span>)]
+<span class="comment"># [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]</span>
+
+<span class="comment"># With a filter</span>
+evens = [x <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">20</span>) <span class="keyword">if</span> x % <span class="number">2</span> == <span class="number">0</span>]
+<span class="comment"># [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]</span>
+
+<span class="comment"># Nested comprehension (flatten a matrix)</span>
+matrix = [[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]]
+flat = [x <span class="keyword">for</span> row <span class="keyword">in</span> matrix <span class="keyword">for</span> x <span class="keyword">in</span> row]
+<span class="comment"># [1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+
+<span class="comment"># Dict comprehension</span>
+word_lengths = {w: <span class="builtin">len</span>(w) <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">"hello"</span>, <span class="string">"world"</span>, <span class="string">"python"</span>]}
+<span class="comment"># {'hello': 5, 'world': 5, 'python': 6}</span>
+
+<span class="comment"># Set comprehension</span>
+unique_lengths = {<span class="builtin">len</span>(w) <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">"hello"</span>, <span class="string">"world"</span>, <span class="string">"python"</span>]}
+<span class="comment"># {5, 6}</span></div>
+
+        <h3>Generators</h3>
+
+        <p>Generators produce values lazily, one at a time, without building the entire list in memory. Use them when the sequence is large or infinite.</p>
+
+        <div class="code-block"><span class="comment"># Generator expression (parentheses instead of brackets)</span>
+total = <span class="builtin">sum</span>(x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">1_000_000</span>))
+<span class="comment"># Computes without building a million-element list</span>
+
+<span class="comment"># Generator function (yield instead of return)</span>
+<span class="keyword">def</span> <span class="func">fibonacci</span>():
+    a, b = <span class="number">0</span>, <span class="number">1</span>
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        <span class="keyword">yield</span> a
+        a, b = b, a + b
+
+<span class="comment"># Take the first 10 Fibonacci numbers</span>
+<span class="keyword">from</span> itertools <span class="keyword">import</span> islice
+<span class="builtin">list</span>(islice(<span class="func">fibonacci</span>(), <span class="number">10</span>))
+<span class="comment"># [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+
+<span class="comment"># Read a huge file line by line (memory efficient)</span>
+<span class="keyword">def</span> <span class="func">grep</span>(pattern, filename):
+    <span class="keyword">with</span> <span class="builtin">open</span>(filename) <span class="keyword">as</span> f:
+        <span class="keyword">for</span> line <span class="keyword">in</span> f:              <span class="comment"># file objects are iterators</span>
+            <span class="keyword">if</span> pattern <span class="keyword">in</span> line:
+                <span class="keyword">yield</span> line.<span class="func">strip</span>()</div>
+
+        <p>The difference matters when the data is large. A list comprehension <code>[x**2 for x in range(10_000_000)]</code> allocates a list of ten million integers. A generator expression <code>(x**2 for x in range(10_000_000))</code> produces them one at a time, using constant memory.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Decorators</h2>
+        <!-- ============================================================ -->
+
+        <p>A decorator is a function that takes a function and returns a modified version of it. The <code>@</code> syntax is syntactic sugar for wrapping a function at definition time.</p>
+
+        <div class="code-block"><span class="keyword">import</span> time
+<span class="keyword">import</span> functools
+
+<span class="comment"># A timing decorator</span>
+<span class="keyword">def</span> <span class="func">timer</span>(func):
+    <span class="decorator">@functools.wraps</span>(func)
+    <span class="keyword">def</span> <span class="func">wrapper</span>(*args, **kwargs):
+        start = time.<span class="func">time</span>()
+        result = <span class="func">func</span>(*args, **kwargs)
+        elapsed = time.<span class="func">time</span>() - start
+        <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>func.__name__<span class="keyword">}</span> took <span class="keyword">{</span>elapsed:.4f<span class="keyword">}</span>s"</span>)
+        <span class="keyword">return</span> result
+    <span class="keyword">return</span> wrapper
+
+<span class="decorator">@timer</span>
+<span class="keyword">def</span> <span class="func">slow_function</span>():
+    time.<span class="func">sleep</span>(<span class="number">1</span>)
+    <span class="keyword">return</span> <span class="string">"done"</span>
+
+<span class="func">slow_function</span>()  <span class="comment"># prints "slow_function took 1.0012s"</span></div>
+
+        <h3>Built-in Decorators</h3>
+
+        <div class="code-block"><span class="comment"># @functools.lru_cache — automatic memoization</span>
+<span class="keyword">import</span> functools
+
+<span class="decorator">@functools.lru_cache</span>(maxsize=<span class="keyword">None</span>)
+<span class="keyword">def</span> <span class="func">fib</span>(n):
+    <span class="keyword">if</span> n &lt; <span class="number">2</span>:
+        <span class="keyword">return</span> n
+    <span class="keyword">return</span> <span class="func">fib</span>(n - <span class="number">1</span>) + <span class="func">fib</span>(n - <span class="number">2</span>)
+
+<span class="func">fib</span>(<span class="number">100</span>)  <span class="comment"># instant (without cache: heat death of the universe)</span>
+
+<span class="comment"># @property — make a method look like an attribute</span>
+<span class="keyword">class</span> <span class="type">Circle</span>:
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, radius):
+        self.radius = radius
+
+    <span class="decorator">@property</span>
+    <span class="keyword">def</span> <span class="func">area</span>(self):
+        <span class="keyword">return</span> <span class="number">3.14159</span> * self.radius ** <span class="number">2</span>
+
+c = <span class="type">Circle</span>(<span class="number">5</span>)
+c.area      <span class="comment"># 78.53975 — accessed like an attribute, computed like a method</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. Classes</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="keyword">class</span> <span class="type">Point</span>:
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, x, y):
+        self.x = x
+        self.y = y
+
+    <span class="keyword">def</span> <span class="func">distance_to</span>(self, other):
+        <span class="keyword">return</span> ((self.x - other.x)**<span class="number">2</span> + (self.y - other.y)**<span class="number">2</span>) ** <span class="number">0.5</span>
+
+    <span class="keyword">def</span> <span class="func">__repr__</span>(self):
+        <span class="keyword">return</span> <span class="string">f"Point(<span class="keyword">{</span>self.x<span class="keyword">}</span>, <span class="keyword">{</span>self.y<span class="keyword">}</span>)"</span>
+
+    <span class="keyword">def</span> <span class="func">__add__</span>(self, other):
+        <span class="keyword">return</span> <span class="type">Point</span>(self.x + other.x, self.y + other.y)
+
+    <span class="keyword">def</span> <span class="func">__eq__</span>(self, other):
+        <span class="keyword">return</span> self.x == other.x <span class="keyword">and</span> self.y == other.y
+
+p1 = <span class="type">Point</span>(<span class="number">3</span>, <span class="number">4</span>)
+p2 = <span class="type">Point</span>(<span class="number">1</span>, <span class="number">2</span>)
+<span class="builtin">print</span>(p1)                  <span class="comment"># Point(3, 4)</span>
+<span class="builtin">print</span>(p1 + p2)             <span class="comment"># Point(4, 6)</span>
+<span class="builtin">print</span>(p1.<span class="func">distance_to</span>(p2))  <span class="comment"># 2.828...</span></div>
+
+        <p>The <code>__dunder__</code> methods (double underscore, or &ldquo;dunder&rdquo; methods) let you define how your objects behave with built-in operations. <code>__repr__</code> controls what <code>print()</code> shows. <code>__add__</code> controls the <code>+</code> operator. <code>__len__</code> controls <code>len()</code>. <code>__getitem__</code> controls <code>[]</code> indexing. This is how Python achieves operator overloading.</p>
+
+        <h3>Dataclasses</h3>
+
+        <p>For simple data-holding classes, <code>@dataclass</code> eliminates boilerplate:</p>
+
+        <div class="code-block"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass
+
+<span class="decorator">@dataclass</span>
+<span class="keyword">class</span> <span class="type">Point</span>:
+    x: <span class="type">float</span>
+    y: <span class="type">float</span>
+
+    <span class="keyword">def</span> <span class="func">distance_to</span>(self, other):
+        <span class="keyword">return</span> ((self.x - other.x)**<span class="number">2</span> + (self.y - other.y)**<span class="number">2</span>) ** <span class="number">0.5</span>
+
+<span class="comment"># __init__, __repr__, __eq__ are generated automatically</span>
+p = <span class="type">Point</span>(<span class="number">3</span>, <span class="number">4</span>)
+<span class="builtin">print</span>(p)    <span class="comment"># Point(x=3, y=4)</span></div>
+
+        <h3>Inheritance</h3>
+
+        <div class="code-block"><span class="keyword">class</span> <span class="type">Animal</span>:
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, name):
+        self.name = name
+
+    <span class="keyword">def</span> <span class="func">speak</span>(self):
+        <span class="keyword">raise</span> <span class="builtin">NotImplementedError</span>
+
+<span class="keyword">class</span> <span class="type">Dog</span>(<span class="type">Animal</span>):
+    <span class="keyword">def</span> <span class="func">speak</span>(self):
+        <span class="keyword">return</span> <span class="string">f"<span class="keyword">{</span>self.name<span class="keyword">}</span> says woof!"</span>
+
+<span class="keyword">class</span> <span class="type">Cat</span>(<span class="type">Animal</span>):
+    <span class="keyword">def</span> <span class="func">speak</span>(self):
+        <span class="keyword">return</span> <span class="string">f"<span class="keyword">{</span>self.name<span class="keyword">}</span> says meow!"</span>
+
+animals = [<span class="type">Dog</span>(<span class="string">"Rex"</span>), <span class="type">Cat</span>(<span class="string">"Whiskers"</span>)]
+<span class="keyword">for</span> a <span class="keyword">in</span> animals:
+    <span class="builtin">print</span>(a.<span class="func">speak</span>())</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">X. Error Handling</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment"># try / except / else / finally</span>
+<span class="keyword">try</span>:
+    result = <span class="number">10</span> / <span class="number">0</span>
+<span class="keyword">except</span> <span class="builtin">ZeroDivisionError</span> <span class="keyword">as</span> e:
+    <span class="builtin">print</span>(<span class="string">f"Error: <span class="keyword">{</span>e<span class="keyword">}</span>"</span>)
+<span class="keyword">except</span> (<span class="builtin">TypeError</span>, <span class="builtin">ValueError</span>) <span class="keyword">as</span> e:
+    <span class="builtin">print</span>(<span class="string">f"Bad input: <span class="keyword">{</span>e<span class="keyword">}</span>"</span>)
+<span class="keyword">else</span>:
+    <span class="comment"># runs only if no exception was raised</span>
+    <span class="builtin">print</span>(<span class="string">f"Result: <span class="keyword">{</span>result<span class="keyword">}</span>"</span>)
+<span class="keyword">finally</span>:
+    <span class="comment"># always runs</span>
+    <span class="builtin">print</span>(<span class="string">"Done"</span>)
+
+<span class="comment"># Raising exceptions</span>
+<span class="keyword">def</span> <span class="func">validate_age</span>(age):
+    <span class="keyword">if</span> age &lt; <span class="number">0</span>:
+        <span class="keyword">raise</span> <span class="builtin">ValueError</span>(<span class="string">f"Age cannot be negative: <span class="keyword">{</span>age<span class="keyword">}</span>"</span>)
+    <span class="keyword">return</span> age
+
+<span class="comment"># Custom exceptions</span>
+<span class="keyword">class</span> <span class="type">NotFoundError</span>(<span class="builtin">Exception</span>):
+    <span class="keyword">def</span> <span class="func">__init__</span>(self, item):
+        <span class="builtin">super</span>().<span class="func">__init__</span>(<span class="string">f"<span class="keyword">{</span>item<span class="keyword">}</span> not found"</span>)
+        self.item = item</div>
+
+        <h3>Context Managers (the <code>with</code> Statement)</h3>
+
+        <div class="code-block"><span class="comment"># File handling: the with statement guarantees cleanup</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"data.txt"</span>, <span class="string">"r"</span>) <span class="keyword">as</span> f:
+    content = f.<span class="func">read</span>()
+<span class="comment"># f is automatically closed here, even if an exception occurred</span>
+
+<span class="comment"># Multiple context managers</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"input.txt"</span>) <span class="keyword">as</span> src, <span class="builtin">open</span>(<span class="string">"output.txt"</span>, <span class="string">"w"</span>) <span class="keyword">as</span> dst:
+    dst.<span class="func">write</span>(src.<span class="func">read</span>().<span class="func">upper</span>())
+
+<span class="comment"># Writing your own context manager</span>
+<span class="keyword">from</span> contextlib <span class="keyword">import</span> contextmanager
+
+<span class="decorator">@contextmanager</span>
+<span class="keyword">def</span> <span class="func">timer</span>(label):
+    start = time.<span class="func">time</span>()
+    <span class="keyword">yield</span>
+    <span class="builtin">print</span>(<span class="string">f"<span class="keyword">{</span>label<span class="keyword">}</span>: <span class="keyword">{</span>time.<span class="func">time</span>() - start:.4f<span class="keyword">}</span>s"</span>)
+
+<span class="keyword">with</span> <span class="func">timer</span>(<span class="string">"processing"</span>):
+    <span class="func">do_something_slow</span>()</div>
+
+        <p>The <code>with</code> statement is Python&rsquo;s equivalent of Go&rsquo;s <code>defer</code> or Java&rsquo;s try-with-resources. It guarantees that resources (files, database connections, locks) are properly cleaned up. Always use <code>with</code> for files. Never use <code>f = open(...)</code> without it.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XI. Modules and Packages</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment"># Importing</span>
+<span class="keyword">import</span> os
+<span class="keyword">import</span> json
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+<span class="keyword">from</span> collections <span class="keyword">import</span> Counter, defaultdict
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np                 <span class="comment"># aliasing</span>
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime <span class="keyword">as</span> dt
+
+<span class="comment"># The __name__ guard</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="comment"># This block runs only when the file is executed directly,</span>
+    <span class="comment"># not when it is imported as a module</span>
+    <span class="func">main</span>()</div>
+
+        <h3>Virtual Environments</h3>
+
+        <div class="code-block"><span class="comment"># Create a virtual environment</span>
+$ python3 -m venv myenv
+
+<span class="comment"># Activate it</span>
+$ source myenv/bin/activate    <span class="comment"># macOS/Linux</span>
+$ myenv\Scripts\activate       <span class="comment"># Windows</span>
+
+<span class="comment"># Install packages (isolated from the system Python)</span>
+$ pip install requests flask pandas
+
+<span class="comment"># Save dependencies</span>
+$ pip freeze &gt; requirements.txt
+
+<span class="comment"># Reproduce the environment elsewhere</span>
+$ pip install -r requirements.txt
+
+<span class="comment"># Deactivate</span>
+$ deactivate</div>
+
+        <p>Always use virtual environments. Never install packages into the system Python. This isolates project dependencies and prevents version conflicts. Every Python project should have its own virtual environment.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XII. The Standard Library</h2>
+        <!-- ============================================================ -->
+
+        <table class="comparison-table">
+          <tr><th>Module</th><th>What It Does</th></tr>
+          <tr><td>os, sys</td><td>OS interaction, environment variables, command-line args, file paths</td></tr>
+          <tr><td>pathlib</td><td>Modern path manipulation (prefer over os.path)</td></tr>
+          <tr><td>json</td><td>JSON encoding/decoding. json.dumps(), json.loads()</td></tr>
+          <tr><td>collections</td><td>Counter, defaultdict, deque, namedtuple, OrderedDict</td></tr>
+          <tr><td>itertools</td><td>chain, product, permutations, combinations, islice, groupby</td></tr>
+          <tr><td>functools</td><td>lru_cache, reduce, partial, wraps</td></tr>
+          <tr><td>re</td><td>Regular expressions. re.search(), re.findall(), re.sub()</td></tr>
+          <tr><td>datetime</td><td>Dates, times, timezones, formatting, arithmetic</td></tr>
+          <tr><td>typing</td><td>Type hints: List, Dict, Optional, Union, Callable, TypeVar</td></tr>
+          <tr><td>unittest, pytest</td><td>Testing frameworks (pytest is third-party but universal)</td></tr>
+          <tr><td>logging</td><td>Structured logging with levels, handlers, formatters</td></tr>
+          <tr><td>http.server</td><td>Simple HTTP server in one line: python3 -m http.server</td></tr>
+          <tr><td>sqlite3</td><td>Built-in SQLite database interface</td></tr>
+          <tr><td>argparse</td><td>Command-line argument parsing</td></tr>
+          <tr><td>csv</td><td>CSV file reading and writing</td></tr>
+          <tr><td>math, statistics</td><td>Mathematical functions, basic statistics</td></tr>
+        </table>
+
+        <h3>collections.Counter</h3>
+
+        <div class="code-block"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter
+
+words = <span class="string">"the cat sat on the mat the cat"</span>.<span class="func">split</span>()
+counts = <span class="type">Counter</span>(words)
+<span class="builtin">print</span>(counts)                  <span class="comment"># Counter({'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1})</span>
+<span class="builtin">print</span>(counts.<span class="func">most_common</span>(<span class="number">2</span>))  <span class="comment"># [('the', 3), ('cat', 2)]</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIII. Python for Data</h2>
+        <!-- ============================================================ -->
+
+        <p>Python dominates data science and machine learning because of four libraries:</p>
+
+        <table class="comparison-table">
+          <tr><th>Library</th><th>What It Does</th></tr>
+          <tr><td>NumPy</td><td>N-dimensional arrays and vectorized math. The foundation of everything below. C performance with Python syntax.</td></tr>
+          <tr><td>pandas</td><td>DataFrames: labeled, indexed, SQL-like tables. read_csv, groupby, merge, pivot. The workhorse of data analysis.</td></tr>
+          <tr><td>matplotlib / seaborn</td><td>Plotting: line charts, scatter plots, histograms, heatmaps. Publication-quality figures.</td></tr>
+          <tr><td>scikit-learn</td><td>Machine learning: regression, classification, clustering, preprocessing, model selection. Consistent API for everything.</td></tr>
+        </table>
+
+        <div class="code-block"><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># NumPy: vectorized operations (no loops needed)</span>
+a = np.<span class="func">array</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])
+<span class="builtin">print</span>(a * <span class="number">2</span>)            <span class="comment"># [2 4 6 8 10]</span>
+<span class="builtin">print</span>(a ** <span class="number">2</span>)           <span class="comment"># [ 1  4  9 16 25]</span>
+<span class="builtin">print</span>(np.<span class="func">mean</span>(a))       <span class="comment"># 3.0</span>
+<span class="builtin">print</span>(np.<span class="func">std</span>(a))        <span class="comment"># 1.414...</span>
+
+<span class="comment"># Matrix operations</span>
+A = np.<span class="func">array</span>([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]])
+B = np.<span class="func">array</span>([[<span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>]])
+<span class="builtin">print</span>(A @ B)            <span class="comment"># matrix multiplication</span></div>
+
+        <div class="code-block"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># pandas: DataFrames</span>
+df = pd.<span class="func">read_csv</span>(<span class="string">"data.csv"</span>)
+df.<span class="func">head</span>()                  <span class="comment"># first 5 rows</span>
+df.<span class="func">describe</span>()              <span class="comment"># summary statistics</span>
+df.<span class="func">groupby</span>(<span class="string">"category"</span>)[<span class="string">"price"</span>].<span class="func">mean</span>()   <span class="comment"># average price per category</span>
+df[df[<span class="string">"price"</span>] &gt; <span class="number">100</span>]    <span class="comment"># filter rows</span></div>
+
+        <p>The AI revolution runs on Python. GPT, DALL-E, Stable Diffusion, AlphaFold &mdash; all trained using PyTorch or TensorFlow, both of which have Python as their primary interface. If you want to work in machine learning, you will work in Python. There is no serious alternative.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIV. Putting It Together</h2>
+        <!-- ============================================================ -->
+
+        <p>Here is a complete program that demonstrates comprehensions, generators, dictionaries, Counter, error handling, context managers, and formatted output. It reads a text file, counts word frequencies, and reports the results.</p>
+
+        <div class="code-block"><span class="keyword">import</span> sys
+<span class="keyword">import</span> re
+<span class="keyword">from</span> collections <span class="keyword">import</span> Counter
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+
+<span class="keyword">def</span> <span class="func">extract_words</span>(text):
+    <span class="string">"""Extract lowercase words from text, stripping punctuation."""</span>
+    <span class="keyword">return</span> re.<span class="func">findall</span>(<span class="string">r"[a-z']+"</span>, text.<span class="func">lower</span>())
+
+
+<span class="keyword">def</span> <span class="func">analyze_file</span>(path):
+    <span class="string">"""Read a file and return word frequency analysis."""</span>
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="builtin">open</span>(path, <span class="string">"r"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+            text = f.<span class="func">read</span>()
+    <span class="keyword">except</span> <span class="builtin">FileNotFoundError</span>:
+        <span class="builtin">print</span>(<span class="string">f"Error: '<span class="keyword">{</span>path<span class="keyword">}</span>' not found"</span>, file=sys.stderr)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    <span class="keyword">except</span> <span class="builtin">UnicodeDecodeError</span>:
+        <span class="builtin">print</span>(<span class="string">f"Error: '<span class="keyword">{</span>path<span class="keyword">}</span>' is not a text file"</span>, file=sys.stderr)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+
+    words = <span class="func">extract_words</span>(text)
+    counts = <span class="type">Counter</span>(words)
+
+    <span class="keyword">return</span> {
+        <span class="string">"path"</span>: path,
+        <span class="string">"total_words"</span>: <span class="builtin">len</span>(words),
+        <span class="string">"unique_words"</span>: <span class="builtin">len</span>(counts),
+        <span class="string">"top_20"</span>: counts.<span class="func">most_common</span>(<span class="number">20</span>),
+        <span class="string">"avg_word_length"</span>: <span class="builtin">sum</span>(<span class="builtin">len</span>(w) <span class="keyword">for</span> w <span class="keyword">in</span> words) / <span class="builtin">len</span>(words) <span class="keyword">if</span> words <span class="keyword">else</span> <span class="number">0</span>,
+        <span class="string">"longest_words"</span>: <span class="builtin">sorted</span>(<span class="builtin">set</span>(words), key=<span class="builtin">len</span>, reverse=<span class="keyword">True</span>)[:<span class="number">5</span>],
+    }
+
+
+<span class="keyword">def</span> <span class="func">print_report</span>(analysis):
+    <span class="string">"""Print a formatted report of the word frequency analysis."""</span>
+    <span class="keyword">if</span> analysis <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">return</span>
+
+    <span class="builtin">print</span>(<span class="string">f"\n{'=' * 50}"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  Word Frequency Analysis: <span class="keyword">{</span>analysis[<span class="string">'path'</span>]<span class="keyword">}</span>"</span>)
+    <span class="builtin">print</span>(<span class="string">f"{'=' * 50}"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  Total words:     <span class="keyword">{</span>analysis[<span class="string">'total_words'</span>]:,<span class="keyword">}</span>"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  Unique words:    <span class="keyword">{</span>analysis[<span class="string">'unique_words'</span>]:,<span class="keyword">}</span>"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  Avg word length: <span class="keyword">{</span>analysis[<span class="string">'avg_word_length'</span>]:.1f<span class="keyword">}</span>"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  Longest words:   <span class="keyword">{</span><span class="string">', '</span>.<span class="func">join</span>(analysis[<span class="string">'longest_words'</span>])<span class="keyword">}</span>"</span>)
+    <span class="builtin">print</span>(<span class="string">f"\n  Top 20 words:"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  {'Word':<span class="number">20</span>} {'Count':>6} {'Bar'}"</span>)
+    <span class="builtin">print</span>(<span class="string">f"  {'-' * 40}"</span>)
+
+    max_count = analysis[<span class="string">"top_20"</span>][<span class="number">0</span>][<span class="number">1</span>] <span class="keyword">if</span> analysis[<span class="string">"top_20"</span>] <span class="keyword">else</span> <span class="number">1</span>
+    <span class="keyword">for</span> word, count <span class="keyword">in</span> analysis[<span class="string">"top_20"</span>]:
+        bar = <span class="string">"#"</span> * <span class="builtin">int</span>(<span class="number">20</span> * count / max_count)
+        <span class="builtin">print</span>(<span class="string">f"  <span class="keyword">{</span>word:<span class="number">20</span><span class="keyword">}</span> <span class="keyword">{</span>count:6,<span class="keyword">}</span> <span class="keyword">{</span>bar<span class="keyword">}</span>"</span>)
+
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="keyword">if</span> <span class="builtin">len</span>(sys.argv) &lt; <span class="number">2</span>:
+        <span class="builtin">print</span>(<span class="string">"Usage: python wordcount.py &lt;file&gt; [file ...]"</span>)
+        sys.<span class="func">exit</span>(<span class="number">1</span>)
+
+    <span class="keyword">for</span> filepath <span class="keyword">in</span> sys.argv[<span class="number">1</span>:]:
+        analysis = <span class="func">analyze_file</span>(filepath)
+        <span class="func">print_report</span>(analysis)</div>
+
+        <div class="output-block">==================================================
+  Word Frequency Analysis: hamlet.txt
+==================================================
+  Total words:     31,956
+  Unique words:    4,815
+  Avg word length: 4.1
+  Longest words:   undiscovered, understanding, entertainment, extraordinary, communication
+
+  Top 20 words:
+  Word                  Count Bar
+  ----------------------------------------
+  the                   1,145 ####################
+  and                     967 ################
+  to                      742 ############
+  of                      673 ###########
+  a                       546 #########
+  i                       542 #########
+  my                      514 ########
+  in                      436 #######
+  it                      419 #######
+  you                     415 #######
+  that                    391 ######
+  is                      346 ######
+  his                     335 #####
+  not                     316 #####
+  this                    306 #####
+  with                    291 #####
+  but                     271 ####
+  for                     248 ####
+  he                      239 ####
+  your                    237 ####</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">What Python Trades Away</h2>
+        <!-- ============================================================ -->
+
+        <table class="comparison-table">
+          <tr><th>What You Lose</th><th>What You Get</th></tr>
+          <tr><td>Speed (10&ndash;100x slower than C)</td><td>Development speed (write programs in hours, not days)</td></tr>
+          <tr><td>Static type checking</td><td>Flexibility, rapid prototyping, duck typing</td></tr>
+          <tr><td>Compiled binaries</td><td>Instant edit-run cycle, no compilation step</td></tr>
+          <tr><td>Low-level memory control</td><td>Automatic garbage collection, no segfaults</td></tr>
+          <tr><td>True parallelism (the GIL)</td><td>Simple concurrency model, multiprocessing as alternative</td></tr>
+        </table>
+
+        <p>The Global Interpreter Lock (GIL) means only one thread can execute Python bytecode at a time. This makes CPU-bound multithreading useless in Python. For CPU-bound parallelism, use the <code>multiprocessing</code> module or write the hot loop in C/Rust. For I/O-bound concurrency (web requests, file I/O), threads and <code>asyncio</code> work fine because the GIL is released during I/O operations.</p>
+
+        <p>Python is slow. This is not a secret. But for most applications, it does not matter. If your program spends 90% of its time waiting for network responses, database queries, or user input, the speed of the language is irrelevant. And when performance does matter, Python calls into C: NumPy, pandas, PyTorch, and most performance-critical libraries are written in C or C++ with Python bindings. You get C speed with Python syntax.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>Python is not trying to be the fastest language, or the most type-safe, or the most elegant. It is trying to be the most <em>useful</em> language for the widest range of people and problems. Its design can be summarized in a few principles:</p>
+
+        <ul>
+          <li><strong>Readability is not optional.</strong> Indentation is syntax. There is one obvious way to do things. Code is read more often than it is written.</li>
+          <li><strong>Batteries included.</strong> The standard library handles JSON, HTTP, databases, regex, CSV, dates, logging, and testing without external dependencies.</li>
+          <li><strong>Duck typing.</strong> If it works, it works. The type system gets out of your way. Type hints exist for documentation and tooling, not enforcement.</li>
+          <li><strong>Rapid prototyping.</strong> The REPL, dynamic typing, and minimal boilerplate mean you can go from idea to working code in minutes.</li>
+          <li><strong>Ecosystem.</strong> PyPI has over 500,000 packages. Whatever you need to build &mdash; a web app, a data pipeline, a machine learning model, a CLI tool, a game, a script to rename 10,000 files &mdash; someone has already built a library for it.</li>
+        </ul>
+
+        <p>Python is the language you learn in a weekend and use for a career. It is the language of AI research, data science, web backends, DevOps automation, scientific computing, and introductory computer science courses. It is not the right tool for every job. But it is the right first tool for almost every programmer, and the right only tool for a surprising number of problems.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

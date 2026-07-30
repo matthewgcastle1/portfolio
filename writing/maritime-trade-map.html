@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Maritime Trade Routes and Major Ports</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .map-container {
+      width: 100%;
+      background: white;
+      border: 1px solid #e0d9ce;
+      border-radius: 4px;
+      overflow: auto;
+      margin: 2rem 0;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .port-label {
+      font-size: 11px;
+      font-weight: 600;
+      fill: #1a3a3a;
+      pointer-events: none;
+    }
+
+    .route-label {
+      font-size: 10px;
+      fill: #666;
+      pointer-events: none;
+      font-style: italic;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+      background: #f5f1e8;
+      padding: 2rem;
+      border-radius: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .legend-symbol {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-text {
+      font-size: 0.95rem;
+      color: #5a5a5a;
+    }
+
+    .route-legend {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .route-line {
+      width: 40px;
+      height: 3px;
+      flex-shrink: 0;
+    }
+
+    .major {
+      background-color: #c44536;
+    }
+
+    .significant {
+      background-color: #f39c12;
+    }
+
+    .developing {
+      background-color: #3498db;
+    }
+
+    .port-size-1 {
+      stroke: #c44536;
+      stroke-width: 3;
+    }
+
+    .port-size-2 {
+      stroke: #f39c12;
+      stroke-width: 2.5;
+    }
+
+    .port-size-3 {
+      stroke: #3498db;
+      stroke-width: 2;
+    }
+
+    .chokepoint {
+      fill: #e74c3c;
+    }
+
+    .route-primary {
+      stroke: #c44536;
+      stroke-width: 2.5;
+      opacity: 0.6;
+    }
+
+    .route-secondary {
+      stroke: #f39c12;
+      stroke-width: 2;
+      opacity: 0.5;
+    }
+
+    .route-tertiary {
+      stroke: #3498db;
+      stroke-width: 1.5;
+      opacity: 0.4;
+    }
+
+    .info-panel {
+      background: white;
+      border: 1px solid #e0d9ce;
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .info-panel h3 {
+      color: #1a3a3a;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .info-panel p {
+      color: #5a5a5a;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .legend {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Global Maritime Trade Routes</h1>
+      <p>Major ports, trade lanes, and chokepoints</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">← Home</a>
+      <a href="maritime-trade.html">← Back to Article</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Global Maritime Trade Routes and Major Ports</h1>
+        <div class="article-meta">Interactive map showing the world's most critical shipping infrastructure</div>
+      </div>
+
+      <div class="info-panel">
+        <h3>About This Map</h3>
+        <p>This map shows the world's busiest container ports and major maritime trade routes. Port size indicates annual throughput (TEU capacity). Routes are color-coded by traffic volume.</p>
+        <p><strong>Key:</strong> The routes shown represent primary trade corridors. Most container ships follow these paths because they connect major manufacturing regions (Asia) with consumption centers (Europe, North America, Middle East).</p>
+      </div>
+
+      <div class="map-container">
+        <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="1600" height="900" fill="#e6f2ff"/>
+
+          <!-- Ocean -->
+          <rect width="1600" height="900" fill="#d9e8f5"/>
+
+          <!-- Continents (simplified) -->
+          <path d="M 0 200 L 150 150 L 200 100 L 250 120 L 280 180 L 200 250 L 100 270 Z" fill="#e0d9ce"/>
+          <!-- Europe -->
+          <path d="M 250 120 L 350 100 L 380 200 L 340 250 L 280 230 Z" fill="#e0d9ce"/>
+          <!-- Africa -->
+          <path d="M 300 250 L 400 200 L 450 300 L 500 450 L 450 500 L 350 400 Z" fill="#e0d9ce"/>
+          <!-- Middle East -->
+          <path d="M 400 200 L 500 180 L 520 300 L 450 300 Z" fill="#e0d9ce"/>
+          <!-- India -->
+          <path d="M 500 300 L 550 280 L 570 380 L 530 400 Z" fill="#e0d9ce"/>
+          <!-- Southeast Asia -->
+          <path d="M 600 280 L 680 250 L 720 320 L 680 380 L 600 350 Z" fill="#e0d9ce"/>
+          <!-- East Asia -->
+          <path d="M 700 150 L 800 120 L 850 200 L 800 280 L 700 250 Z" fill="#e0d9ce"/>
+          <!-- North America -->
+          <path d="M 50 350 L 180 300 L 200 500 L 100 550 Z" fill="#e0d9ce"/>
+          <!-- South America -->
+          <path d="M 100 550 L 200 500 L 220 800 L 120 750 Z" fill="#e0d9ce"/>
+          <!-- Australia -->
+          <path d="M 850 650 L 950 620 L 980 750 L 900 780 Z" fill="#e0d9ce"/>
+
+          <!-- PRIMARY TRADE ROUTES (thick red lines) -->
+          <!-- Asia to Europe via Suez -->
+          <path d="M 800 200 Q 600 180 400 250 Q 300 270 280 200" stroke="#c44536" stroke-width="3" fill="none" opacity="0.6" class="route-primary"/>
+          <text x="500" y="180" class="route-label">Asia-Europe Route</text>
+          <text x="500" y="195" class="route-label">(Suez Canal ~20 days)</text>
+
+          <!-- Asia to Americas via Panama -->
+          <path d="M 800 200 Q 600 350 400 450 Q 200 550 150 450" stroke="#c44536" stroke-width="3" fill="none" opacity="0.6" class="route-primary"/>
+          <text x="450" y="380" class="route-label">Asia-Americas Route</text>
+          <text x="450" y="395" class="route-label">(Panama Canal ~15 days)</text>
+
+          <!-- SECONDARY ROUTES (orange) -->
+          <!-- Asia to Middle East/Africa -->
+          <path d="M 750 250 Q 650 300 550 350 Q 450 400 400 400" stroke="#f39c12" stroke-width="2.5" fill="none" opacity="0.5" class="route-secondary"/>
+          <text x="550" y="340" class="route-label" font-size="9">Intra-Asian & Middle East</text>
+
+          <!-- Intra-Asian Trade -->
+          <path d="M 650 250 Q 700 280 750 300 Q 650 320 600 300" stroke="#f39c12" stroke-width="2.5" fill="none" opacity="0.5" class="route-secondary"/>
+          <text x="650" y="240" class="route-label">Intra-Asian</text>
+
+          <!-- Americas Coastal -->
+          <path d="M 150 450 Q 180 600 180 700" stroke="#3498db" stroke-width="2" fill="none" opacity="0.4" class="route-tertiary"/>
+
+          <!-- MAJOR PORTS - Tier 1 (Red circles, largest) -->
+          <!-- Shanghai -->
+          <circle cx="800" cy="200" r="8" fill="none" class="port-size-1"/>
+          <text x="820" y="205" class="port-label">Shanghai</text>
+          <text x="820" y="220" class="port-label" font-size="9">(45M TEU)</text>
+
+          <!-- Singapore -->
+          <circle cx="650" cy="320" r="8" fill="none" class="port-size-1"/>
+          <text x="670" y="325" class="port-label">Singapore</text>
+          <text x="670" y="340" class="port-label" font-size="9">(37M TEU)</text>
+
+          <!-- Rotterdam -->
+          <circle cx="280" cy="180" r="8" fill="none" class="port-size-1"/>
+          <text x="290" y="160" class="port-label">Rotterdam</text>
+          <text x="290" y="175" class="port-label" font-size="9">(14M TEU)</text>
+
+          <!-- Los Angeles -->
+          <circle cx="110" cy="420" r="8" fill="none" class="port-size-1"/>
+          <text x="60" y="415" class="port-label">Los Angeles</text>
+          <text x="60" y="430" class="port-label" font-size="9">(17M TEU)</text>
+
+          <!-- MAJOR PORTS - Tier 2 (Orange circles) -->
+          <!-- Shenzhen -->
+          <circle cx="820" cy="230" r="7" fill="none" class="port-size-2"/>
+          <text x="840" y="235" class="port-label" font-size="10">Shenzhen</text>
+
+          <!-- Hong Kong -->
+          <circle cx="810" cy="250" r="7" fill="none" class="port-size-2"/>
+          <text x="830" y="255" class="port-label" font-size="10">Hong Kong</text>
+
+          <!-- Busan -->
+          <circle cx="850" cy="180" r="7" fill="none" class="port-size-2"/>
+          <text x="870" y="185" class="port-label" font-size="10">Busan</text>
+
+          <!-- Dubai -->
+          <circle cx="500" cy="280" r="7" fill="none" class="port-size-2"/>
+          <text x="520" y="285" class="port-label" font-size="10">Dubai</text>
+
+          <!-- Hamburg -->
+          <circle cx="310" cy="160" r="7" fill="none" class="port-size-2"/>
+          <text x="320" y="145" class="port-label" font-size="10">Hamburg</text>
+
+          <!-- Port Klang -->
+          <circle cx="640" cy="310" r="7" fill="none" class="port-size-2"/>
+          <text x="660" y="315" class="port-label" font-size="10">Port Klang</text>
+
+          <!-- TIER 3 PORTS (Blue circles, significant) -->
+          <!-- Hong Kong area ports -->
+          <circle cx="800" cy="270" r="6" fill="none" class="port-size-3"/>
+          <text x="820" y="275" class="port-label" font-size="9">Xiamen</text>
+
+          <!-- Singapore Straits area -->
+          <circle cx="670" cy="300" r="6" fill="none" class="port-size-3"/>
+          <text x="690" y="295" class="port-label" font-size="9">Tanjung Pelepas</text>
+
+          <!-- New York -->
+          <circle cx="200" cy="380" r="6" fill="none" class="port-size-3"/>
+          <text x="180" y="370" class="port-label" font-size="9">New York</text>
+
+          <!-- Singapore again but smaller secondary port -->
+          <circle cx="630" cy="340" r="5" fill="none" class="port-size-3"/>
+
+          <!-- Middle East ports -->
+          <circle cx="520" cy="300" r="6" fill="none" class="port-size-3"/>
+          <text x="540" y="305" class="port-label" font-size="9">Jebel Ali</text>
+
+          <!-- CHOKEPOINTS (Red markers with labels) -->
+          <!-- Malacca Strait -->
+          <circle cx="620" cy="310" r="5" fill="#e74c3c" opacity="0.8"/>
+          <text x="630" y="305" class="port-label" font-size="9" fill="#e74c3c">Malacca</text>
+          <text x="630" y="318" class="route-label" fill="#e74c3c">25% of trade</text>
+
+          <!-- Suez Canal -->
+          <circle cx="380" cy="250" r="5" fill="#e74c3c" opacity="0.8"/>
+          <text x="390" y="245" class="port-label" font-size="9" fill="#e74c3c">Suez</text>
+          <text x="390" y="258" class="route-label" fill="#e74c3c">12% of trade</text>
+
+          <!-- Panama Canal -->
+          <circle cx="160" cy="460" r="5" fill="#e74c3c" opacity="0.8"/>
+          <text x="140" y="455" class="port-label" font-size="9" fill="#e74c3c">Panama</text>
+          <text x="140" y="468" class="route-label" fill="#e74c3c">5% of trade</text>
+
+          <!-- Strait of Hormuz -->
+          <circle cx="540" cy="270" r="5" fill="#e74c3c" opacity="0.8"/>
+          <text x="550" y="265" class="port-label" font-size="9" fill="#e74c3c">Hormuz</text>
+          <text x="550" y="278" class="route-label" fill="#e74c3c">20% of oil</text>
+
+          <!-- Distance/Time annotations -->
+          <text x="1200" y="100" class="route-label" font-size="12" fill="#666">
+            <tspan x="1200">Average Transit Times:</tspan>
+            <tspan x="1200" dy="20">Shanghai → Rotterdam: 20-30 days</tspan>
+            <tspan x="1200" dy="20">Shanghai → LA: 10-15 days</tspan>
+            <tspan x="1200" dy="20">Singapore → LA: 15-20 days</tspan>
+          </text>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <div>
+          <h3 style="margin-bottom: 1rem; color: #1a3a3a;">Port Size (Annual Capacity)</h3>
+          <div class="legend-item">
+            <div class="legend-symbol major"></div>
+            <div class="legend-text"><strong>Mega Port:</strong> 40M+ TEU (Shanghai, Singapore)</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol significant"></div>
+            <div class="legend-text"><strong>Major Port:</strong> 15-40M TEU (Rotterdam, Dubai)</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-symbol developing"></div>
+            <div class="legend-text"><strong>Significant Port:</strong> 5-15M TEU</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 1rem; color: #1a3a3a;">Trade Routes</h3>
+          <div class="legend-item">
+            <div class="route-line major"></div>
+            <div class="legend-text"><strong>Primary:</strong> 3M+ containers/year (Asia-Europe)</div>
+          </div>
+          <div class="legend-item">
+            <div class="route-line significant"></div>
+            <div class="legend-text"><strong>Secondary:</strong> 1-3M containers/year</div>
+          </div>
+          <div class="legend-item">
+            <div class="route-line developing"></div>
+            <div class="legend-text"><strong>Developing:</strong> Regional/specialized routes</div>
+          </div>
+          <div class="legend-item">
+            <div style="width: 20px; height: 8px; background: #e74c3c; border-radius: 50%;"></div>
+            <div class="legend-text"><strong>Chokepoint:</strong> Critical straits/canals</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <h3>Key Insights from the Map</h3>
+        <p><strong>Concentration in Asia:</strong> The top ports are concentrated in East Asia (Shanghai, Shenzhen, Hong Kong, Busan, Singapore). This reflects where manufacturing happens. China alone accounts for ~40% of global container traffic.</p>
+        <p><strong>Hub Ports:</strong> Singapore and Dubai are major transshipment hubs. Containers arriving from one route are reloaded onto other vessels, allowing companies to serve smaller ports efficiently.</p>
+        <p><strong>Chokepoints are Vulnerable:</strong> The Suez Canal is critical for Asia-Europe trade. The Malacca Strait handles 25% of global maritime trade. These strategic locations are vulnerable to piracy, accidents, or political disruption.</p>
+        <p><strong>Imbalance in Trade:</strong> More containers flow from Asia to Europe/Americas than the reverse. This creates "empty container repositioning" costs—shipping empty containers back to Asia to be refilled. This is a major logistics challenge.</p>
+        <p><strong>Port Development:</strong> Developing nations are investing heavily in port capacity. India, Vietnam, and others see ports as economic development engines. China's Belt and Road initiative has funded port development globally for strategic advantage.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

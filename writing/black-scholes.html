@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Black-Scholes Equation</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .highlight-box p {
+      text-align: center;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-box {
+      background-color: #fff5f5;
+      border-left: 4px solid #c44536;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .warning-box h4 {
+      color: #c44536;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      border-radius: 3px;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+      .diagram-box { font-size: 0.72rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Black-Scholes Equation</h1>
+      <p>How options are priced, what every term means, and where the edge is</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Black-Scholes Equation: Pricing Options and Finding Edge</h1>
+        <div class="article-meta">Finance &amp; Mathematics</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Why This Matters</h2>
+
+        <p>The Black-Scholes model is the central equation of options pricing. Every options market in the world uses it, or something derived from it, as the starting point for pricing. Understanding it is not optional if you want to trade options intelligently. But more importantly, understanding <em>where it breaks down</em> is where the actual trading edge lives. The model gives you a language and a baseline. The deviations from the model are where money is made and lost.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. Options in 60 Seconds</h2>
+        <!-- ============================================================ -->
+
+        <p>A <strong>call option</strong> gives you the right, but not the obligation, to buy an asset at a fixed price (the <strong>strike</strong>, K) on or before a fixed date (the <strong>expiration</strong>, T). A <strong>put option</strong> gives you the right to sell at K.</p>
+
+        <p>At expiration, a call is worth $\max(S - K, 0)$ where $S$ is the stock price. If the stock is above the strike, you exercise and pocket the difference. If it&rsquo;s below, the option expires worthless. A put is worth $\max(K - S, 0)$.</p>
+
+        <p>Before expiration, the option is worth <em>more</em> than its immediate exercise value because the stock might move favorably. The question Black-Scholes answers is: how much more?</p>
+
+        <div class="diagram-box">
+<pre>
+Call payoff at expiration:          Put payoff at expiration:
+
+  Payoff                              Payoff
+    |          /                        |\
+    |         /                         | \
+    |        /                          |  \
+    |       /                           |   \
+    |______/____________ S              |____\__________ S
+           K                                  K
+
+  Worth 0 below K,                    Worth K-S below K,
+  worth S-K above K.                  worth 0 above K.
+</pre>
+        </div>
+
+        <p>The question every options trader faces: what is a fair price for this option <em>today</em>, with time remaining before expiration? If you can answer this better than the market, you can trade profitably.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. The Model&rsquo;s Assumptions</h2>
+        <!-- ============================================================ -->
+
+        <p>Black-Scholes makes specific assumptions about how the stock price moves. Understanding these assumptions is critical because every assumption that fails in reality is a potential source of mispricing.</p>
+
+        <div class="concept-box">
+          <h4>The Black-Scholes Assumptions</h4>
+          <p><strong>1. The stock follows geometric Brownian motion.</strong> The stock price $S(t)$ evolves as:</p>
+          <p>$$dS = \mu S \, dt + \sigma S \, dW$$</p>
+          <p>where $\mu$ is the drift (expected return), $\sigma$ is the volatility (annualized standard deviation of returns), and $dW$ is a Wiener process (Brownian motion). This says that log-returns are normally distributed with variance $\sigma^2$ per unit time.</p>
+          <p><strong>2. Volatility $\sigma$ is constant and known.</strong></p>
+          <p><strong>3. The risk-free interest rate $r$ is constant and known.</strong></p>
+          <p><strong>4. No dividends.</strong> (Easily relaxed.)</p>
+          <p><strong>5. No transaction costs or taxes.</strong></p>
+          <p><strong>6. Continuous trading is possible.</strong> You can rebalance your hedge at every instant.</p>
+          <p><strong>7. No arbitrage.</strong> There is no way to make risk-free profit.</p>
+        </div>
+
+        <p>Assumptions 2, 5, and 6 are the ones that fail most consequentially. We will return to this.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. The Formula</h2>
+        <!-- ============================================================ -->
+
+        <p>The Black-Scholes formula for the price of a European call option is:</p>
+
+        <div class="highlight-box">
+          <p><strong>The Black-Scholes Formula</strong></p>
+          $$C = S \cdot N(d_1) - K \cdot e^{-rT} \cdot N(d_2)$$
+          $$d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)T}{\sigma\sqrt{T}} \qquad d_2 = d_1 - \sigma\sqrt{T}$$
+        </div>
+
+        <p>The put price is given by put-call parity: $P = K \cdot e^{-rT} \cdot N(-d_2) - S \cdot N(-d_1)$.</p>
+
+        <p>Let&rsquo;s unpack every symbol.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>What It Is</th>
+          </tr>
+          <tr>
+            <td>$C$</td>
+            <td>Call price</td>
+            <td>The fair value of the call option today. This is what we&rsquo;re solving for.</td>
+          </tr>
+          <tr>
+            <td>$S$</td>
+            <td>Stock price</td>
+            <td>Current price of the underlying asset. Observable.</td>
+          </tr>
+          <tr>
+            <td>$K$</td>
+            <td>Strike price</td>
+            <td>The price at which the option holder can buy (call) or sell (put). Fixed by the contract.</td>
+          </tr>
+          <tr>
+            <td>$T$</td>
+            <td>Time to expiration</td>
+            <td>In years. $30/365 \approx 0.082$. Observable.</td>
+          </tr>
+          <tr>
+            <td>$r$</td>
+            <td>Risk-free rate</td>
+            <td>Annualized continuously-compounded rate. Use the T-bill rate matching your expiration. Observable.</td>
+          </tr>
+          <tr>
+            <td>$\sigma$</td>
+            <td>Volatility</td>
+            <td>Annualized standard deviation of the stock&rsquo;s log-returns. This is <em>the</em> critical input. <strong>Not directly observable.</strong></td>
+          </tr>
+          <tr>
+            <td>$N(\cdot)$</td>
+            <td>Standard normal CDF</td>
+            <td>$N(x)$ = probability that a standard normal variable is less than $x$. This is the only non-elementary function in the formula.</td>
+          </tr>
+          <tr>
+            <td>$d_1$</td>
+            <td>See below</td>
+            <td>A z-score measuring how far in-the-money the option is, adjusted for drift and time.</td>
+          </tr>
+          <tr>
+            <td>$d_2$</td>
+            <td>See below</td>
+            <td>$d_1$ minus one standard deviation of the stock&rsquo;s total move. Probability-related quantity.</td>
+          </tr>
+        </table>
+
+        <p>Five inputs, one output. Four of the five inputs ($S$, $K$, $T$, $r$) are directly observable. The fifth, $\sigma$, is not. This is the entire game.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. What Each Piece Means Intuitively</h2>
+        <!-- ============================================================ -->
+
+        <h3>The Structure: $C = S \cdot N(d_1) - K \cdot e^{-rT} \cdot N(d_2)$</h3>
+
+        <p>Read this as: the call price equals two pieces.</p>
+
+        <p><strong>The first term, $S \cdot N(d_1)$:</strong> This is the expected value of receiving the stock, weighted by the probability that you&rsquo;ll want it (i.e., that the option finishes in the money), adjusted for the fact that you receive it only in states where the stock is high. $N(d_1)$ is <em>not</em> the probability that the option expires in the money. It is the <strong>delta</strong>&mdash;the option&rsquo;s sensitivity to the stock price&mdash;and it equals the probability of expiring in the money under the &ldquo;stock-price measure&rdquo; (a probability-weighted version of the world where higher stock prices are more likely). Think of it as the probability of exercise, biased upward by the fact that in-the-money states are more valuable.</p>
+
+        <p><strong>The second term, $K \cdot e^{-rT} \cdot N(d_2)$:</strong> This is the present value of paying the strike price $K$, times the probability that you actually have to pay it. $N(d_2)$ <em>is</em> the risk-neutral probability that the option expires in the money&mdash;the probability under the measure where the stock grows at rate $r$ (not $\mu$). The factor $e^{-rT}$ discounts the strike payment back to today.</p>
+
+        <p>So the formula says: <em>the call is worth what you expect to receive (the stock, in good states) minus what you expect to pay (the strike, discounted, in those same states).</em></p>
+
+        <h3>What Are $d_1$ and $d_2$?</h3>
+
+        <p>These are the hardest pieces to build intuition for, but they are just z-scores.</p>
+
+        <div class="math-box">
+          <span class="label">$d_1$ and $d_2$, unpacked:</span>
+          $$d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)\,T}{\sigma\sqrt{T}}$$
+          The numerator has two parts:<br>
+          &bull; <strong>$\ln(S/K)$</strong>: How far in-the-money the option is right now (in log terms). If $S > K$, this is positive; the option is in the money.<br>
+          &bull; <strong>$(r + \sigma^2/2)\,T$</strong>: How much the stock is expected to drift upward by expiration. The $r$ is the risk-free drift. The $\sigma^2/2$ is an It&ocirc; correction&mdash;geometric Brownian motion has a higher expected value than its median because the distribution is right-skewed. This term is always positive.
+          <br><br>
+          The denominator, $\sigma\sqrt{T}$, is the total standard deviation of the stock&rsquo;s log-return over the period. It normalizes the numerator into a z-score.
+          <br><br>
+          <strong>$d_2 = d_1 - \sigma\sqrt{T}$</strong>: Same z-score, but shifted left by one standard deviation. This removes the $\sigma^2/2$ correction and gives the &ldquo;center&rdquo; probability of finishing in the money.
+        </div>
+
+        <p>If $d_1$ is large and positive, the option is deep in the money, $N(d_1) \approx 1$, and $C \approx S - Ke^{-rT}$ (the option is worth approximately its intrinsic value). If $d_1$ is large and negative, the option is deep out of the money, $N(d_1) \approx 0$, and $C \approx 0$. The interesting behavior is around $d_1 \approx 0$, where the option is near the money and the probability of exercise is uncertain. This is where time value is largest and where the Greeks matter most.</p>
+
+        <h3>Risk-Neutral Pricing: Why $\mu$ Doesn&rsquo;t Appear</h3>
+
+        <p>Notice something remarkable: the stock&rsquo;s expected return $\mu$ does not appear in the formula. A stock you expect to grow at 20% per year and a stock you expect to grow at 2% per year have the same option price, given the same volatility. This seems wrong, but it is the deepest insight in the model.</p>
+
+        <p>The reason is <strong>risk-neutral pricing</strong>. The argument goes like this: you can replicate the option&rsquo;s payoff by continuously trading the stock and a risk-free bond. If you hold $N(d_1)$ shares of the stock at every instant (adjusting as the stock moves), the portfolio tracks the option perfectly. Since the replicating portfolio and the option produce identical payoffs, they must have the same price. And the price of the replicating portfolio does not depend on $\mu$&mdash;it depends only on $\sigma$, because the hedge adjusts to the stock&rsquo;s moves regardless of their expected direction.</p>
+
+        <p>This means the option price depends on how much the stock <em>moves</em> (volatility) but not on which <em>direction</em> it&rsquo;s expected to move (drift). The drift is absorbed by the hedging strategy. Only the magnitude of the fluctuations matters.</p>
+
+        <div class="note-box">
+          <h4>The &ldquo;risk-neutral world&rdquo; is a computational trick, not a belief</h4>
+          <p>When we say &ldquo;in the risk-neutral world, the stock grows at rate $r$,&rdquo; we are not saying we believe the stock will return the risk-free rate. We are saying: because we can hedge, the option price is the same as it would be in a hypothetical world where stocks grew at rate $r$ and investors were indifferent to risk. We compute in that world because the math is simpler. The answer is correct for the real world because hedging eliminates the dependence on $\mu$.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. The Greeks</h2>
+        <!-- ============================================================ -->
+
+        <p>The Greeks are the partial derivatives of the option price with respect to its inputs. They tell you how the option price responds to changes in the market. If you are trading options, you are trading Greeks.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Greek</th>
+            <th>Symbol</th>
+            <th>Definition</th>
+            <th>Call Value</th>
+            <th>What It Means</th>
+          </tr>
+          <tr>
+            <td><strong>Delta</strong></td>
+            <td>$\Delta$</td>
+            <td>$\partial C/\partial S$</td>
+            <td>$N(d_1)$</td>
+            <td>How much the option price moves per \\$1 move in the stock. Ranges from 0 (deep OTM) to 1 (deep ITM). An ATM option has $\Delta \approx 0.5$. Also the hedge ratio: to delta-hedge, hold $\Delta$ shares per option sold.</td>
+          </tr>
+          <tr>
+            <td><strong>Gamma</strong></td>
+            <td>$\Gamma$</td>
+            <td>$\partial^2 C/\partial S^2$</td>
+            <td>$N'(d_1) / (S\sigma\sqrt{T})$</td>
+            <td>The rate of change of delta. Highest for ATM options near expiration. Gamma is the curvature of the option&rsquo;s price curve. <strong>Long gamma = you profit from large moves in either direction.</strong> Short gamma = you lose from large moves.</td>
+          </tr>
+          <tr>
+            <td><strong>Theta</strong></td>
+            <td>$\Theta$</td>
+            <td>$\partial C/\partial t$</td>
+            <td>(see formula below)</td>
+            <td>Time decay. How much value the option loses per day, all else equal. Always negative for long options. Theta accelerates as expiration approaches. <strong>Theta is the price you pay for gamma.</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Vega</strong></td>
+            <td>$\nu$</td>
+            <td>$\partial C/\partial \sigma$</td>
+            <td>$S \cdot N'(d_1) \cdot \sqrt{T}$</td>
+            <td>Sensitivity to volatility. How much the option price changes per 1 percentage-point change in implied volatility. Highest for ATM, long-dated options. <strong>This is the key Greek for vol trading.</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Rho</strong></td>
+            <td>$\rho$</td>
+            <td>$\partial C/\partial r$</td>
+            <td>$KTe^{-rT}N(d_2)$</td>
+            <td>Sensitivity to interest rates. Usually small relative to the others. Matters for long-dated options and in rapidly changing rate environments.</td>
+          </tr>
+        </table>
+
+        <h3>The Gamma-Theta Tradeoff</h3>
+
+        <p>This is the most important relationship in options trading. Under Black-Scholes, for a delta-hedged portfolio:</p>
+
+        <div class="math-box">
+          <span class="label">The fundamental PnL equation for a delta-hedged option:</span>
+          $$\text{Daily PnL} \approx \tfrac{1}{2}\,\Gamma\, S^2 \left(\frac{\Delta S}{S}\right)^2 - \Theta\,\Delta t$$
+          The first term is the gamma gain: you profit when the stock moves (in either direction) because your hedge is convex. The second term is the theta cost: you pay for the privilege of being long gamma by losing time value every day.
+          <br><br>
+          If the stock moves <em>more</em> than implied volatility predicts, the gamma gains exceed the theta costs, and you profit. If the stock moves <em>less</em> than implied, the theta costs exceed the gamma gains, and you lose.
+        </div>
+
+        <p>This is the entire business model of vol trading, distilled to one equation. When you buy an option and delta-hedge, you are betting that <strong>realized volatility will exceed implied volatility</strong>. When you sell an option and delta-hedge, you are betting the opposite. The option market is, at its core, a market for volatility.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Volatility: The Only Input That Matters</h2>
+        <!-- ============================================================ -->
+
+        <h3>Implied Volatility</h3>
+
+        <p>Four of the five Black-Scholes inputs are observable. The fifth, $\sigma$, is not. In practice, the market works backward: given the observed option price $C$, you solve the Black-Scholes formula for the $\sigma$ that produces that price. This $\sigma$ is the <strong>implied volatility</strong> (IV).</p>
+
+        <p>Implied volatility is not a forecast. It is the volatility number the market is pricing in. It is the market&rsquo;s collective assessment of how much the stock will move&mdash;but filtered through supply and demand for options, hedging flows, and the risk premia that option sellers demand. Think of IV as the &ldquo;price&rdquo; of an option quoted in volatility units rather than dollars.</p>
+
+        <h3>Historical (Realized) Volatility</h3>
+
+        <p>Historical volatility (HV or RV) is the actual standard deviation of the stock&rsquo;s log-returns over some past window. You can compute it directly from price data:</p>
+
+        <div class="math-box">
+          <span class="label">Realized volatility (annualized):</span>
+          $$\sigma_{\text{realized}} = \text{std(daily log-returns)} \times \sqrt{252}$$
+          where the 252 is the number of trading days per year. For example, if the standard deviation of daily log-returns is 1.5%, then annualized RV $= 0.015 \times \sqrt{252} \approx 23.8\%$.
+        </div>
+
+        <p>The gap between implied and realized volatility is the central quantity in options trading.</p>
+
+        <h3>The Volatility Risk Premium</h3>
+
+        <p>Empirically, across almost all markets and time periods, <strong>implied volatility is higher than subsequent realized volatility</strong>, on average. This is the <strong>volatility risk premium</strong> (VRP). It exists because:</p>
+
+        <ul>
+          <li>Option sellers bear crash risk (left-tail events hurt them disproportionately), so they demand compensation.</li>
+          <li>Option buyers (hedgers) are willing to overpay for insurance, just as homeowners overpay for fire insurance relative to expected losses.</li>
+          <li>The vol risk premium is compensation for bearing a risk that cannot be diversified away (it is correlated with market crashes).</li>
+        </ul>
+
+        <p>On average, selling options and delta-hedging is profitable because IV > RV. But &ldquo;on average&rdquo; hides enormous variance. The days when the premium goes against you (market crashes, vol spikes) are violent. This is the entire risk profile of being short vol: you collect small, steady premiums, punctuated by large, sudden losses. Understanding this asymmetry is the difference between a strategy and a blowup.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Where Black-Scholes Breaks Down</h2>
+        <!-- ============================================================ -->
+
+        <p>Every assumption failure creates a deviation from the model. Every deviation is either priced by the market (and thus not exploitable) or mispriced (and thus an opportunity). Knowing which is which is the hard part.</p>
+
+        <h3>1. Volatility Is Not Constant: The Volatility Smile</h3>
+
+        <p>Black-Scholes assumes a single volatility $\sigma$ for all strikes and expirations. In reality, if you compute the implied volatility for every option on the same underlying, you get a <strong>surface</strong> rather than a single number. The two dimensions are strike and expiration:</p>
+
+        <div class="diagram-box">
+<pre>
+Implied Volatility vs. Strike (fixed expiration):
+
+  IV
+  40% |  \
+  35% |    \
+  30% |      \___________
+  25% |                   \___
+  20% |                        \
+      +-----|-----|-----|-----|----&gt; Strike
+           80    90   100   110   120
+          (OTM         ATM         OTM
+           puts)                  calls)
+
+This is the "volatility skew" or "smile."
+OTM puts have higher IV than ATM options,
+which have higher IV than OTM calls.
+</pre>
+        </div>
+
+        <p>The skew exists because the real world has fat tails. Stock returns are not log-normal: crashes (large downward moves) happen more often than Black-Scholes predicts, and the market prices this in by demanding higher IV for OTM puts. The skew steepened dramatically after the 1987 crash and has persisted ever since.</p>
+
+        <p><strong>Trading implication:</strong> The skew is mostly &ldquo;fair&rdquo;&mdash;it reflects the actual fat-tailed distribution of returns. But the <em>shape</em> of the skew changes over time, and deviations from the typical shape can signal mispricing. A strategy that trades the skew (e.g., selling OTM puts and buying ATM options, or trading put spreads vs. call spreads) is trading the relative pricing of different strikes, not the absolute level of vol.</p>
+
+        <h3>2. Volatility Is Not Constant: The Term Structure</h3>
+
+        <p>IV varies with expiration. Typically, short-dated options have different IV than long-dated options. The <strong>term structure</strong> of volatility usually slopes upward (longer = higher IV) in calm markets and inverts (shorter > longer) during crises, because short-dated realized vol spikes while long-dated expectations are anchored.</p>
+
+        <p><strong>Trading implication:</strong> Calendar spreads (buy one expiration, sell another) are bets on the term structure. If short-dated IV is elevated relative to long-dated (backwardation), selling short-dated and buying long-dated is a bet that the elevation will normalize.</p>
+
+        <h3>3. Returns Have Fat Tails (Kurtosis)</h3>
+
+        <p>Real stock returns have excess kurtosis: extreme moves happen far more often than the normal distribution predicts. A 5-sigma daily move should happen roughly once every 14,000 years under the Gaussian model. In the S&amp;P 500, 5-sigma days happen about once every few years. The 1987 crash was a ~22-sigma event under Black-Scholes&mdash;a number so astronomically unlikely that it should never have happened in the lifetime of the universe. It did.</p>
+
+        <p><strong>Trading implication:</strong> Deep OTM options, especially puts, are systematically underpriced by Black-Scholes (even after the skew). Tail risk strategies (buying deep OTM puts, Nassim Taleb&rsquo;s approach) exploit this. The difficulty is that they lose money slowly and consistently, and only pay off in rare events. Carrying the position requires patience and capital.</p>
+
+        <h3>4. Jumps</h3>
+
+        <p>Black-Scholes assumes continuous price paths. In reality, stocks gap: earnings announcements, FDA decisions, and geopolitical events cause discontinuous jumps. These jumps are not hedgeable by delta-hedging (because the stock moves too fast to adjust the hedge), and they make short-dated options more valuable than Black-Scholes predicts.</p>
+
+        <p><strong>Trading implication:</strong> Around known events (earnings, FOMC), IV spikes to price in the expected jump. The question is whether the market&rsquo;s IV correctly prices the jump size. If you have a better estimate of the earnings move than the market, you can trade the discrepancy. This is the basis of most earnings-focused options strategies.</p>
+
+        <h3>5. Discrete Hedging and Transaction Costs</h3>
+
+        <p>The model assumes you can rebalance your delta hedge continuously and costlessly. In reality, you rebalance discretely (hourly, daily) and pay bid-ask spreads each time. The error from discrete hedging is proportional to gamma and to the square root of the rebalancing interval. Transaction costs eat directly into the gamma-theta PnL.</p>
+
+        <p><strong>Trading implication:</strong> High-gamma positions (short-dated ATM options) are the most sensitive to hedging frequency and transaction costs. In practice, you need to model your hedge slippage as a cost and subtract it from your expected PnL. This is one reason market makers have an edge: they pay minimal transaction costs.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Finding Mispriced Options</h2>
+        <!-- ============================================================ -->
+
+        <p>Now for the practical question. Given everything above, how would you build a systematic strategy that identifies and exploits options mispricing?</p>
+
+        <h3>Strategy 1: Volatility Forecasting (IV vs. Realized)</h3>
+
+        <p>The most direct approach. If you can forecast realized volatility better than the market, you can systematically buy options when IV &lt; your forecast and sell when IV &gt; your forecast.</p>
+
+        <div class="concept-box">
+          <h4>The mechanics</h4>
+          <p><strong>1. Estimate future realized volatility.</strong> Common models: GARCH (uses past returns to forecast future vol), HAR (Heterogeneous Autoregressive model, uses 1-day, 5-day, and 22-day realized vol), or machine learning on features like recent returns, volume, IV term structure, VIX, cross-asset correlations.</p>
+          <p><strong>2. Compare to implied volatility.</strong> Compute the spread: your RV forecast minus current IV. If the spread is positive (you forecast higher RV than the market implies), buy options. If negative, sell options.</p>
+          <p><strong>3. Delta-hedge.</strong> Immediately after establishing the position, delta-hedge to remove directional exposure. Now your PnL depends only on whether realized vol exceeds implied vol.</p>
+          <p><strong>4. Rebalance the hedge.</strong> As the stock moves, delta changes. Rebalance your stock position to maintain delta-neutrality. The gamma PnL accumulates through this rebalancing.</p>
+          <p><strong>5. At expiration (or when you close):</strong> If realized vol exceeded implied vol, your gamma gains exceeded your theta costs, and you profited. If not, you lost.</p>
+        </div>
+
+        <p>The edge comes from step 1. If your vol forecast is unbiased and has lower RMSE than the market&rsquo;s implied, you will be profitable in expectation. In practice, this is very hard because the options market is efficient and IV is a strong (though biased) predictor of future RV. You need a genuine informational or analytical edge.</p>
+
+        <h3>Strategy 2: Trading the Skew</h3>
+
+        <p>Instead of forecasting the absolute level of vol, you can trade the <em>relative</em> pricing of different strikes. This is less sensitive to directional vol moves and more about the shape of the distribution.</p>
+
+        <div class="concept-box">
+          <h4>The idea</h4>
+          <p>The vol skew (how much more OTM puts cost than ATM options) fluctuates over time. When the skew is steep relative to its historical range, OTM puts may be overpriced relative to ATM options. You can sell the skew (sell OTM puts, buy ATM puts, delta-hedge) and profit if the skew normalizes.</p>
+          <p>Metrics to track: the 25-delta put IV minus the ATM IV (the &ldquo;$25\Delta$ risk reversal&rdquo;), the butterfly spread ($25\Delta$ put IV + $25\Delta$ call IV $- 2 \times$ ATM IV, measuring the curvature of the smile).</p>
+        </div>
+
+        <h3>Strategy 3: Term Structure Trades</h3>
+
+        <div class="concept-box">
+          <h4>The idea</h4>
+          <p>Buy an option at one expiration, sell at another. When the term structure is steep (long-dated IV >> short-dated IV), sell long-dated and buy short-dated, betting on convergence. When inverted (during a crisis), do the opposite.</p>
+          <p>The simplest implementation: calendar spreads on the same strike. The edge is in predicting whether the term structure will steepen, flatten, or invert.</p>
+        </div>
+
+        <h3>Strategy 4: Cross-Asset Volatility</h3>
+
+        <div class="concept-box">
+          <h4>The idea</h4>
+          <p>Implied vols on correlated assets should be related. If SPY IV spikes but QQQ IV does not (and the two are historically correlated), the relative pricing is likely to converge. Sell SPY options, buy QQQ options (or vice versa), delta-hedge both legs. This is a dispersion or correlation trade.</p>
+          <p>More sophisticated: trade index vol vs. single-stock vol. The index vol should be less than the average single-stock vol (because of diversification). When this &ldquo;implied correlation&rdquo; is high, you can sell index options and buy single-stock options, betting that implied correlation is too high.</p>
+        </div>
+
+        <h3>Strategy 5: Event Volatility (Earnings, FOMC)</h3>
+
+        <div class="concept-box">
+          <h4>The idea</h4>
+          <p>Before earnings, short-dated IV spikes to price in the expected announcement move. You can isolate the implied earnings move from the option prices. If your estimate of the actual move (from the company&rsquo;s historical earnings surprises, sector behavior, or analysis of the quarter) differs from the market&rsquo;s implied move, you can trade the discrepancy.</p>
+          <p>The implied move is approximately: straddle price / stock price for the nearest weekly expiration. If this implies a 5% move and you think the real move will be 8%, buy the straddle. If you think it will be 3%, sell the straddle.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. Building a Systematic Framework</h2>
+        <!-- ============================================================ -->
+
+        <p>If you want to build an algorithmic system around these ideas, here is the data and computation pipeline:</p>
+
+        <div class="math-box">
+          <span class="label">The pipeline:</span><br><br>
+          <strong>1. Data ingestion:</strong> Real-time options chain (all strikes, all expirations), underlying price, risk-free rate (Treasury yields), dividends.<br><br>
+          <strong>2. IV surface construction:</strong> For every option, invert Black-Scholes to get IV. Fit a smooth surface (SABR model, SVI parameterization, or spline interpolation) across strikes and expirations. This is your market snapshot.<br><br>
+          <strong>3. Realized vol computation:</strong> From high-frequency underlying price data, compute realized vol using a robust estimator (Yang-Zhang, Garman-Klass, or Rogers-Satchell&mdash;these use OHLC data and are more efficient than close-to-close).<br><br>
+          <strong>4. Forecast model:</strong> Predict future RV (1-week, 1-month) from features: recent RV at multiple horizons, IV term structure, VIX level and slope, cross-asset vol, volume, returns. GARCH and HAR are the standard baselines. ML models can incorporate more features but risk overfitting.<br><br>
+          <strong>5. Signal generation:</strong> Compare your RV forecast to IV at each point on the surface. The spread is your signal. Large positive spread = buy vol; large negative spread = sell vol. Apply the same logic to skew and term structure signals.<br><br>
+          <strong>6. Position sizing and execution:</strong> Trade options to express your view. Delta-hedge immediately. Size positions so that your worst-case loss (a large gap move, a vol spike) is survivable. <em>Risk management is the strategy.</em><br><br>
+          <strong>7. Hedge management:</strong> Rebalance delta on a schedule (or on delta thresholds). Track your running gamma PnL vs. theta decay. Attribute PnL to your signal (were you right about vol?) vs. execution (did hedging costs eat your edge?).
+        </div>
+
+        <h3>Backtesting Pitfalls</h3>
+
+        <p>Options backtesting is treacherous. Common traps:</p>
+
+        <ul>
+          <li><strong>Bid-ask spreads:</strong> Options are wide. If your backtest uses mid prices, you are overstating your edge by the half-spread on entry and exit. For many strategies, the edge is smaller than the spread.</li>
+          <li><strong>Liquidity:</strong> Deep OTM options are often illiquid. You cannot trade the sizes your backtest assumes at the prices your backtest uses.</li>
+          <li><strong>Look-ahead bias in IV:</strong> If you compute IV using settlement prices, you are using information not available in real time (the settlement price is set at close, and the option prices you would have traded during the day may differ).</li>
+          <li><strong>Survivorship bias:</strong> Delisted stocks, corporate actions, and early exercise (for American options) complicate historical data. Ensure your data includes these events.</li>
+          <li><strong>Regime changes:</strong> Vol dynamics change across regimes (2008 is not 2017). A model calibrated on one regime may fail in another.</li>
+        </ul>
+
+        <div class="warning-box">
+          <h4>The most important thing</h4>
+          <p>The vol risk premium means that <em>on average</em>, selling options is profitable. This is well known. A strategy that naively sells options and delta-hedges will look great in backtests&mdash;steady income, high Sharpe ratio. Then a crash happens, and you lose years of accumulated premium in a week. The 2018 &ldquo;Volmageddon&rdquo; and the March 2020 Covid crash wiped out many systematic short-vol strategies. If your strategy&rsquo;s edge is just &ldquo;harvesting the VRP,&rdquo; you are running a leveraged short-tail-risk strategy, and you will eventually be wiped out. Genuine edge means forecasting better than the market, not just collecting premium.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">X. Beyond Black-Scholes</h2>
+        <!-- ============================================================ -->
+
+        <p>The industry has moved beyond Black-Scholes as a pricing model, while retaining it as a quoting convention. Options are quoted in IV (which is the Black-Scholes IV), but priced using more sophisticated models:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Model</th>
+            <th>What It Adds</th>
+            <th>Use Case</th>
+          </tr>
+          <tr>
+            <td><strong>Black-Scholes</strong></td>
+            <td>Constant vol, log-normal returns</td>
+            <td>Baseline, quoting convention, teaching</td>
+          </tr>
+          <tr>
+            <td><strong>Local Volatility (Dupire)</strong></td>
+            <td>Vol is a function of S and t, calibrated to match the entire IV surface</td>
+            <td>Exotic option pricing, barrier options</td>
+          </tr>
+          <tr>
+            <td><strong>Stochastic Volatility (Heston)</strong></td>
+            <td>Vol follows its own diffusion process (mean-reverting, correlated with stock)</td>
+            <td>Better dynamics for vol-of-vol, skew, and term structure</td>
+          </tr>
+          <tr>
+            <td><strong>Jump-Diffusion (Merton)</strong></td>
+            <td>Adds Poisson jumps to GBM</td>
+            <td>Short-dated options, earnings events</td>
+          </tr>
+          <tr>
+            <td><strong>SABR</strong></td>
+            <td>Stochastic vol with a closed-form approximation for the smile</td>
+            <td>Interest rate options, FX options</td>
+          </tr>
+          <tr>
+            <td><strong>Rough Volatility</strong></td>
+            <td>Vol driven by fractional Brownian motion ($H \approx 0.1$)</td>
+            <td>Captures empirical vol dynamics (vol is &ldquo;rougher&rdquo; than Brownian)</td>
+          </tr>
+        </table>
+
+        <p>Each model adds parameters. More parameters means better fit to the market surface but also more calibration risk (overfitting to today&rsquo;s surface, poor out-of-sample performance). There is a tradeoff between model realism and model robustness that mirrors the bias-variance tradeoff in machine learning.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>The Black-Scholes model is a map, not the territory. It tells you that option pricing is fundamentally about <strong>volatility</strong>&mdash;not direction, not expected returns, just the magnitude of fluctuations. It gives you a common language (IV, delta, gamma, theta, vega) for talking about options. It tells you that buying options is buying volatility and selling options is selling volatility. And it tells you that the edge in options trading is in forecasting volatility better than the market&rsquo;s implied volatility.</p>
+
+        <p>Where Black-Scholes is wrong&mdash;fat tails, non-constant vol, jumps, discrete hedging&mdash;is where the interesting trading happens. The vol smile, the term structure, the volatility risk premium, event vol, cross-asset dispersion: these are all deviations from the model, and each represents a different type of risk and potential return.</p>
+
+        <p>If you remember one thing: <strong>the option price contains one unknown, $\sigma$, and the market&rsquo;s answer is implied volatility. If your estimate of future realized vol differs from IV, and you are right, you will make money. If you are wrong, you will lose money. That&rsquo;s the whole game.</strong></p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

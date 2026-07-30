@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Git Works: The Data Structures Behind Version Control</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 2px;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .concept-box p {
+      color: #5a5a5a;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .object-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .object-table th {
+      background-color: #f5f1e8;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 2px solid #8b7355;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .object-table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0d9ce;
+      color: #5a5a5a;
+    }
+
+    @media (max-width: 768px) {
+      .code-block, .diagram-box {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>How Git Works</h1>
+      <p>The elegant data structures behind version control</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">← Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>How Git Works: The Data Structures Behind Version Control</h1>
+        <div class="article-meta">Computer Science</div>
+      </div>
+
+      <div class="article-body">
+        <h2>Introduction: Why Git is Elegant</h2>
+
+        <p>Git is fast, reliable, and conceptually simple, yet deceptively sophisticated. Understanding how git works reveals deep principles of computer science: immutability, content-addressed storage, and functional data structures.</p>
+
+        <p>Git was created by Linus Torvalds in 2005 to manage the Linux kernel source code. Before git, Linux kernel development used a commercial tool (BitKeeper) that became unavailable. Linus needed something better, so he built git in roughly two weeks. He named it "the stupid content tracker," a tongue-in-cheek reference to himself.</p>
+
+        <p>What makes git elegant is its foundation: a directed acyclic graph (DAG) of immutable objects. Everything is hashed. Nothing changes; only new objects are created. This simplicity enables powerful features: branching, merging, distributed collaboration, complete history recovery.</p>
+
+        <h2>Part One: The Core Data Structures</h2>
+
+        <h3>Git Objects: The Foundation</h3>
+
+        <p>Git's repository is fundamentally a database of objects. There are four types:</p>
+
+        <table class="object-table">
+          <thead>
+            <tr>
+              <th>Object Type</th>
+              <th>Purpose</th>
+              <th>Contains</th>
+              <th>Identified By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Blob</strong></td>
+              <td>File content</td>
+              <td>The actual bytes of a file</td>
+              <td>SHA-1 hash of content</td>
+            </tr>
+            <tr>
+              <td><strong>Tree</strong></td>
+              <td>Directory structure</td>
+              <td>List of blobs and trees with names and permissions</td>
+              <td>SHA-1 hash of tree contents</td>
+            </tr>
+            <tr>
+              <td><strong>Commit</strong></td>
+              <td>Snapshot of project</td>
+              <td>Tree root, parent commit(s), author, message, timestamp</td>
+              <td>SHA-1 hash of commit metadata</td>
+            </tr>
+            <tr>
+              <td><strong>Tag</strong></td>
+              <td>Named reference to commit</td>
+              <td>Commit hash, tagger, message (annotated tags)</td>
+              <td>SHA-1 hash or name</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Content-Addressed Storage</h3>
+
+        <p>The genius of git's design: every object's hash is the SHA-1 hash of its content. All objects are compressed with zlib before being written to disk, which reduces storage requirements and speeds up network transfers.</p>
+
+        <div class="diagram-box">
+          Blob (file.txt):
+          SHA-1("hello world\n") = 95d09f2b10159347eece98399c432b1c007bff64
+
+          This hash IS the object's identity.
+
+          Tree:
+          40000 tree abc123...  .gitignore
+          100644 blob 95d09f...  file.txt
+
+          SHA-1(tree contents) = def456...
+
+          Commit:
+          tree def456...
+          author Alice &lt;alice@example.com&gt; 1234567890
+          message "Initial commit"
+
+          SHA-1(commit metadata) = 789abc...
+        </div>
+
+        <p>This has profound implications:</p>
+
+        <ul>
+          <li><strong>Immutability:</strong> If you change content, the hash changes. All commits built on top become invalid. You can't corrupt history secretly.</li>
+          <li><strong>Deduplication:</strong> Two identical files produce the same blob. No redundant storage.</li>
+          <li><strong>Integrity:</strong> If any bit flips, the hash doesn't match. Corruption is detected immediately.</li>
+          <li><strong>Distributed:</strong> You can verify objects anywhere. No central server needed.</li>
+        </ul>
+
+        <h3>The Commit DAG</h3>
+
+        <p>Commits form a directed acyclic graph. Each commit points to one or more parent commits (or zero parents for the initial commit). The DAG structure enables all of git's power.</p>
+
+        <div class="diagram-box">
+          Initial commit:
+          commit abc123
+          tree tree1
+
+          Next commit:
+          commit def456
+          tree tree2
+          parent abc123
+
+          Creates a chain:
+          abc123 --parent--> def456 --parent--> ghi789
+
+          Branch is just a pointer:
+          main -> ghi789
+          feature -> def456 (behind main)
+
+          When merging, create a commit with TWO parents:
+          commit xyz999
+          parent ghi789 (main)
+          parent jkl000 (feature)
+        </div>
+
+        <h3>References: The Human-Readable Layer</h3>
+
+        <p>Hashes like 95d09f2b are hard to remember. References (refs) are pointers to objects:</p>
+
+        <ul>
+          <li><strong>Branches:</strong> Moving pointers. `main`, `develop`, `feature/login`. They point to commit objects.</li>
+          <li><strong>HEAD:</strong> Special pointer indicating current position. Usually points to a branch.</li>
+          <li><strong>Tags:</strong> Permanent pointers to specific commits. Used for releases (v1.0.0, v2.1.3).</li>
+          <li><strong>Remotes:</strong> Pointers to commits in remote repositories (origin/main, upstream/develop).</li>
+        </ul>
+
+        <div class="code-block">
+$ cat .git/refs/heads/main
+abc123def456...  (the commit hash this branch points to)
+
+$ cat .git/HEAD
+ref: refs/heads/main  (we're on the main branch)
+
+$ git symbolic-ref HEAD
+refs/heads/main  (human-readable form)
+        </div>
+
+        <h2>Part Two: The Working Directory, Index, and Repository</h2>
+
+        <h3>Three Levels of Storage</h3>
+
+        <p>Git maintains three levels of state:</p>
+
+        <div class="diagram-box">
+          Working Directory (what you edit)
+                ↓ (git add)
+          Index / Staging Area (what's staged)
+                ↓ (git commit)
+          Repository (.git folder with objects)
+        </div>
+
+        <p><strong>Working Directory:</strong> The actual files on disk that you edit. Untracked by git until you stage them.</p>
+
+        <p><strong>Index (Staging Area):</strong> The `.git/index` file. A binary file listing files and their hashes. You `git add` files here before committing. It's a snapshot of what the next commit will contain.</p>
+
+        <p><strong>Repository:</strong> The `.git` directory containing objects, refs, and configuration. This is what gets pushed to remote servers.</p>
+
+        <h3>The Git Workflow</h3>
+
+        <div class="diagram-box">
+1. Edit file.txt in working directory
+2. git add file.txt
+   - Hash the file content
+   - Create a blob object in .git/objects
+   - Update index to reference this blob
+3. git commit -m "message"
+   - Create a tree object referencing current index
+   - Create a commit object pointing to tree and parent commits
+   - Move branch pointer to new commit
+4. git push origin main
+   - Send commit objects to remote
+   - Remote updates its refs/heads/main pointer
+        </div>
+
+        <h2>Part Three: Branching and Merging</h2>
+
+        <h3>Branching is Cheap</h3>
+
+        <p>In git, a branch is just a pointer to a commit. Creating a branch doesn't copy files or create new objects. It just creates a new ref file:</p>
+
+        <div class="code-block">
+$ git branch feature
+# Creates .git/refs/heads/feature pointing to current commit
+
+$ git switch feature
+# Changes HEAD to point to refs/heads/feature
+        </div>
+
+        <p>This is why git branching is so lightweight compared to older version control systems like SVN, which physically copied entire directory trees.</p>
+
+        <h3>Merging: Three-Way Merge</h3>
+
+        <p>When you merge branches, git performs a three-way merge:</p>
+
+        <div class="diagram-box">
+Common ancestor commit:
+file.txt = "hello"
+
+Feature branch commit:
+file.txt = "hello world"
+
+Main branch commit:
+file.txt = "hello\nworld"
+
+Three-way merge:
+- Look at ancestor, feature, and main versions
+- If only one side changed, use that change
+- If both sides changed differently, CONFLICT
+- If both sides made same change, no conflict
+        </div>
+
+        <p>If there's a conflict, git marks it in the file and makes you resolve it manually. Once resolved, you commit a merge commit (with two parents).</p>
+
+        <h3>Rebase: Replay Commits</h3>
+
+        <p>Rebasing is an alternative to merging. Instead of creating a merge commit, git replays your commits on top of the target branch:</p>
+
+        <div class="diagram-box">
+Before rebase:
+main:     a -- b -- c
+feature:           d -- e
+
+After `git rebase main` on feature:
+main:     a -- b -- c
+feature:           d' -- e'
+
+(d' and e' are new commits, replayed on top of c)
+        </div>
+
+        <p>Rebasing creates a linear history but produces entirely new commits. The replayed commits have the same diffs but different hashes, because both the parent hash and the timestamp change. This makes rebasing dangerous if you've already pushed commits, since it rewrites shared history.</p>
+
+        <h2>Part Four: Distributed Operation</h2>
+
+        <h3>No Central Server Required</h3>
+
+        <p>Git is fundamentally distributed. Every repository is complete and independent. You can commit locally without network access. Remotes (like GitHub) are just other repositories that happen to be on a server.</p>
+
+        <div class="diagram-box">
+Local repository:
+.git/objects/
+  ab/c123...  (blob)
+  de/f456...  (tree)
+  gh/i789...  (commit)
+refs/
+  heads/main
+  remotes/origin/main
+
+Remote repository (on GitHub):
+same structure
+
+git push:
+  - Sends your commits' objects to remote
+  - Updates remote's refs
+
+git fetch:
+  - Gets remote's objects
+  - Updates your remote tracking refs (origin/main)
+
+git pull:
+  - git fetch + git merge
+        </div>
+
+        <h2>Part Five: The History: Git's Origins and Evolution</h2>
+
+        <h3>Why Linus Created Git</h3>
+
+        <p>Before 2005, Linux kernel development used BitKeeper, a proprietary tool. When BitKeeper's license changed unfavorably, Linux community needed an alternative. Linus Torvalds, needing to manage thousands of developers and patches, sat down and wrote git in roughly two weeks.</p>
+
+        <p>Linus's requirements:</p>
+
+        <ul>
+          <li>Very fast (Linux kernel is massive)</li>
+          <li>Distributed (no single point of failure)</li>
+          <li>Support non-linear development (many branches)</li>
+          <li>Able to handle merge conflicts elegantly</li>
+        </ul>
+
+        <p>He created a simple but powerful design based on content-addressed objects and DAGs. The result was so elegant that it became the standard for open source and eventually enterprise software.</p>
+
+        <h3>Key Contributors and Evolution</h3>
+
+        <p><strong>Linus Torvalds (2005):</strong> Created git's core architecture and initial implementation.</p>
+
+        <p><strong>Junio Hamano (2005-present):</strong> Became maintainer after Linus stepped back. Responsible for most of git's development and refinement.</p>
+
+        <p><strong>GitHub (2008):</strong> Made git accessible to non-Linux developers through a web interface. Popularized git in non-kernel development.</p>
+
+        <p><strong>GitLab (2011), Gitea (2016):</strong> Alternative implementations showing git's flexibility.</p>
+
+        <h2>Part Six: Complexity and Performance</h2>
+
+        <h3>Simplicity of Core Concepts</h3>
+
+        <p>Git's core is remarkably simple. Understanding objects, commits, and refs is achievable in a day or two. The fundamental operations are straightforward data structure manipulations.</p>
+
+        <h3>Complexity in Implementation</h3>
+
+        <p>Implementing git efficiently, however, is complex:</p>
+
+        <ul>
+          <li><strong>Packing objects:</strong> Raw objects are stored individually. Git packs them to save space, using delta compression (storing differences between similar objects rather than full copies).</li>
+          <li><strong>Garbage collection:</strong> Removing unreachable objects requires careful traversal of the DAG.</li>
+          <li><strong>Merge strategies:</strong> Three-way merging and conflict resolution involves sophisticated algorithms.</li>
+          <li><strong>Performance optimization:</strong> Large repositories need careful indexing and caching (git index files, bloom filters for fast searches).</li>
+        </ul>
+
+        <p>The git codebase (written in C) is roughly 100,000 lines, with most of that devoted to optimizations and edge cases.</p>
+
+        <h2>Part Seven: Could Git Be Replaced?</h2>
+
+        <h3>Alternatives Exist</h3>
+
+        <p><strong>Mercurial (hg):</strong> Similar design to git. Slightly simpler API. Popular in some communities but less dominant.</p>
+
+        <p><strong>Pijul:</strong> Newer system based on patch theory rather than snapshots. More sophisticated conflict resolution but less adoption.</p>
+
+        <p><strong>Fossil:</strong> Designed for decentralized development with integrated bug tracking. Smaller following.</p>
+
+        <p><strong>Darcs:</strong> Patch-based like Pijul. Older but still used in Haskell communities.</p>
+
+        <h3>Why Git is Hard to Replace</h3>
+
+        <p>Despite alternatives, git dominates because:</p>
+
+        <ul>
+          <li><strong>Simplicity:</strong> Core concepts are easy to understand and reason about.</li>
+          <li><strong>Efficiency:</strong> Fast for common operations. Scales to massive codebases.</li>
+          <li><strong>Ecosystem:</strong> GitHub, GitLab, countless tools built on git. Switching costs are enormous.</li>
+          <li><strong>Robustness:</strong> Immutability and content-addressing make it virtually immune to corruption.</li>
+        </ul>
+
+        <p>A new version control system would need to be substantially better in practical ways to overcome git's incumbency.</p>
+
+        <h2>Part Eight: The Philosophy Behind Git</h2>
+
+        <h3>Immutability and Trust</h3>
+
+        <p>Git's design assumes you don't trust files to stay unmodified. By hashing everything, corruption is detectable. This philosophy differs from earlier systems that assumed "the server is trustworthy."</p>
+
+        <h3>Decentralization</h3>
+
+        <p>Git assumes no single point of authority. Every copy is complete. This distributes power and resilience.</p>
+
+        <h3>History Preservation</h3>
+
+        <p>Git never forgets. You can recover any commit ever made (unless you explicitly run garbage collection on unreachable commits). The full history is always available locally.</p>
+
+        <h2>Conclusion: Elegant Simplicity</h2>
+
+        <p>Git's power comes from elegant simplicity: immutable objects, content-addressed storage, and a DAG of commits. These ideas combine to create a system that is fast, reliable, and distributed.</p>
+
+        <p>Understanding git's data structures reveals principles that apply far beyond version control: how immutability enables safety, how content-addressing ensures integrity, and how simple abstractions can scale to manage millions of files across thousands of contributors.</p>
+
+        <blockquote>
+          "In many ways, Git's strength comes from its simplicity. It doesn't try to be everything. It does one thing (track changes to files) and does it with elegance. The DAG of immutable objects is so fundamental that you can build anything on top of it."
+        </blockquote>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

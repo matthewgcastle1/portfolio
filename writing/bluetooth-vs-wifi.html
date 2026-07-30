@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluetooth vs WiFi: The Physics of Wireless Communication</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      border-radius: 3px;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .highlight-box p {
+      text-align: center;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .spectrum-label {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .spectrum-label.bluetooth { background: #d4e8ff; color: #1a3a7a; }
+    .spectrum-label.wifi { background: #ffe8d4; color: #7a3a1a; }
+    .spectrum-label.both { background: #e8d4ff; color: #3a1a7a; }
+
+    @media (max-width: 768px) {
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+      .diagram-box { font-size: 0.72rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Bluetooth vs WiFi</h1>
+      <p>The physics of wireless communication</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Bluetooth vs WiFi: The Physics of Wireless Communication</h1>
+        <div class="article-meta">Physics &amp; Signal Processing</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Two Radios in Every Pocket</h2>
+
+        <p>Your phone contains at least two radios. One connects to your earbuds. The other connects to the internet. Both use electromagnetic waves in roughly the same frequency band. Both transmit digital data through the air. Yet one drains almost no battery and reaches ten meters, while the other burns through power and reaches across a building. They solve fundamentally different problems with different physical strategies, and understanding <em>why</em> they differ reveals beautiful signal processing, information theory, and physics.</p>
+
+        <p>This article focuses on the physical layer&mdash;what actually happens to electrons, photons, and electromagnetic fields when your device sends a wireless signal. We will largely ignore the upper protocol layers (pairing, authentication, IP routing) and instead ask: <em>how does a 0 or 1 become a radio wave, and how does the receiver extract it back?</em></p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part I: Electromagnetic Waves and the Radio Spectrum</h2>
+        <!-- ============================================================ -->
+
+        <h3>What is a Radio Wave?</h3>
+
+        <p>A radio wave is an electromagnetic wave&mdash;oscillating electric and magnetic fields propagating through space at the speed of light. It is the same phenomenon as visible light, infrared radiation, and X-rays, differing only in frequency.</p>
+
+        <p>An oscillating current in an antenna produces a changing electric field, which produces a changing magnetic field, which produces a changing electric field, and so on&mdash;self-propagating outward at $c = 3 \times 10^8$ m/s. Maxwell&rsquo;s equations describe this precisely:</p>
+
+        <div class="math-box">
+          <span class="label">Maxwell&rsquo;s Equations (in vacuum, differential form):</span>
+          $$\nabla \cdot \mathbf{E} = 0$$
+          $$\nabla \cdot \mathbf{B} = 0$$
+          $$\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}$$
+          $$\nabla \times \mathbf{B} = \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}$$
+          The third equation (Faraday&rsquo;s law) says a changing magnetic field creates an electric field. The fourth (Amp&egrave;re&rsquo;s law with Maxwell&rsquo;s correction) says a changing electric field creates a magnetic field. Together, they imply self-sustaining electromagnetic waves propagating at $c = 1/\sqrt{\mu_0 \epsilon_0}$.
+        </div>
+
+        <p>The key relationship between frequency and wavelength:</p>
+
+        <div class="highlight-box">
+          $$\lambda = \frac{c}{f}$$
+          <p>Wavelength (meters) = speed of light / frequency (Hz)</p>
+        </div>
+
+        <p>At 2.4 GHz ($2.4 \times 10^9$ Hz), the wavelength is about 12.5 centimeters&mdash;roughly the width of your hand. At 5 GHz, it&rsquo;s about 6 centimeters. These wavelengths are convenient: small enough for compact antennas (an efficient antenna is roughly $\lambda/4$, which is 3 cm at 2.4 GHz), but large enough to diffract around furniture and pass through walls.</p>
+
+        <h3>The ISM Band: Shared Spectrum</h3>
+
+        <p>Both Bluetooth and WiFi operate in the <strong>ISM band</strong> (Industrial, Scientific, and Medical)&mdash;a portion of the radio spectrum that governments worldwide have designated for unlicensed use. The most important ISM band for wireless communication sits at <strong>2.400&ndash;2.4835 GHz</strong>. This is not a coincidence. It was originally reserved for devices like microwave ovens (which heat food at 2.45 GHz by exciting water molecules), and when engineers needed spectrum for short-range digital communication, they chose this already-unlicensed band.</p>
+
+        <p>WiFi additionally uses the <strong>5 GHz band</strong> (5.15&ndash;5.825 GHz) and, since WiFi 6E, the <strong>6 GHz band</strong> (5.925&ndash;7.125 GHz). Bluetooth has always lived exclusively in the 2.4 GHz band.</p>
+
+        <div class="diagram-box">
+<pre>
+  2.400 GHz                                          2.4835 GHz
+  |                                                         |
+  |  Bluetooth: 79 channels &times; 1 MHz                        |
+  |  [01][02][03][04]...........................[77][78][79] |
+  |                                                         |
+  |  WiFi 2.4 GHz: 3 non-overlapping channels &times; 20 MHz     |
+  |  [=====Ch 1=====]    [=====Ch 6=====]    [====Ch 11====]|
+  |                                                         |
+
+  5.15 GHz                                           5.825 GHz
+  |                                                         |
+  |  WiFi 5 GHz: up to 25 non-overlapping 20 MHz channels   |
+  |  (or fewer wider channels: 40, 80, 160 MHz)             |
+  |  [==20==][==20==][==20==][=====40=====][========80======]|
+  |                                                         |
+</pre>
+        </div>
+
+        <p>Notice the fundamental difference already visible in this diagram. Bluetooth slices the same 83.5 MHz of spectrum into 79 narrow 1 MHz channels and hops between them. WiFi claims a single wide channel (20, 40, 80, or even 160 MHz) and pours data through it. This is the central architectural divergence, and everything else follows from it.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part II: How Data Becomes a Radio Wave</h2>
+        <!-- ============================================================ -->
+
+        <h3>Modulation: Encoding Information in a Wave</h3>
+
+        <p>A pure sine wave at 2.4 GHz carries no information. It is a single tone&mdash;like a tuning fork. To transmit data, you must <em>modulate</em> the wave: vary some property of the carrier signal in a pattern that encodes your bits. There are three properties you can vary:</p>
+
+        <div class="concept-box">
+          <h4>The Three Knobs of Modulation</h4>
+          <p><strong>Amplitude:</strong> Make the wave louder or quieter. (AM radio does this.)</p>
+          <p><strong>Frequency:</strong> Shift the wave slightly higher or lower in frequency. (FM radio does this.)</p>
+          <p><strong>Phase:</strong> Shift the wave forward or backward in time. (This is the subtle one, and wireless protocols use it heavily.)</p>
+          <p>A general modulated signal is: $s(t) = A(t) \cdot \cos(2\pi f_c t + \phi(t))$, where $A(t)$, $f_c$, and $\phi(t)$ are the amplitude, carrier frequency, and phase. Modulation means varying $A(t)$ and/or $\phi(t)$ according to your data.</p>
+        </div>
+
+        <p>Both Bluetooth and WiFi use phase-based modulation as their primary mechanism, but they do it very differently.</p>
+
+        <h3>Bluetooth: Gaussian Frequency-Shift Keying (GFSK)</h3>
+
+        <p>Bluetooth Classic uses one of the simplest digital modulation schemes: <strong>GFSK</strong> (Gaussian Frequency-Shift Keying). To send a 1, the transmitter shifts the carrier frequency slightly <em>up</em>. To send a 0, it shifts the frequency slightly <em>down</em>. The deviation is $\pm 115$&ndash;$175$ kHz from the carrier center.</p>
+
+        <div class="math-box">
+          <span class="label">GFSK Modulation:</span>
+          $$s(t) = \cos\!\big(2\pi [f_c + d(t) \cdot \Delta f] \cdot t\big)$$
+          where $f_c$ is the carrier frequency (one of the 79 channels), $d(t) = +1$ for a &ldquo;1&rdquo; bit or $-1$ for a &ldquo;0&rdquo; bit, and $\Delta f \approx 150$ kHz is the frequency deviation.
+          <br><br>
+          The &ldquo;Gaussian&rdquo; part: before modulating, the data signal $d(t)$ is passed through a Gaussian low-pass filter ($BT = 0.5$). This smooths the transitions between 0 and 1, which rounds off the sharp frequency jumps and keeps the transmitted signal within its 1 MHz channel. Without the filter, the sharp transitions would splatter energy into adjacent channels.
+        </div>
+
+        <p>The &ldquo;Gaussian&rdquo; in GFSK refers to the shape of the pulse-shaping filter applied to the data before modulation. A Gaussian filter has the unique property that its impulse response <em>and</em> its frequency response are both Gaussians (the Gaussian is an eigenfunction of the Fourier transform). This makes it the optimal filter for minimizing the product of time duration and bandwidth&mdash;it achieves the minimum possible time-bandwidth product, meaning the signal is as compact as possible in both time and frequency simultaneously.</p>
+
+        <div class="math-box">
+          <span class="label">The Gaussian filter and the uncertainty principle:</span>
+          $$g(t) = \exp\!\left(-\frac{t^2}{2\sigma^2}\right)$$
+          $$G(f) = \exp\!\left(-2\pi^2 \sigma^2 f^2\right)$$
+          The Fourier transform of a Gaussian is a Gaussian. The time-bandwidth product $\Delta t \cdot \Delta f = 1/(4\pi)$ is the theoretical minimum. This is the signal processing version of the Heisenberg uncertainty principle&mdash;you cannot be arbitrarily localized in both time and frequency. The Gaussian achieves the lower bound.
+        </div>
+
+        <p>GFSK is simple. The receiver only needs to determine whether the frequency is above or below the carrier center&mdash;a binary decision. This simplicity means cheap radios, tiny silicon area, and very low power consumption. The tradeoff: it encodes only 1 bit per symbol. At a symbol rate of 1 Msym/s in a 1 MHz channel, that&rsquo;s 1 Mbit/s raw&mdash;the original Bluetooth Classic data rate.</p>
+
+        <h3>Enhanced Data Rate: Shifting Phase</h3>
+
+        <p>Bluetooth 2.0+ introduced Enhanced Data Rate (EDR) using more sophisticated modulation. Instead of GFSK, EDR uses <strong>$\pi/4$-DQPSK</strong> (2 bits/symbol, 2 Mbit/s) and <strong>8-DPSK</strong> (3 bits/symbol, 3 Mbit/s). These are differential phase-shift keying schemes: data is encoded in the <em>change</em> in phase between consecutive symbols rather than in the absolute phase. DQPSK rotates the phase by one of four offsets (each representing 2 bits), and 8-DPSK by one of eight offsets (3 bits).</p>
+
+        <p>Higher-order modulation packs more bits per symbol but requires the receiver to make finer distinctions&mdash;telling apart 8 phase states instead of 2 frequency states. This needs a better signal-to-noise ratio, which is why EDR is only used when the link quality is good.</p>
+
+        <h3>WiFi: OFDM &mdash; A Symphony of Subcarriers</h3>
+
+        <p>WiFi uses a fundamentally different and far more sophisticated scheme called <strong>OFDM</strong> (Orthogonal Frequency-Division Multiplexing). Where Bluetooth uses one narrow channel with one modulated carrier, WiFi divides its wide channel into <em>many</em> narrowband subcarriers and transmits data on all of them simultaneously.</p>
+
+        <p>A 20 MHz WiFi channel (802.11a/g/n) contains <strong>64 subcarriers</strong> spaced 312.5 kHz apart. Of these, 52 carry data or pilot signals and 12 are unused guard bands at the edges. Each subcarrier is independently modulated using <strong>QAM</strong> (Quadrature Amplitude Modulation)&mdash;the same technique used in cable TV and DSL.</p>
+
+        <div class="concept-box">
+          <h4>QAM: Using Both Phase and Amplitude</h4>
+          <p>QAM encodes data by varying both the phase <em>and</em> the amplitude of each subcarrier. Each symbol is a point in the complex plane (the &ldquo;constellation diagram&rdquo;), where the x-axis is the in-phase component I and the y-axis is the quadrature component Q.</p>
+          <p><strong>BPSK:</strong> 2 points $\rightarrow$ 1 bit/symbol</p>
+          <p><strong>QPSK:</strong> 4 points $\rightarrow$ 2 bits/symbol</p>
+          <p><strong>16-QAM:</strong> 16 points ($4 \times 4$ grid) $\rightarrow$ 4 bits/symbol</p>
+          <p><strong>64-QAM:</strong> 64 points ($8 \times 8$ grid) $\rightarrow$ 6 bits/symbol</p>
+          <p><strong>256-QAM:</strong> 256 points ($16 \times 16$ grid) $\rightarrow$ 8 bits/symbol (WiFi 5)</p>
+          <p><strong>1024-QAM:</strong> 1024 points ($32 \times 32$ grid) $\rightarrow$ 10 bits/symbol (WiFi 6)</p>
+          <p><strong>4096-QAM:</strong> 4096 points ($64 \times 64$ grid) $\rightarrow$ 12 bits/symbol (WiFi 7)</p>
+          <p>The receiver must distinguish between points packed increasingly tightly together. 1024-QAM requires a signal-to-noise ratio of about 35 dB&mdash;the signal must be 3,000 times more powerful than the noise.</p>
+        </div>
+
+        <p>Now for the key insight. Each OFDM subcarrier carries a QAM symbol. With 52 data subcarriers and 64-QAM (6 bits each), a single 20 MHz OFDM symbol carries $52 \times 6 = 312$ bits. The symbol duration is $3.2\;\mu\text{s}$ (plus a $0.8\;\mu\text{s}$ guard interval), so the raw rate is $312 / 4\;\mu\text{s} = 78$ Mbit/s. This is already nearly $80\times$ faster than Bluetooth&mdash;and WiFi can use wider channels (40, 80, 160 MHz), higher-order QAM, and multiple spatial streams to go much further.</p>
+
+        <h3>Why OFDM Works: The Fourier Transform</h3>
+
+        <p>OFDM is, at its mathematical heart, the <a href="../demos/fourier-transform.html" style="color: #8b7355;">Fourier transform</a> in action. Each OFDM symbol is generated by taking the <strong>Inverse Fast Fourier Transform (IFFT)</strong> of the data symbols. The transmitter does not generate 52 separate sine waves with 52 separate oscillators. Instead, it places the QAM symbols into a frequency-domain vector, computes the IFFT to produce a time-domain waveform, and sends that waveform through a single digital-to-analog converter.</p>
+
+        <div class="math-box">
+          <span class="label">OFDM: From frequency domain to time domain</span>
+          <br>
+          The transmitter has $N$ complex data symbols $X[0], X[1], \ldots, X[N-1]$, one per subcarrier.
+          $$x[n] = \frac{1}{N} \sum_{k=0}^{N-1} X[k] \cdot e^{j2\pi kn/N} \quad \text{(IFFT)}$$
+          The receiver samples the received waveform and computes the forward FFT to recover the data symbols:
+          $$X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-j2\pi kn/N} \quad \text{(FFT)}$$
+          The &ldquo;orthogonal&rdquo; in OFDM comes from the orthogonality of complex exponentials: $\sum e^{j2\pi kn/N} \cdot e^{-j2\pi k'n/N} = 0$ for $k \neq k'$. This is the same inner-product orthogonality that makes <a href="../demos/change-of-basis.html" style="color: #8b7355;">Fourier series work as a change of basis</a>.
+        </div>
+
+        <p>This is a profound connection. The WiFi chip in your phone computes a 64-point or 256-point FFT for <em>every single OFDM symbol it receives</em>&mdash;millions of FFTs per second. The FFT, one of the most important algorithms in all of mathematics, is what makes modern wireless communication practical. Without it, OFDM would require dozens of separate oscillators and demodulators; with it, the entire operation is a single digital computation.</p>
+
+        <h3>The Guard Interval and Multipath</h3>
+
+        <p>OFDM has another critical advantage: robustness against <strong>multipath</strong>. In any indoor environment, a transmitted signal bounces off walls, floors, furniture, and people. The receiver gets multiple copies of the signal arriving at different times&mdash;the direct path plus delayed reflections. For a narrowband system like Bluetooth, these multipath reflections cause <em>inter-symbol interference</em> (the echoes of one symbol overlap with the next symbol).</p>
+
+        <p>OFDM solves this by making each symbol much longer in time. A Bluetooth GFSK symbol lasts $1\;\mu\text{s}$. An OFDM symbol lasts $3.2\;\mu\text{s}$ plus a $0.8\;\mu\text{s}$ guard interval (the <strong>cyclic prefix</strong>), for a total of $4\;\mu\text{s}$. Indoor multipath delays are typically under $0.5\;\mu\text{s}$, well within the guard interval. The cyclic prefix absorbs the echoes, and the FFT cleanly separates the subcarriers as if there were no multipath at all.</p>
+
+        <div class="math-box">
+          <span class="label">Why narrowband subcarriers are multipath-resistant:</span><br>
+          In the frequency domain, a multipath channel applies a different complex gain H(f) to each frequency. A wideband signal spanning 20 MHz sees deep fades at some frequencies and not others. But each OFDM subcarrier spans only 312.5 kHz&mdash;narrow enough that H(f) is approximately flat across it. So each subcarrier experiences <em>flat fading</em> (a simple scaling), not <em>frequency-selective fading</em> (distortion). The receiver compensates with a single complex multiplication per subcarrier (channel equalization).
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part III: Bluetooth&rsquo;s Physical Strategy</h2>
+        <!-- ============================================================ -->
+
+        <h3>Frequency Hopping Spread Spectrum (FHSS)</h3>
+
+        <p>Bluetooth&rsquo;s defining physical-layer strategy is <strong>frequency hopping</strong>. Rather than occupying one channel continuously, a Bluetooth link hops across all 79 channels in a pseudo-random sequence, switching 1,600 times per second (every $625\;\mu\text{s}$).</p>
+
+        <p>This is an old idea&mdash;it was patented by Hedy Lamarr and George Antheil in 1942 as a way to prevent the jamming of radio-controlled torpedoes. The principle: if the transmitter and receiver agree on a hopping sequence, they can communicate despite interference on any individual channel, because they never stay on an interfered channel for long.</p>
+
+        <div class="diagram-box">
+<pre>
+Time &rarr;  t=0    t=625&mu;s  t=1250&mu;s  t=1875&mu;s  t=2500&mu;s  t=3125&mu;s
+         ___
+Ch 23   |___|
+                  ___
+Ch 71            |___|
+                            ___
+Ch 05                      |___|
+                                        ___
+Ch 48                                  |___|
+                                                    ___
+Ch 12                                              |___|
+                                                                ___
+Ch 67                                                          |___|
+
+Each hop: 1 MHz wide, 625 &mu;s long, transmits one packet.
+Sequence is pseudo-random, determined by master device&rsquo;s clock and address.
+</pre>
+        </div>
+
+        <p>The hopping sequence is generated by a deterministic algorithm seeded by the Bluetooth device address and the master clock. Both endpoints know the seed, so they hop in lockstep. To an eavesdropper or interferer who doesn&rsquo;t know the sequence, the signal appears as brief, unpredictable bursts scattered across 79 MHz of spectrum&mdash;very hard to jam or intercept.</p>
+
+        <h3>Adaptive Frequency Hopping (AFH)</h3>
+
+        <p>Bluetooth 1.2 introduced <strong>Adaptive Frequency Hopping</strong>. The radio monitors which channels have persistent interference (typically from WiFi, which parks on a 20 MHz swath of the same band). Channels with high error rates are removed from the hopping sequence, and the remaining good channels are used more frequently. This is how Bluetooth coexists with WiFi despite sharing the same spectrum: it learns to avoid the frequencies WiFi occupies.</p>
+
+        <p>With a 20 MHz WiFi channel occupying roughly 20 of the 79 Bluetooth channels, AFH reduces the available hop channels to about 59&mdash;still more than enough for robust communication. This is a direct consequence of the narrow-channel architecture: losing 25% of your channels costs you nothing in bandwidth (each channel is independent), whereas losing 25% of a single wideband OFDM channel would be catastrophic.</p>
+
+        <h3>Bluetooth Low Energy (BLE): An Even More Minimal Radio</h3>
+
+        <p>Bluetooth Low Energy (BLE), introduced in Bluetooth 4.0, redesigned the physical layer for extreme power efficiency. BLE uses only <strong>40 channels</strong> (2 MHz wide each, vs. Bluetooth Classic&rsquo;s $79 \times 1$ MHz), with 3 dedicated advertising channels and 37 data channels. It still uses GFSK modulation but with a slightly different set of parameters.</p>
+
+        <p>The power savings come from <em>duty cycling</em>. A BLE device can sleep for seconds or minutes, wake up for a few milliseconds to send or receive a packet, and go back to sleep. A typical BLE sensor (heart rate monitor, temperature sensor) transmits a few dozen bytes every second. At 1 Mbit/s, that takes about 0.3 milliseconds. The radio is on for 0.03% of the time. The average current draw can be under 10 microamps.</p>
+
+        <div class="math-box">
+          <span class="label">BLE power budget (typical sensor):</span>
+          $$\text{Transmit power: } 0 \text{ dBm } (1 \text{ mW})$$
+          $$\text{Transmit duration per event: } \sim 0.3 \text{ ms}$$
+          $$\text{Events per second: } 1$$
+          $$\text{Duty cycle: } \frac{0.3 \text{ ms}}{1000 \text{ ms}} = 0.03\%$$
+          $$\text{Average power: } 1 \text{ mW} \times 0.0003 = 0.3 \;\mu\text{W} \;(\text{plus overhead} \approx 10\text{--}30 \;\mu\text{W total})$$
+          $$\text{Battery life on CR2032 (225 mAh, 3V): } \frac{675 \text{ mWh}}{0.03 \text{ mW}} \approx \text{several years}$$
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part IV: WiFi&rsquo;s Physical Strategy</h2>
+        <!-- ============================================================ -->
+
+        <h3>Wide Channels and High Throughput</h3>
+
+        <p>WiFi&rsquo;s strategy is the opposite of Bluetooth&rsquo;s. Instead of hopping across narrow channels, WiFi claims a wide, continuous block of spectrum and maximizes the data rate through it. The evolution of WiFi is largely the story of making channels wider and modulation denser:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Standard</th>
+            <th>Year</th>
+            <th>Band</th>
+            <th>Channel Width</th>
+            <th>Subcarriers</th>
+            <th>Max QAM</th>
+            <th>Max Rate</th>
+          </tr>
+          <tr>
+            <td>802.11a/g</td>
+            <td>1999/2003</td>
+            <td>5 / 2.4 GHz</td>
+            <td>20 MHz</td>
+            <td>64 (52 used)</td>
+            <td>64-QAM</td>
+            <td>54 Mbit/s</td>
+          </tr>
+          <tr>
+            <td>802.11n (WiFi 4)</td>
+            <td>2009</td>
+            <td>2.4 / 5 GHz</td>
+            <td>20/40 MHz</td>
+            <td>64/128</td>
+            <td>64-QAM</td>
+            <td>600 Mbit/s</td>
+          </tr>
+          <tr>
+            <td>802.11ac (WiFi 5)</td>
+            <td>2013</td>
+            <td>5 GHz</td>
+            <td>20&ndash;160 MHz</td>
+            <td>up to 512</td>
+            <td>256-QAM</td>
+            <td>6.9 Gbit/s</td>
+          </tr>
+          <tr>
+            <td>802.11ax (WiFi 6)</td>
+            <td>2020</td>
+            <td>2.4 / 5 / 6 GHz</td>
+            <td>20&ndash;160 MHz</td>
+            <td>up to 2048</td>
+            <td>1024-QAM</td>
+            <td>9.6 Gbit/s</td>
+          </tr>
+          <tr>
+            <td>802.11be (WiFi 7)</td>
+            <td>2024</td>
+            <td>2.4 / 5 / 6 GHz</td>
+            <td>20&ndash;320 MHz</td>
+            <td>up to 4096</td>
+            <td>4096-QAM</td>
+            <td>46 Gbit/s</td>
+          </tr>
+        </table>
+
+        <p>The throughput gains come from three sources: wider channels (more subcarriers = more parallel data streams), denser modulation (more bits per subcarrier), and MIMO (multiple antennas, discussed below). Each generation pushes all three.</p>
+
+        <h3>MIMO: Multiple Antennas, Multiple Streams</h3>
+
+        <p>Starting with WiFi 4, access points and devices use <strong>MIMO</strong> (Multiple-Input Multiple-Output)&mdash;multiple antennas that transmit and receive simultaneously. The key insight from information theory is that in a multipath environment (which is nearly always the case indoors), multiple antennas can create <em>independent spatial channels</em>.</p>
+
+        <p>With $N_T$ transmit antennas and $N_R$ receive antennas, the channel can support up to $\min(N_T, N_R)$ independent spatial streams, each carrying the same data rate as a single-antenna system. This multiplies throughput linearly. WiFi 5 supports up to 8 spatial streams; in practice, consumer devices have 2&ndash;4 antennas.</p>
+
+        <div class="math-box">
+          <span class="label">MIMO channel model:</span>
+          $$\mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n}$$
+          where $\mathbf{y}$ is the $N_R \times 1$ received vector, $\mathbf{H}$ is the $N_R \times N_T$ channel matrix, $\mathbf{x}$ is the $N_T \times 1$ transmitted vector, and $\mathbf{n}$ is noise. The capacity is:
+          $$C = \log_2 \det\!\left(\mathbf{I} + \frac{\text{SNR}}{N_T} \mathbf{H}\mathbf{H}^H\right) \;\; \text{bits/s/Hz}$$
+          In a rich multipath environment, $\mathbf{H}$ is full-rank and capacity scales linearly with $\min(N_T, N_R)$. This is free throughput&mdash;more antennas, more data&mdash;using the same spectrum and the same power.
+        </div>
+
+        <p>This is a remarkable result. Multipath reflection, which is a <em>problem</em> for simple single-antenna systems, becomes an <em>advantage</em> for MIMO. The reflections create independent propagation paths, and MIMO exploits them. The more complex the environment (more walls, furniture, scatterers), the richer the channel matrix H, and the more spatial streams can be supported.</p>
+
+        <h3>WiFi&rsquo;s Power Cost</h3>
+
+        <p>All of this comes at a steep power cost. A WiFi radio must:</p>
+        <ul>
+          <li>Compute FFTs continuously (64&ndash;4096 point, at every symbol)</li>
+          <li>Run multiple analog-to-digital converters at high speed (one per antenna, at 20&ndash;320 MHz bandwidth)</li>
+          <li>Perform channel estimation, equalization, and error correction per subcarrier</li>
+          <li>Drive a power amplifier with high linearity (QAM requires precise amplitude control, unlike GFSK)</li>
+          <li>Stay awake to listen for incoming packets (even in power-save mode, the radio wakes up for every beacon interval, typically 100 ms)</li>
+        </ul>
+        <p>Typical WiFi transmit power is 15&ndash;20 dBm (30&ndash;100 mW)&mdash;100 times more than Bluetooth. The receive path draws 100&ndash;300 mW even when not transmitting. This is why WiFi drains your phone battery far faster than Bluetooth.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part V: The Physics of Propagation</h2>
+        <!-- ============================================================ -->
+
+        <h3>Free-Space Path Loss</h3>
+
+        <p>As a radio wave propagates outward from an antenna, its power density decreases with the square of the distance. This is not absorption&mdash;it&rsquo;s geometry. The same power is spread over a sphere of increasing area.</p>
+
+        <div class="math-box">
+          <span class="label">Free-Space Path Loss (Friis equation):</span>
+          $$P_r = P_t \, G_t \, G_r \left(\frac{\lambda}{4\pi d}\right)^2$$
+          or in dB:
+          $$\text{FSPL(dB)} = 20 \log_{10}(d) + 20 \log_{10}(f) + 20 \log_{10}\!\left(\frac{4\pi}{c}\right)$$
+          At 2.4 GHz:
+          $$\text{FSPL(dB)} \approx 40 + 20 \log_{10}(d \text{ in meters})$$
+          At 1 meter: 40 dB loss. At 10 meters: 60 dB. At 100 meters: 80 dB.
+          <br>Every factor of 10 in distance costs 20 dB ($100\times$ power reduction).
+        </div>
+
+        <p>At 5 GHz, the path loss is about 6 dB higher than at 2.4 GHz for the same distance. This is why 5 GHz WiFi has shorter range&mdash;not because higher frequencies are absorbed more (they aren&rsquo;t, significantly, in air), but because the effective antenna aperture is smaller at shorter wavelengths. A 5 GHz antenna captures less of the passing wave than a 2.4 GHz antenna of the same physical size.</p>
+
+        <h3>Wall Attenuation and Material Absorption</h3>
+
+        <p>Indoor propagation is dominated by material absorption and reflection. Different materials attenuate 2.4 GHz signals by different amounts:</p>
+
+        <table class="comparison-table">
+          <tr><th>Material</th><th>Attenuation (2.4 GHz)</th><th>Attenuation (5 GHz)</th></tr>
+          <tr><td>Drywall / plasterboard</td><td>2&ndash;4 dB</td><td>3&ndash;5 dB</td></tr>
+          <tr><td>Wood door</td><td>3&ndash;4 dB</td><td>4&ndash;6 dB</td></tr>
+          <tr><td>Glass window</td><td>2&ndash;3 dB</td><td>4&ndash;8 dB</td></tr>
+          <tr><td>Brick wall</td><td>6&ndash;10 dB</td><td>10&ndash;15 dB</td></tr>
+          <tr><td>Concrete wall (15 cm)</td><td>10&ndash;15 dB</td><td>15&ndash;25 dB</td></tr>
+          <tr><td>Metal / foil</td><td>20&ndash;40+ dB</td><td>20&ndash;40+ dB</td></tr>
+          <tr><td>Human body</td><td>3&ndash;5 dB</td><td>5&ndash;8 dB</td></tr>
+          <tr><td>Water (bulk)</td><td>High (resonant absorption)</td><td>Very high</td></tr>
+        </table>
+
+        <p>Water deserves special mention. The 2.45 GHz frequency is near a rotational absorption resonance of water molecules. This is why microwave ovens operate at this frequency&mdash;the water in food efficiently absorbs the energy and heats up. In wireless communication, this means that humid environments, rain, and human bodies (which are ~60% water) attenuate 2.4 GHz signals more than you might expect from their physical density alone.</p>
+
+        <h3>Link Budget: Why Bluetooth Works at 10m and WiFi at 100m</h3>
+
+        <p>The <strong>link budget</strong> determines the maximum range. It is an accounting of all the gains and losses from transmitter to receiver:</p>
+
+        <div class="math-box">
+          <span class="label">Link budget:</span>
+          $$\text{Received Power} = \text{Transmit Power} + \text{Antenna Gains} - \text{Path Loss} - \text{Other Losses}$$
+          Communication works when Received Power > Receiver Sensitivity.
+          <br><br>
+          <span class="label">Bluetooth Classic:</span>
+          $$\text{Transmit power: } 0 \text{ dBm (Class 2, typical)}$$
+          $$\text{Receiver sensitivity: } {-70} \text{ dBm (for 1 Mbit/s GFSK)}$$
+          $$\text{Link margin: } 70 \text{ dB}$$
+          $$\text{At 2.4 GHz, 70 dB path loss} \approx 30 \text{ meters free-space}$$
+          <br>
+          <span class="label">WiFi (802.11n):</span>
+          $$\text{Transmit power: } 17 \text{ dBm (50 mW, typical)}$$
+          $$\text{Receiver sensitivity: } {-82} \text{ dBm (for 6.5 Mbit/s, MCS 0)}$$
+          $$\text{Link margin: } 99 \text{ dB}$$
+          $$\text{At 2.4 GHz, 99 dB path loss} \approx 300 \text{ meters free-space}$$
+        </div>
+
+        <p>WiFi has a 29 dB advantage in link margin over Bluetooth&mdash;that&rsquo;s a factor of nearly 800 in power. About 17 dB comes from higher transmit power, and about 12 dB from better receiver sensitivity (a consequence of the wider channel and more sophisticated signal processing). This is why WiFi reaches across buildings while Bluetooth is room-scale.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part VI: Shannon&rsquo;s Theorem and the Fundamental Tradeoffs</h2>
+        <!-- ============================================================ -->
+
+        <p>All of the design choices in Bluetooth and WiFi are ultimately constrained by one equation&mdash;Shannon&rsquo;s channel capacity theorem, the most important result in information theory:</p>
+
+        <div class="highlight-box">
+          <p><strong>Shannon&rsquo;s Channel Capacity Theorem (1948)</strong></p>
+          $$C = B \cdot \log_2(1 + \text{SNR})$$
+          <p>The maximum data rate C (bits/second) through a channel of bandwidth B (Hz) with signal-to-noise ratio SNR is bounded. No coding scheme, no modulation, no cleverness of any kind can exceed this limit.</p>
+        </div>
+
+        <p>This single equation explains <em>everything</em> about the Bluetooth/WiFi tradeoff:</p>
+
+        <div class="concept-box">
+          <h4>Bluetooth&rsquo;s choice: small B, low SNR</h4>
+          <p>Bandwidth $B = 1$ MHz. Transmit power is low (0 dBm), so SNR is moderate. Shannon says $C \approx 1 \text{ MHz} \times \log_2(1 + 100) \approx 6.6$ Mbit/s is the theoretical maximum for one Bluetooth channel. The actual rate of 1&ndash;3 Mbit/s is well within this bound. Bluetooth accepts a low data rate in exchange for a simple radio that can be built in a few square millimeters of silicon and draws microwatts.</p>
+        </div>
+
+        <div class="concept-box">
+          <h4>WiFi&rsquo;s choice: large B, high SNR</h4>
+          <p>Bandwidth $B = 20\text{--}320$ MHz. Transmit power is high (17 dBm), and the OFDM receiver achieves high SNR per subcarrier. Shannon says $C \approx 160 \text{ MHz} \times \log_2(1 + 1000) \approx 1.6$ Gbit/s for a single 160 MHz stream. With 8 MIMO streams, the theoretical limit exceeds 10 Gbit/s. WiFi 6&rsquo;s actual peak of 9.6 Gbit/s approaches this. WiFi accepts high power consumption and hardware complexity in exchange for throughput.</p>
+        </div>
+
+        <p>Shannon&rsquo;s theorem is not a guide or approximation&mdash;it is a hard mathematical bound. You can approach it with better coding (LDPC, turbo codes), better modulation (higher QAM), and better signal processing (MIMO, beamforming). You cannot exceed it. Every generation of WiFi gets closer to the Shannon limit, and the improvements are getting harder.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part VII: The Complete Comparison</h2>
+        <!-- ============================================================ -->
+
+        <table class="comparison-table">
+          <tr>
+            <th>Property</th>
+            <th><span class="spectrum-label bluetooth">Bluetooth Classic</span></th>
+            <th><span class="spectrum-label bluetooth">Bluetooth LE</span></th>
+            <th><span class="spectrum-label wifi">WiFi 6</span></th>
+          </tr>
+          <tr>
+            <td><strong>Frequency band</strong></td>
+            <td>2.4 GHz ISM</td>
+            <td>2.4 GHz ISM</td>
+            <td>2.4 / 5 / 6 GHz</td>
+          </tr>
+          <tr>
+            <td><strong>Channel width</strong></td>
+            <td>1 MHz</td>
+            <td>2 MHz</td>
+            <td>20&ndash;160 MHz</td>
+          </tr>
+          <tr>
+            <td><strong>Modulation</strong></td>
+            <td>GFSK / $\pi/4$-DQPSK / 8-DPSK</td>
+            <td>GFSK</td>
+            <td>OFDMA + up to 1024-QAM</td>
+          </tr>
+          <tr>
+            <td><strong>Spectrum strategy</strong></td>
+            <td>Frequency hopping (1600 hops/s)</td>
+            <td>Frequency hopping (adaptive)</td>
+            <td>Fixed wide channel</td>
+          </tr>
+          <tr>
+            <td><strong>Data rate</strong></td>
+            <td>1&ndash;3 Mbit/s</td>
+            <td>1&ndash;2 Mbit/s</td>
+            <td>Up to 9.6 Gbit/s</td>
+          </tr>
+          <tr>
+            <td><strong>Typical range</strong></td>
+            <td>10&ndash;30 m</td>
+            <td>10&ndash;50 m</td>
+            <td>30&ndash;100 m</td>
+          </tr>
+          <tr>
+            <td><strong>Transmit power</strong></td>
+            <td>0&ndash;4 dBm (1&ndash;2.5 mW)</td>
+            <td>$-20$ to 10 dBm</td>
+            <td>15&ndash;20 dBm (30&ndash;100 mW)</td>
+          </tr>
+          <tr>
+            <td><strong>Receiver complexity</strong></td>
+            <td>Frequency discriminator</td>
+            <td>Frequency discriminator</td>
+            <td>FFT + channel equalizer + LDPC decoder + MIMO processor</td>
+          </tr>
+          <tr>
+            <td><strong>Power consumption</strong></td>
+            <td>~30 mW active</td>
+            <td>~10&ndash;50 $\mu$W average</td>
+            <td>~200&ndash;800 mW active</td>
+          </tr>
+          <tr>
+            <td><strong>Silicon area</strong></td>
+            <td>Small</td>
+            <td>Tiny</td>
+            <td>Large (separate chip or large IP block)</td>
+          </tr>
+          <tr>
+            <td><strong>Latency</strong></td>
+            <td>~3&ndash;10 ms</td>
+            <td>~3&ndash;6 ms</td>
+            <td>~1&ndash;5 ms</td>
+          </tr>
+          <tr>
+            <td><strong>Topology</strong></td>
+            <td>Point-to-point (piconet, 7 devices)</td>
+            <td>Star, mesh, broadcast</td>
+            <td>Star (AP $\leftrightarrow$ clients), mesh with backhaul</td>
+          </tr>
+          <tr>
+            <td><strong>Key math</strong></td>
+            <td>PRNG hopping sequence, Gaussian filter</td>
+            <td>Same + AES encryption</td>
+            <td>FFT/IFFT, matrix algebra (MIMO), LDPC codes</td>
+          </tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part VIII: The Intuition</h2>
+        <!-- ============================================================ -->
+
+        <p>Here is the mental model that ties it all together.</p>
+
+        <p><strong>Bluetooth is a whisper.</strong> It speaks softly (low power), uses a narrow voice (1 MHz), and constantly changes the frequency it whispers at (frequency hopping) so that even in a noisy room, the listener can always catch a few clean words. It doesn&rsquo;t need to say much&mdash;a few kilobytes of audio codec data, a heart rate number, a keyboard scancode&mdash;so a whisper is enough. The radio is tiny, cheap, and sips power. It trades throughput for simplicity and efficiency.</p>
+
+        <p><strong>WiFi is a firehose.</strong> It shouts (high power) across a wide bandwidth (20&ndash;160 MHz), packs information into every dimension available (many subcarriers $\times$ dense QAM $\times$ multiple spatial streams via MIMO), and uses the most sophisticated signal processing available (FFTs, LDPC, beamforming) to extract every last bit. It needs to carry video streams, file downloads, and web traffic&mdash;megabytes and gigabytes. The radio is power-hungry, computationally intensive, and requires precision analog circuits. It trades power and complexity for throughput.</p>
+
+        <p>Both are electromagnetic waves at 2.4 GHz. Both are governed by Shannon&rsquo;s theorem. Both are limited by path loss and multipath. The difference is entirely in how they allocate the fundamental resources: <strong>bandwidth</strong>, <strong>power</strong>, and <strong>complexity</strong>.</p>
+
+        <div class="note-box">
+          <h4>Why not just use one protocol for everything?</h4>
+          <p>Because Shannon&rsquo;s theorem creates inescapable tradeoffs. To get WiFi&rsquo;s throughput, you need WiFi&rsquo;s power and complexity. To get Bluetooth&rsquo;s battery life, you need Bluetooth&rsquo;s modest data rate. There is no free lunch in information theory. A wireless earphone streaming audio at 300 kbit/s doesn&rsquo;t need 9.6 Gbit/s&mdash;it needs a radio that runs for 8 hours on a 60 mAh battery. Bluetooth gives it exactly that. A laptop downloading a file needs 500 Mbit/s&mdash;it needs a radio that can push data through wide channels. WiFi gives it exactly that. The two protocols are not competitors. They are complementary solutions at different points on the Shannon tradeoff curve.</p>
+        </div>
+
+        <h3>The Deeper Physics</h3>
+
+        <p>At the deepest level, wireless communication is constrained by thermodynamics. The noise floor at the receiver is set by <strong>thermal noise</strong>: the random motion of electrons at room temperature. This noise power is:</p>
+
+        <div class="math-box">
+          <span class="label">Thermal noise power:</span>
+          $$N = kTB$$
+          where $k = 1.38 \times 10^{-23}$ J/K (Boltzmann&rsquo;s constant), $T \approx 290$ K (room temperature), and $B$ is the bandwidth in Hz.
+          <br><br>
+          At 20 MHz bandwidth: $N = 1.38 \times 10^{-23} \times 290 \times 20 \times 10^{6} = 8 \times 10^{-14}$ W $= {-101}$ dBm.
+          <br>
+          At 1 MHz bandwidth: $N = {-114}$ dBm.
+          <br><br>
+          A wider channel has a higher noise floor. This is a fundamental physical constraint: more bandwidth means more thermal noise, which means you need more signal power to maintain the same SNR. Bluetooth&rsquo;s narrow 1 MHz channel has 13 dB less noise than WiFi&rsquo;s 20 MHz channel, which is part of why it can work at such low power.
+        </div>
+
+        <p>This is a beautiful convergence of physics, mathematics, and engineering. Maxwell&rsquo;s equations determine how the wave propagates. Boltzmann&rsquo;s constant determines the noise floor. Shannon&rsquo;s theorem determines the maximum data rate given the signal-to-noise ratio. Fourier analysis provides the computational tool (the FFT) that makes OFDM practical. And the engineers who designed Bluetooth and WiFi made different, complementary choices about where to sit in this space of physical constraints.</p>
+
+        <p>Every time you connect your earbuds and stream a song while browsing the web, two radios in your pocket are independently solving the wave equation, sampling at millions of times per second, computing Fourier transforms in real time, and extracting information from thermal noise&mdash;all while consuming less power than a dim LED. The physics is the same. The math is the same. The engineering is exquisitely different.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

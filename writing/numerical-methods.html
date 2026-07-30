@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numerical Methods: Algorithms for Solving What Algebra Cannot</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .method-card {
+      background: white;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .method-name {
+      font-size: 1.3rem;
+      color: #1a3a3a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .method-summary {
+      color: #5a5a5a;
+      font-style: italic;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid #8b7355;
+      padding-left: 1rem;
+    }
+
+    .code-block {
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+      padding: 1.2rem;
+      border-radius: 3px;
+      margin: 1rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    .code-block .kw { color: #c792ea; }
+    .code-block .fn { color: #82aaff; }
+    .code-block .cm { color: #676e95; font-style: italic; }
+    .code-block .st { color: #c3e88d; }
+    .code-block .nb { color: #ffcb6b; }
+    .code-block .op { color: #89ddff; }
+    .code-block .num { color: #f78c6c; }
+
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #2c2c2c;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-size: 0.95rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table th {
+      background-color: #8b7355;
+      color: white;
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .comparison-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #e0d9ce;
+      color: #5a5a5a;
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: #f9f6f0;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .code-block {
+        font-size: 0.75rem;
+        padding: 0.8rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Numerical Methods</h1>
+      <p>Algorithms for solving what algebra cannot</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Numerical Methods: Algorithms for Solving What Algebra Cannot</h1>
+        <div class="article-meta">Mathematics & Computer Science</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Introduction</h2>
+
+        <p>Most equations cannot be solved exactly. This is a fact that surprises people who stopped at algebra, where every problem has a clean symbolic answer. But the world is full of equations that resist closed-form solutions: polynomials of degree five and higher (Abel&ndash;Ruffini theorem), transcendental equations like $x = \cos(x)$, systems of nonlinear equations, and most differential equations arising from physics and engineering.</p>
+
+        <p>Numerical methods are algorithms that find <em>approximate</em> solutions to these problems. They trade symbolic exactness for computational precision&mdash;and in practice, eight digits of accuracy is more than enough. The methods here fall into four categories:</p>
+
+        <ul>
+          <li><strong>Root finding</strong> &mdash; given $f(x)$, find $x$ where $f(x) = 0$</li>
+          <li><strong>Direct linear solvers</strong> &mdash; solve $Ax = b$ exactly (up to floating-point error)</li>
+          <li><strong>Iterative linear solvers</strong> &mdash; solve $Ax = b$ by successive approximation</li>
+          <li><strong>ODE solvers</strong> &mdash; given $x'(t) = f(x, t)$ and an initial condition, approximate $x(t)$</li>
+        </ul>
+
+        <p>Each method below includes the mathematical idea, the algorithm, and a Python implementation. The code is real and functional&mdash;not pseudocode. These were written for actual use.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 1: Root Finding</h2>
+        <!-- ============================================================ -->
+
+        <p>Root finding is the oldest problem in numerical analysis. Given a continuous function $f$, find a value $x$ such that $f(x) = 0$. This is equivalent to asking: where does the curve cross the x-axis?</p>
+
+        <p>The methods progress from the most reliable but slowest (bisection) to the fastest but most fragile (Newton&rsquo;s method). The tradeoff between robustness and speed is the central tension in all numerical work.</p>
+
+        <!-- Bisection -->
+        <div class="method-card">
+          <div class="method-name">Bisection Method</div>
+          <div class="method-summary">The most reliable root-finding method. Guaranteed to converge. Slow but never fails.</div>
+
+          <p><strong>The idea:</strong> If $f(a)$ and $f(b)$ have opposite signs, then by the Intermediate Value Theorem, there must be a root between $a$ and $b$. Cut the interval in half. Check the sign of $f$ at the midpoint. The root is in whichever half has a sign change. Repeat. Each iteration halves the interval, so after $n$ iterations the error is at most $\frac{b - a}{2^n}$.</p>
+
+          <div class="math-box">
+            <strong>Convergence:</strong> Linear. Each step gains roughly one binary digit of accuracy.<br>
+            <strong>Error after n steps:</strong> $|\text{error}| \le \frac{b - a}{2^n}$<br>
+            <strong>Steps needed for tolerance $\epsilon$:</strong> $n = \lceil \log_2((b - a)/\epsilon) \rceil$
+          </div>
+
+          <p><strong>Strengths:</strong> Guaranteed convergence. No derivatives needed. Works on any continuous function. <strong>Weakness:</strong> Slow. To get 10 decimal digits from an interval of width 1, you need about 33 iterations.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">bisection</span>(f, a, b, e):
+    <span class="cm">"""
+    f: function to find root of
+    a, b: interval bounds (must bracket a root)
+    e: maximum acceptable error
+    """</span>
+    <span class="kw">if</span> f(b) &lt; f(a):
+        a, b = b, a
+    n = <span class="nb">int</span>(np.log2(np.abs(b - a)) - np.log2(e) + <span class="num">1</span>)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+        c = (a + b) / <span class="num">2</span>
+        <span class="kw">if</span> f(c) == <span class="num">0</span>:
+            <span class="kw">return</span> c
+        <span class="kw">elif</span> f(c) &gt; <span class="num">0</span>:
+            b = c
+        <span class="kw">else</span>:
+            a = c
+    <span class="kw">return</span> c</div>
+
+          <p>Note how the number of iterations is computed in advance from the interval width and the desired tolerance. There is no convergence check inside the loop&mdash;bisection is so predictable that you know exactly how many steps you need.</p>
+        </div>
+
+        <!-- False Position -->
+        <div class="method-card">
+          <div class="method-name">False Position (Regula Falsi)</div>
+          <div class="method-summary">Like bisection, but smarter about where to cut. Uses linear interpolation instead of the midpoint.</div>
+
+          <p><strong>The idea:</strong> Instead of always taking the midpoint, draw a straight line between $(a, f(a))$ and $(b, f(b))$ and find where it crosses the x-axis. This &ldquo;false position&rdquo; is usually a better estimate of the root than the midpoint, especially when the function is nearly linear near the root.</p>
+
+          <div class="math-box">
+            <strong>The interpolation formula:</strong><br>
+            $$c = \frac{a \cdot f(b) - b \cdot f(a)}{f(b) - f(a)}$$
+            This is derived by finding the x-intercept of the line through $(a, f(a))$ and $(b, f(b))$.
+          </div>
+
+          <p>False position retains the bracketing guarantee of bisection (one endpoint always stays fixed), but converges faster for well-behaved functions. The downside: one endpoint can get &ldquo;stuck,&rdquo; leading to slow convergence in certain cases. Variants like the Illinois method fix this.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">false_position</span>(f, a, b, n):
+    <span class="cm">"""
+    f: function to find root of
+    a, b: interval bounds
+    n: maximum number of iterations
+    """</span>
+    <span class="kw">if</span> f(b) &lt; f(a):
+        a, b = b, a
+    c = (a + b) / <span class="num">2</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+        c = (a * f(b) - b * f(a)) / (f(b) - f(a))
+        <span class="kw">if</span> f(c) == <span class="num">0</span>:
+            <span class="kw">return</span> c
+        <span class="kw">elif</span> f(c) &gt; <span class="num">0</span>:
+            b = c
+        <span class="kw">else</span>:
+            a = c
+    <span class="kw">return</span> c</div>
+        </div>
+
+        <!-- Newton's Method -->
+        <div class="method-card">
+          <div class="method-name">Newton&rsquo;s Method</div>
+          <div class="method-summary">The workhorse of scientific computing. Quadratic convergence&mdash;the number of correct digits roughly doubles each iteration.</div>
+
+          <p><strong>The idea:</strong> At your current guess $x_n$, approximate the function by its tangent line. Follow the tangent line to where it crosses the x-axis. That crossing is your next guess. Formally:</p>
+
+          <div class="math-box">
+            $$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$$
+            <strong>Convergence:</strong> Quadratic (near the root). If $x_n$ is off by $\epsilon$, then $x_{n+1}$ is off by roughly $\epsilon^2$.<br>
+            <strong>Requires:</strong> The derivative $f'(x)$.
+          </div>
+
+          <p>Newton&rsquo;s method is astonishingly fast when it works. From a good starting guess, 5&ndash;6 iterations typically gives 15+ digits of accuracy. But it can fail spectacularly: if $f'(x_n)$ is near zero, the tangent line is nearly horizontal and the next guess flies off to infinity. It can also cycle, diverge, or converge to the wrong root.</p>
+
+          <p>The implementation includes safeguards: a minimum derivative threshold (<code>min_dfx</code>) to catch near-zero derivatives, and a convergence check based on the step size.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">newton</span>(f, df, xn, n, e, min_dfx):
+    <span class="cm">"""
+    f: function whose roots are to be found
+    df: derivative of f
+    xn: initial approximation
+    n: maximum iterations
+    e: convergence tolerance (stop when step &lt; e)
+    min_dfx: minimum |f'(x)| before warning
+    """</span>
+    fx = f(xn)
+    dfx = df(xn)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+        <span class="kw">if</span> np.abs(dfx) &lt; min_dfx:
+            <span class="nb">print</span>(<span class="st">"Derivative is too close to 0."</span>)
+            <span class="kw">return</span> xn
+        d = fx / dfx
+        xn = xn - d
+        <span class="kw">if</span> np.abs(d) &lt; e:
+            <span class="kw">return</span> xn
+        fx = f(xn)
+        dfx = df(xn)
+    <span class="kw">return</span> xn</div>
+        </div>
+
+        <!-- Refined Newton -->
+        <div class="method-card">
+          <div class="method-name">Refined Newton&rsquo;s Method</div>
+          <div class="method-summary">Newton&rsquo;s method with step-size control. If the full Newton step makes things worse, take half a step instead.</div>
+
+          <p><strong>The idea:</strong> Standard Newton&rsquo;s method can overshoot. If the function value at the proposed new point is <em>larger</em> in magnitude than at the current point, the full step was too aggressive. This refined version checks: did the step actually improve things? If not, it halves the step. This simple modification significantly improves robustness without sacrificing much speed.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">refined_newton</span>(f, df, xn, n, e, min_dfx):
+    <span class="cm">"""Same parameters as newton(), with step-size control."""</span>
+    fx = f(xn)
+    fn = fx
+    dfx = df(xn)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+        <span class="kw">if</span> np.abs(dfx) &lt; min_dfx:
+            <span class="nb">print</span>(<span class="st">"Derivative is too close to 0."</span>)
+            <span class="kw">return</span> xn
+        d = fx / dfx
+        fn = f(xn - d)
+        <span class="kw">if</span> np.abs(fn) &gt; np.abs(fx):
+            xn = xn - d / <span class="num">2</span>    <span class="cm"># half step</span>
+            fn = f(xn)
+        <span class="kw">else</span>:
+            xn = xn - d        <span class="cm"># full step</span>
+        <span class="kw">if</span> np.abs(d) &lt; e:
+            <span class="kw">return</span> xn
+        fx = fn
+        dfx = df(xn)
+    <span class="kw">return</span> xn</div>
+
+          <p>This is a simple form of <em>line search</em>&mdash;a technique that becomes essential in optimization and multidimensional root-finding. More sophisticated versions (Armijo rule, Wolfe conditions) are used in gradient descent and quasi-Newton methods.</p>
+        </div>
+
+        <h3>Comparing Root-Finding Methods</h3>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Method</th>
+            <th>Convergence</th>
+            <th>Requires</th>
+            <th>Guaranteed?</th>
+            <th>Best For</th>
+          </tr>
+          <tr>
+            <td>Bisection</td>
+            <td>Linear (1 bit/step)</td>
+            <td>Bracketing interval</td>
+            <td>Yes</td>
+            <td>Safety-critical, rough estimates</td>
+          </tr>
+          <tr>
+            <td>False Position</td>
+            <td>Superlinear (usually)</td>
+            <td>Bracketing interval</td>
+            <td>Yes</td>
+            <td>Nearly linear functions</td>
+          </tr>
+          <tr>
+            <td>Newton</td>
+            <td>Quadratic</td>
+            <td>Derivative, good initial guess</td>
+            <td>No</td>
+            <td>Speed when derivative is available</td>
+          </tr>
+          <tr>
+            <td>Refined Newton</td>
+            <td>Quadratic (with safeguard)</td>
+            <td>Derivative, good initial guess</td>
+            <td>No (but more robust)</td>
+            <td>Newton + robustness</td>
+          </tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 2: Solving Linear Systems (Direct Methods)</h2>
+        <!-- ============================================================ -->
+
+        <p>A <em>linear system</em> is a set of equations of the form $Ax = b$, where $A$ is an $n \times n$ matrix, $b$ is a known vector, and $x$ is the unknown vector. Solving linear systems is arguably the most important problem in applied mathematics. It arises everywhere: finite element analysis, circuit simulation, computer graphics, machine learning, fluid dynamics, economic modeling.</p>
+
+        <p>Direct methods solve the system in a finite number of steps (ignoring floating-point roundoff). They contrast with iterative methods, which approach the solution through successive approximation.</p>
+
+        <!-- Naive Gaussian Elimination -->
+        <div class="method-card">
+          <div class="method-name">Naive Gaussian Elimination</div>
+          <div class="method-summary">The textbook method. Forward elimination to upper triangular form, then back substitution.</div>
+
+          <p><strong>The idea:</strong> Use row operations to eliminate entries below the diagonal, transforming $A$ into an upper triangular matrix $U$. Then solve $Ux = b'$ by back substitution (starting from the last equation and working up). This is the method taught in every linear algebra course.</p>
+
+          <p><strong>Why &ldquo;naive&rdquo;?</strong> Because it doesn&rsquo;t pivot. If a diagonal entry (the &ldquo;pivot&rdquo;) is zero or very small, the algorithm divides by it and either fails or produces wildly inaccurate results. Real implementations always use pivoting.</p>
+
+          <div class="math-box">
+            <strong>Complexity:</strong> $O(n^3)$ for forward elimination, $O(n^2)$ for back substitution.<br>
+            <strong>Total:</strong> $\frac{2}{3}n^3 + O(n^2)$ floating-point operations.
+          </div>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">forward_elimination</span>(A, b):
+    <span class="cm">"""Transform A to upper triangular, modify b accordingly."""</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(k + <span class="num">1</span>, n):
+            m = A[i, k] / A[k, k]
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(k, n):
+                A[i, j] = A[i, j] - m * A[k, j]
+            b[i] = b[i] - m * b[k]
+
+<span class="kw">def</span> <span class="fn">back_sub</span>(A, b):
+    <span class="cm">"""Solve Ux = b where U is upper triangular."""</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    x = np.zeros(n)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+        s = b[i]
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(i + <span class="num">1</span>, n):
+            s -= x[j] * A[i, j]
+        x[i] = s / A[i, i]
+    <span class="kw">return</span> x
+
+<span class="kw">def</span> <span class="fn">naive_gauss</span>(A, b):
+    <span class="cm">"""Solve Ax = b via naive Gaussian elimination."""</span>
+    forward_elimination(A, b)
+    <span class="kw">return</span> back_sub(A, b)</div>
+        </div>
+
+        <!-- Gaussian Elimination with Scaled Partial Pivoting -->
+        <div class="method-card">
+          <div class="method-name">Gaussian Elimination with Scaled Partial Pivoting</div>
+          <div class="method-summary">The production version. Handles numerical instability by choosing the best pivot row at each step.</div>
+
+          <p><strong>The problem with naive elimination:</strong> Small pivots amplify rounding errors catastrophically. If $A[k,k]$ is $10^{-15}$, dividing by it magnifies errors by a factor of $10^{15}$.</p>
+
+          <p><strong>Scaled partial pivoting:</strong> Before eliminating column k, find the row (among remaining rows) that has the largest <em>relative</em> entry in column k. &ldquo;Relative&rdquo; means divided by the maximum entry in that row&mdash;this prevents large rows from dominating. Swap that row to the pivot position. Use an index array to track swaps (cheaper than physically swapping rows).</p>
+
+          <p><strong>The factored storage trick:</strong> Instead of processing $b$ during elimination, store the multipliers in the zeroed-out entries below the diagonal. This lets you factor $A$ once and then solve for any number of right-hand sides $b$ without repeating the $O(n^3)$ elimination.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">gauss</span>(A):
+    <span class="cm">"""
+    Factor A in-place with scaled partial pivoting.
+    Returns index array l. Multipliers stored below diagonal.
+    """</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    l = np.arange(n)
+    s = np.zeros(n)
+
+    <span class="cm"># Scale vector: max |entry| in each row</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+        s[i] = np.abs(A[i, <span class="num">0</span>])
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, n):
+            s[i] = <span class="nb">max</span>(s[i], np.abs(A[i, j]))
+
+    <span class="cm"># Forward elimination with pivoting</span>
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        <span class="cm"># Find best pivot row</span>
+        maxr = <span class="num">0</span>
+        pivot = k
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(k, n):
+            r = np.abs(A[l[i], k] / s[l[i]])
+            <span class="kw">if</span> r &gt; maxr:
+                maxr = r
+                pivot = i
+        l[k], l[pivot] = l[pivot], l[k]
+
+        <span class="cm"># Eliminate and store multipliers</span>
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(k + <span class="num">1</span>, n):
+            m = A[l[i], k] / A[l[k], k]
+            A[l[i], k] = m  <span class="cm"># store multiplier</span>
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(k + <span class="num">1</span>, n):
+                A[l[i], j] -= m * A[l[k], j]
+    <span class="kw">return</span> l</div>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">solve</span>(A, l, b):
+    <span class="cm">"""
+    Solve Ax = b using pre-factored A and index array l.
+    Run gauss(A) first, then call this for each new b.
+    """</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    x = np.zeros(n)
+
+    <span class="cm"># Apply stored multipliers to b</span>
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(k + <span class="num">1</span>, n):
+            b[l[i]] -= A[l[i], k] * b[l[k]]
+
+    <span class="cm"># Back substitution</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+        x[i] = b[l[i]]
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(i + <span class="num">1</span>, n):
+            x[i] -= A[l[i], j] * x[j]
+        x[i] /= A[l[i], i]
+    <span class="kw">return</span> x</div>
+
+          <p>This design is important: factoring $A$ costs $O(n^3)$, but each subsequent solve costs only $O(n^2)$. If you have 100 different right-hand sides for the same matrix, you save 99 full eliminations.</p>
+        </div>
+
+        <!-- Matrix Inverse -->
+        <div class="method-card">
+          <div class="method-name">Matrix Inverse via Gaussian Elimination</div>
+          <div class="method-summary">Compute $A^{-1}$ by solving $Ax = e_j$ for each column of the identity matrix.</div>
+
+          <p><strong>The idea:</strong> The $j$-th column of $A^{-1}$ is the solution to $Ax = e_j$, where $e_j$ is the $j$-th column of the identity matrix. Factor $A$ once with <code>gauss()</code>, then call <code>solve()</code> $n$ times with different identity columns.</p>
+
+          <p><strong>A note on practice:</strong> In almost all applications, you should solve $Ax = b$ directly rather than computing $A^{-1}$ and then multiplying $A^{-1}b$. Computing the inverse is slower, less accurate, and rarely necessary. But there are situations (e.g., computing covariance matrices, certain control theory problems) where the inverse itself is needed.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">inverse</span>(A):
+    <span class="cm">"""Compute A inverse. Alters A in memory."""</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    l = gauss(A)
+    A_inverse = np.zeros((n, n))
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(n):
+        b = np.zeros(n)
+        b[j] = <span class="num">1</span>
+        x = solve(A, l, b)
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+            A_inverse[i, j] = x[i]
+    <span class="kw">return</span> A_inverse</div>
+        </div>
+
+        <!-- Tridiagonal Solver -->
+        <div class="method-card">
+          <div class="method-name">Tridiagonal Solver (Thomas Algorithm)</div>
+          <div class="method-summary">Gaussian elimination optimized for banded matrices. $O(n)$ instead of $O(n^3)$.</div>
+
+          <p><strong>The idea:</strong> Many problems (finite differences, spline interpolation, heat equations) produce matrices where only the diagonal and its immediate neighbors are nonzero. These <em>tridiagonal</em> systems have a special structure that Gaussian elimination can exploit: each row operation only affects one row below, so the entire elimination reduces to a simple forward sweep followed by back substitution.</p>
+
+          <div class="math-box">
+            <strong>Structure:</strong> The matrix has three diagonals: sub-diagonal <strong>a</strong>, diagonal <strong>d</strong>, super-diagonal <strong>c</strong>.<br>
+            <strong>Complexity:</strong> $O(n)$ operations, vs. $O(n^3)$ for general Gaussian elimination.<br>
+            <strong>Memory:</strong> Only three vectors of length $n$ needed (not a full $n \times n$ matrix).
+          </div>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">tri</span>(a, d, c, b):
+    <span class="cm">"""
+    Solve tridiagonal system.
+    a: sub-diagonal, d: diagonal, c: super-diagonal, b: right-hand side.
+    """</span>
+    n = np.shape(d)[<span class="num">0</span>]
+    x = np.zeros(n)
+    <span class="cm"># Forward elimination</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        m = a[i] / d[i]
+        d[i + <span class="num">1</span>] -= m * c[i]
+        b[i + <span class="num">1</span>] -= m * b[i]
+    <span class="cm"># Back substitution</span>
+    x[n - <span class="num">1</span>] = b[n - <span class="num">1</span>] / d[n - <span class="num">1</span>]
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">2</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+        x[i] = (b[i] - c[i] * x[i + <span class="num">1</span>]) / d[i]
+    <span class="kw">return</span> x</div>
+
+          <p>The Thomas algorithm is one of the most elegant results in numerical linear algebra. A problem that would take millions of operations for a large dense matrix takes only a few thousand for a tridiagonal one.</p>
+        </div>
+
+        <!-- Multi-b Tridiagonal -->
+        <div class="method-card">
+          <div class="method-name">Multi-RHS Tridiagonal Solver</div>
+          <div class="method-summary">Factor the tridiagonal system once, then solve for multiple right-hand sides cheaply.</div>
+
+          <p>Same idea as the factored Gaussian elimination above, adapted for the tridiagonal case. The forward elimination (which modifies d and produces multipliers) is done once. Then for each new right-hand side b, only the O(n) substitution phase runs.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">multi_b_forward</span>(a, d, c):
+    <span class="cm">"""Factor tridiagonal system. Returns multiplier vector."""</span>
+    n = np.shape(d)[<span class="num">0</span>]
+    factors = np.zeros(n)
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        m = a[i] / d[i]
+        d[i + <span class="num">1</span>] -= m * c[i]
+        factors[i] = m
+    <span class="kw">return</span> factors
+
+<span class="kw">def</span> <span class="fn">multi_b_solve</span>(a, d, c, b, factors):
+    <span class="cm">"""Solve with pre-factored tridiagonal and new b."""</span>
+    n = np.shape(d)[<span class="num">0</span>]
+    x = np.zeros(n)
+    <span class="cm"># Apply stored multipliers to b</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        b[i + <span class="num">1</span>] -= factors[i] * b[i]
+    <span class="cm"># Back substitution</span>
+    x[n - <span class="num">1</span>] = b[n - <span class="num">1</span>] / d[n - <span class="num">1</span>]
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">2</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+        x[i] = (b[i] - c[i] * x[i + <span class="num">1</span>]) / d[i]
+    <span class="kw">return</span> x</div>
+        </div>
+
+        <!-- Tridiagonal with Pivoting -->
+        <div class="method-card">
+          <div class="method-name">Tridiagonal Solver with Partial Pivoting</div>
+          <div class="method-summary">Adds pivoting to the tridiagonal solver for numerical stability, but only swaps rows when it won&rsquo;t destroy the banded structure.</div>
+
+          <p>Standard pivoting in a tridiagonal system is tricky: swapping rows can create fill-in entries that destroy the tridiagonal structure. This implementation is conservative&mdash;it only pivots when the swap won&rsquo;t introduce new nonzeros (i.e., when the entry above the super-diagonal in the pivot row is already zero, or when we&rsquo;re at the last row). This gives better numerical stability than no pivoting, while preserving the $O(n)$ complexity.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">tri_pivot</span>(a, d, c, b):
+    <span class="cm">"""Tridiagonal solve with selective partial pivoting."""</span>
+    n = np.shape(d)[<span class="num">0</span>]
+    x = np.zeros(n)
+    s = np.zeros(n)
+    <span class="cm"># Build scale vector</span>
+    s[<span class="num">0</span>] = <span class="nb">max</span>(np.abs(d[<span class="num">0</span>]), np.abs(c[<span class="num">0</span>]))
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, n - <span class="num">1</span>):
+        s[i] = <span class="nb">max</span>(np.abs(a[i-<span class="num">1</span>]), np.abs(d[i]), np.abs(c[i]))
+    s[n-<span class="num">1</span>] = <span class="nb">max</span>(np.abs(a[n-<span class="num">2</span>]), np.abs(d[n-<span class="num">1</span>]))
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n - <span class="num">1</span>):
+        <span class="cm"># Pivot only if it won't create fill-in</span>
+        <span class="kw">if</span> a[i]/s[i+<span class="num">1</span>] &gt; d[i]/s[i]:
+            <span class="kw">if</span> (i &lt; n-<span class="num">2</span> <span class="kw">and</span> c[i+<span class="num">1</span>] == <span class="num">0</span>) <span class="kw">or</span> i == n-<span class="num">2</span>:
+                <span class="cm"># Swap rows i and i+1</span>
+                a[i], d[i] = d[i], a[i]
+                d[i+<span class="num">1</span>], c[i] = c[i], d[i+<span class="num">1</span>]
+                b[i], b[i+<span class="num">1</span>] = b[i+<span class="num">1</span>], b[i]
+        m = a[i] / d[i]
+        d[i+<span class="num">1</span>] -= m * c[i]
+        b[i+<span class="num">1</span>] -= m * b[i]
+
+    x[n-<span class="num">1</span>] = b[n-<span class="num">1</span>] / d[n-<span class="num">1</span>]
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n-<span class="num">2</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+        x[i] = (b[i] - c[i] * x[i+<span class="num">1</span>]) / d[i]
+    <span class="kw">return</span> x</div>
+        </div>
+
+        <!-- Bi-diagonal Solver -->
+        <div class="method-card">
+          <div class="method-name">Bi-Diagonal Solver</div>
+          <div class="method-summary">Solves a specialized banded system where the upper half has sub-diagonal entries and the lower half has super-diagonal entries, meeting at a central row.</div>
+
+          <p>This handles a specific structure that arises in certain finite-difference discretizations and boundary value problems. The matrix has entries below the diagonal in the top half, entries above the diagonal in the bottom half, and a full three-entry row in the middle. The key insight is that the top half can be solved forward (top to bottom), the bottom half can be solved backward (bottom to top), and then the middle row uses both results.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">Bi_diagonal</span>(n, a, d, b):
+    <span class="cm">"""
+    n: number of rows (must be odd)
+    a: off-diagonal entries (top-to-bottom, left-to-right order)
+    d: diagonal entries
+    b: right-hand side
+    """</span>
+    m = n // <span class="num">2</span>
+    x = np.zeros(n)
+    <span class="cm"># Top half: forward sweep</span>
+    x[<span class="num">0</span>] = b[<span class="num">0</span>] / d[<span class="num">0</span>]
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, m):
+        x[i] = (b[i] - a[i-<span class="num">1</span>] * x[i-<span class="num">1</span>]) / d[i]
+    <span class="cm"># Bottom half: backward sweep</span>
+    x[n-<span class="num">1</span>] = b[n-<span class="num">1</span>] / d[n-<span class="num">1</span>]
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n-<span class="num">2</span>, m, -<span class="num">1</span>):
+        x[i] = (b[i] - a[i] * x[i+<span class="num">1</span>]) / d[i]
+    <span class="cm"># Middle entry</span>
+    x[m] = (b[m] - a[m-<span class="num">1</span>]*x[m-<span class="num">1</span>] - a[m]*x[m+<span class="num">1</span>]) / d[m]
+    <span class="kw">return</span> x</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 3: Iterative Linear Solvers</h2>
+        <!-- ============================================================ -->
+
+        <p>Direct methods solve $Ax = b$ exactly (up to roundoff) in a finite number of steps. Iterative methods start with an initial guess $x_0$ and produce a sequence $x_1, x_2, \ldots$ that (hopefully) converges to the true solution. Why bother?</p>
+
+        <ul>
+          <li><strong>Sparsity:</strong> For large sparse systems (millions of unknowns, but each equation involves only a few), direct methods fill in zeros and waste memory. Iterative methods only need the nonzero entries.</li>
+          <li><strong>Approximate solutions:</strong> Sometimes you don&rsquo;t need 15 digits. A few iterations might give 3&ndash;4 digits of accuracy, which is enough.</li>
+          <li><strong>Preconditioning:</strong> Iterative methods can be dramatically accelerated by preconditioning (transforming the system so it&rsquo;s easier to solve).</li>
+        </ul>
+
+        <p>Convergence of all these methods depends on the matrix. They are guaranteed to converge when A is <em>strictly diagonally dominant</em> (each diagonal entry is larger in magnitude than the sum of all other entries in its row).</p>
+
+        <!-- Jacobi -->
+        <div class="method-card">
+          <div class="method-name">Jacobi Iteration</div>
+          <div class="method-summary">The simplest iterative method. Update each component using only values from the previous iteration.</div>
+
+          <p><strong>The idea:</strong> Rearrange the $i$-th equation to solve for $x_i$:</p>
+
+          <div class="math-box">
+            $$x_i^{(\text{new})} = \frac{b_i - \sum_{j \neq i} A_{ij} \, x_j^{(\text{old})}}{A_{ii}}$$
+            Each new value uses <em>only</em> old values. This means all components can be updated independently&mdash;Jacobi is naturally parallelizable.
+          </div>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">jacobi</span>(A, b, x0, tolerance, max_iter):
+    <span class="cm">"""
+    A: coefficient matrix
+    b: right-hand side
+    x0: initial guess
+    tolerance: stop when ||x_new - x_old|| &lt; tolerance
+    max_iter: maximum iterations
+    """</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    x = x0.copy()
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(max_iter):
+        x0 = x.copy()
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+            s = b[i]
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(n):
+                <span class="kw">if</span> j != i:
+                    s -= A[i, j] * x0[j]  <span class="cm"># uses OLD values</span>
+            x[i] = s / A[i, i]
+        <span class="kw">if</span> np.linalg.norm(x - x0) &lt; tolerance:
+            <span class="kw">return</span> x
+    <span class="kw">return</span> <span class="nb">False</span></div>
+        </div>
+
+        <!-- Gauss-Seidel -->
+        <div class="method-card">
+          <div class="method-name">Gauss-Seidel Iteration</div>
+          <div class="method-summary">Like Jacobi, but uses each new value immediately. Typically converges about twice as fast.</div>
+
+          <p><strong>The key difference from Jacobi:</strong> When computing $x_i^{(\text{new})}$, use the already-updated values $x_1^{(\text{new})}, \ldots, x_{i-1}^{(\text{new})}$ for the earlier components. This &ldquo;immediate use&rdquo; of new information typically accelerates convergence by a factor of about 2.</p>
+
+          <p>The tradeoff: Gauss-Seidel is inherently sequential (each update depends on the previous one), so it cannot be parallelized as easily as Jacobi.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">gauss_seidel</span>(A, b, x0, tolerance, max_iter):
+    n = np.shape(A)[<span class="num">0</span>]
+    x = x0.copy()
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(max_iter):
+        x0 = x.copy()
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+            s = b[i]
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(n):
+                <span class="kw">if</span> j != i:
+                    s -= A[i, j] * x[j]  <span class="cm"># uses CURRENT values (new when available)</span>
+            x[i] = s / A[i, i]
+        <span class="kw">if</span> np.linalg.norm(x - x0) &lt; tolerance:
+            <span class="kw">return</span> x
+    <span class="kw">return</span> <span class="nb">False</span></div>
+
+          <p>Look carefully at the difference: Jacobi uses <code>x0[j]</code> (old values), Gauss-Seidel uses <code>x[j]</code> (current values, which includes already-updated entries). One character difference, significant performance impact.</p>
+        </div>
+
+        <!-- SOR -->
+        <div class="method-card">
+          <div class="method-name">Successive Over-Relaxation (SOR)</div>
+          <div class="method-summary">Gauss-Seidel with a tunable acceleration parameter. Can converge dramatically faster with the right $\omega$.</div>
+
+          <p><strong>The idea:</strong> Gauss-Seidel computes a &ldquo;natural&rdquo; update. SOR takes a weighted average between the old value and the Gauss-Seidel update, controlled by a relaxation parameter $\omega$:</p>
+
+          <div class="math-box">
+            $$x_i^{(\text{new})} = \omega \cdot x_i^{(\text{GS})} + (1 - \omega) \cdot x_i^{(\text{old})}$$
+            <strong>$\omega = 1$:</strong> Gauss-Seidel (no relaxation)<br>
+            <strong>$1 < \omega < 2$:</strong> Over-relaxation (accelerates convergence for most problems)<br>
+            <strong>$0 < \omega < 1$:</strong> Under-relaxation (slower but more stable)<br>
+            <strong>$\omega \geq 2$:</strong> Diverges
+          </div>
+
+          <p>Finding the optimal $\omega$ is problem-dependent. For some structured matrices (e.g., from discretizing Laplace&rsquo;s equation), the optimal $\omega$ can be computed analytically and reduces the iteration count from $O(n)$ to $O(\sqrt{n})$. For a $1000 \times 1000$ system, that&rsquo;s the difference between 1000 and 32 iterations.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">SOR</span>(A, b, x0, tolerance, max_iter, w):
+    <span class="cm">"""
+    Same as Gauss-Seidel but with relaxation factor w (omega).
+    w = 1 is Gauss-Seidel. Typically 1 &lt; w &lt; 2 for over-relaxation.
+    """</span>
+    n = np.shape(A)[<span class="num">0</span>]
+    x = x0.copy()
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="nb">range</span>(max_iter):
+        x0 = x.copy()
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(n):
+            s = b[i]
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="nb">range</span>(n):
+                <span class="kw">if</span> j != i:
+                    s -= A[i, j] * x[j]
+            x[i] = w * s / A[i, i] + (<span class="num">1</span> - w) * x0[i]
+        <span class="kw">if</span> np.linalg.norm(x - x0) &lt; tolerance:
+            <span class="kw">return</span> x
+    <span class="kw">return</span> <span class="nb">False</span></div>
+        </div>
+
+        <h3>Comparing Iterative Methods</h3>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Method</th>
+            <th>Speed</th>
+            <th>Parallelizable?</th>
+            <th>Parameters</th>
+            <th>Best For</th>
+          </tr>
+          <tr>
+            <td>Jacobi</td>
+            <td>Slowest</td>
+            <td>Yes (naturally)</td>
+            <td>None</td>
+            <td>Parallel computing, GPU</td>
+          </tr>
+          <tr>
+            <td>Gauss-Seidel</td>
+            <td>~2x Jacobi</td>
+            <td>No (sequential)</td>
+            <td>None</td>
+            <td>General-purpose iterative</td>
+          </tr>
+          <tr>
+            <td>SOR</td>
+            <td>Up to $\sqrt{n}\times$ faster</td>
+            <td>No</td>
+            <td>$\omega$ (requires tuning)</td>
+            <td>Structured problems (PDEs)</td>
+          </tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 4: Ordinary Differential Equation Solvers</h2>
+        <!-- ============================================================ -->
+
+        <p>An <em>initial value problem</em> (IVP) asks: given $x'(t) = f(x, t)$ and $x(a) = x_0$, find $x(t)$ for $t \in [a, b]$. Most differential equations cannot be solved analytically. Numerical ODE solvers approximate $x(t)$ at discrete time steps.</p>
+
+        <p>The methods below progress from the simplest (Euler) to the most widely used (Runge-Kutta 4). They all share the same structure: starting from a known value, take a &ldquo;step&rdquo; of size $h$ to estimate the function at the next time point. The difference is in how cleverly they estimate the step.</p>
+
+        <!-- Euler's Method -->
+        <div class="method-card">
+          <div class="method-name">Euler&rsquo;s Method</div>
+          <div class="method-summary">The simplest ODE solver. Follow the tangent line. First-order accurate.</div>
+
+          <p><strong>The idea:</strong> At each step, approximate $x(t + h)$ by following the tangent line at $x(t)$:</p>
+
+          <div class="math-box">
+            $$x_{n+1} = x_n + h \cdot f(x_n, t_n)$$
+            <strong>Local error:</strong> $O(h^2)$ per step.<br>
+            <strong>Global error:</strong> $O(h)$ &mdash; first-order method.<br>
+            To halve the error, you must halve the step size (doubling the work).
+          </div>
+
+          <p>Euler&rsquo;s method is rarely used in practice because it&rsquo;s inaccurate. But it&rsquo;s the conceptual foundation for all higher-order methods. Understanding Euler is understanding the basic idea of numerical integration of ODEs.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">eulers_method</span>(f, a, b, init, steps):
+    <span class="cm">"""
+    f: derivative function f(x, t) = x'(t)
+    a, b: time interval [a, b]
+    init: initial value x(a)
+    steps: number of time steps
+    """</span>
+    h = (b - a) / steps
+    values = np.zeros(steps + <span class="num">1</span>)
+    values[<span class="num">0</span>] = init
+    t = a
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, steps + <span class="num">1</span>):
+        values[i] = values[i-<span class="num">1</span>] + h * f(values[i-<span class="num">1</span>], t)
+        t = a + i * h
+    <span class="kw">return</span> values</div>
+        </div>
+
+        <!-- Taylor Method -->
+        <div class="method-card">
+          <div class="method-name">Taylor Method (Arbitrary Order)</div>
+          <div class="method-summary">Uses higher derivatives for higher accuracy. Order-$p$ method uses terms up to $h^p$.</div>
+
+          <p><strong>The idea:</strong> Euler&rsquo;s method uses the first term of the Taylor expansion of $x(t + h)$. The Taylor method uses more terms:</p>
+
+          <div class="math-box">
+            $$x_{n+1} = x_n + h \cdot x'(t_n) + \frac{h^2}{2!} \cdot x''(t_n) + \cdots + \frac{h^p}{p!} \cdot x^{(p)}(t_n)$$
+            <strong>Global error:</strong> $O(h^p)$ &mdash; $p$-th order method.<br>
+            <strong>Catch:</strong> You need formulas for all derivatives up to order $p$. These must be derived analytically for each specific ODE.
+          </div>
+
+          <p>The Taylor method is powerful but impractical for most real-world use because computing higher-order derivatives is tedious and problem-specific. The Runge-Kutta methods achieve the same accuracy without needing any derivatives beyond the first.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">taylor_method</span>(order, f, a, b, init, steps):
+    <span class="cm">"""
+    order: number of Taylor terms to use
+    f: function where f(n, x, t) returns the nth derivative of x
+       (must be written specifically for each ODE)
+    a, b: time interval
+    init: initial value x(a)
+    steps: number of time steps
+    """</span>
+    h = (b - a) / steps
+    values = np.zeros(steps + <span class="num">1</span>)
+    values[<span class="num">0</span>] = init
+    t = a
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, steps + <span class="num">1</span>):
+        values[i] = values[i-<span class="num">1</span>]
+        <span class="kw">for</span> n <span class="kw">in</span> <span class="nb">range</span>(<span class="num">1</span>, order + <span class="num">1</span>):
+            values[i] += (<span class="num">1</span>/np.math.factorial(n)) * (h**n) * f(n, values[i-<span class="num">1</span>], t)
+        t = a + i * h
+    <span class="kw">return</span> values</div>
+        </div>
+
+        <!-- Runge-Kutta 4 -->
+        <div class="method-card">
+          <div class="method-name">Runge-Kutta 4th Order (RK4)</div>
+          <div class="method-summary">The standard method for ODE solving. Fourth-order accuracy using only the first derivative. The workhorse of scientific computing.</div>
+
+          <p><strong>The idea:</strong> Achieve 4th-order accuracy (matching the Taylor method of order 4) without computing any higher derivatives. Instead, evaluate $f$ at four carefully chosen points within each step and take a weighted average:</p>
+
+          <div class="math-box">
+            $$\begin{aligned}
+            k_1 &= h \cdot f(x_n,\, t_n) \\
+            k_2 &= h \cdot f\!\left(x_n + \tfrac{k_1}{2},\, t_n + \tfrac{h}{2}\right) \\
+            k_3 &= h \cdot f\!\left(x_n + \tfrac{k_2}{2},\, t_n + \tfrac{h}{2}\right) \\
+            k_4 &= h \cdot f(x_n + k_3,\, t_n + h)
+            \end{aligned}$$
+
+            $$x_{n+1} = x_n + \frac{k_1 + 2k_2 + 2k_3 + k_4}{6}$$
+            <strong>Local error:</strong> $O(h^5)$<br>
+            <strong>Global error:</strong> $O(h^4)$ &mdash; fourth-order method.<br>
+            <strong>Cost:</strong> 4 function evaluations per step.
+          </div>
+
+          <p><strong>Why these weights?</strong> The coefficients $(1, 2, 2, 1)/6$ come from Simpson&rsquo;s rule for numerical integration. $k_1$ evaluates the slope at the left endpoint, $k_2$ and $k_3$ evaluate at the midpoint (using progressively better estimates), and $k_4$ evaluates at the right endpoint. The weighting gives the midpoint estimates double importance, which is characteristic of Simpson&rsquo;s rule.</p>
+
+          <p><strong>In practice:</strong> RK4 is the default choice for non-stiff ODEs. It&rsquo;s simple, accurate, and reliable. For stiff equations (where solutions change on vastly different timescales), implicit methods like backward Euler or BDF methods are needed instead.</p>
+
+          <div class="code-block"><span class="kw">def</span> <span class="fn">runge_kutta_4</span>(f, a, b, alpha, steps):
+    <span class="cm">"""
+    f: derivative function f(x, t) = x'(t)
+    a, b: time interval [a, b]
+    alpha: initial value x(a) = alpha
+    steps: number of time steps
+    """</span>
+    values = np.zeros(steps + <span class="num">1</span>)
+    values[<span class="num">0</span>] = alpha
+    h = (b - a) / steps
+    t = a
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="nb">range</span>(steps):
+        k1 = h * f(values[i], t)
+        k2 = h * f(values[i] + <span class="num">.5</span>*k1, t + <span class="num">.5</span>*h)
+        k3 = h * f(values[i] + <span class="num">.5</span>*k2, t + <span class="num">.5</span>*h)
+        k4 = h * f(values[i] + k3, t + h)
+        values[i+<span class="num">1</span>] = values[i] + (k1 + <span class="num">2</span>*k2 + <span class="num">2</span>*k3 + k4) / <span class="num">6</span>
+        t = a + (i + <span class="num">1</span>) * h
+    <span class="kw">return</span> values</div>
+        </div>
+
+        <h3>Comparing ODE Solvers</h3>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Method</th>
+            <th>Order</th>
+            <th>f evaluations/step</th>
+            <th>Requires</th>
+            <th>Best For</th>
+          </tr>
+          <tr>
+            <td>Euler</td>
+            <td>1st</td>
+            <td>1</td>
+            <td>f only</td>
+            <td>Teaching, quick estimates</td>
+          </tr>
+          <tr>
+            <td>Taylor (order p)</td>
+            <td>p-th</td>
+            <td>1 (but p derivatives)</td>
+            <td>Derivatives up to order p</td>
+            <td>When derivatives are cheap</td>
+          </tr>
+          <tr>
+            <td>Runge-Kutta 4</td>
+            <td>4th</td>
+            <td>4</td>
+            <td>f only</td>
+            <td>General-purpose (standard choice)</td>
+          </tr>
+        </table>
+
+        <p>To put the accuracy difference in perspective: for a step size of $h = 0.01$, Euler&rsquo;s error is proportional to $0.01$, while RK4&rsquo;s error is proportional to $0.01^4 = 10^{-8}$. That&rsquo;s six orders of magnitude better for only $4\times$ the work per step.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Closing Thoughts</h2>
+        <!-- ============================================================ -->
+
+        <p>These methods were developed over three centuries. Bisection dates to antiquity. Newton&rsquo;s method appeared in the 1660s (though Newton&rsquo;s version looked different from what we use). Gaussian elimination was systematized in the early 1800s. Runge-Kutta methods were developed around 1900. SOR was formalized in the 1950s for early electronic computers.</p>
+
+        <p>What&rsquo;s remarkable is how much stays the same. The core ideas&mdash;bracketing, linearization, elimination, iteration, weighted sampling&mdash;are as relevant today as they were decades or centuries ago. Modern scientific computing uses more sophisticated versions (adaptive step-size control, Krylov subspace methods, multigrid, spectral methods), but they all build on these foundations.</p>
+
+        <p>A few principles that recur across all numerical methods:</p>
+
+        <ul>
+          <li><strong>Speed vs. robustness:</strong> Faster methods (Newton, RK4) are less robust than slower ones (bisection, Euler). Know when you need reliability and when you need speed.</li>
+          <li><strong>Exploit structure:</strong> A tridiagonal system can be solved in $O(n)$ instead of $O(n^3)$. Always look for structure in your problem&mdash;it can mean the difference between seconds and hours.</li>
+          <li><strong>Factor once, solve many:</strong> If the same matrix appears with different right-hand sides, factor it once and reuse the factorization. This applies to Gaussian elimination, tridiagonal systems, and many other contexts.</li>
+          <li><strong>Higher order is not always better:</strong> RK4 is better than Euler for smooth problems, but for stiff or discontinuous problems, implicit low-order methods can be more appropriate.</li>
+          <li><strong>Convergence is everything:</strong> An algorithm that doesn&rsquo;t converge is useless no matter how elegant it is. Always verify convergence.</li>
+        </ul>
+
+        <div class="note-box">
+          <p><strong>On implementation:</strong> The Python code in this article is written for clarity, not performance. For production use, these methods are available in heavily optimized form through NumPy (<code>numpy.linalg.solve</code>), SciPy (<code>scipy.integrate.solve_ivp</code>, <code>scipy.optimize.brentq</code>), and LAPACK (the Fortran library underneath most numerical software). But understanding the algorithms is essential for knowing which tool to reach for and why it might fail.</p>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

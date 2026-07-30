@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to C</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+    .code-block .preprocessor { color: #c586c0; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Introduction to C</h1>
+      <p>The language that built the machine you are reading this on</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Introduction to C: The Language Underneath Everything</h1>
+        <div class="article-meta">Computer Science</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Why C</h2>
+
+        <p>Dennis Ritchie created C in 1972 at Bell Labs to rewrite Unix. Before C, operating systems were written in assembly &mdash; thousands of lines of instructions tied to a specific processor. Ritchie wanted a language that was close enough to the hardware to write an operating system, but abstract enough to be portable across machines. He succeeded. Unix was rewritten in C, and both language and operating system began to spread.</p>
+
+        <p>Fifty years later, C is the foundation of modern computing. The Linux kernel is C. The Windows kernel is C. macOS is C. The Python interpreter is C. The JVM is C and C++. The TCP/IP stack that connects every device on the internet is C. Your phone, your car&rsquo;s engine controller, the Mars rovers, the MRI machine &mdash; all C.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;C is not a big language, and it is not well served by a big book.&rdquo;</p>
+          <div class="attribution">&mdash; Brian Kernighan &amp; Dennis Ritchie, preface to <em>The C Programming Language</em></div>
+        </div>
+
+        <div class="note-box">
+          <h4>Why C Is Still Relevant</h4>
+          <p>Every operating system, every database engine (PostgreSQL, SQLite, MySQL), every language runtime (CPython, Ruby MRI, PHP), every embedded system, and most network infrastructure is written in C. Learning C means learning how the machine actually works: how memory is laid out, how pointers work, why buffer overflows are dangerous, and what your higher-level language is doing under the hood.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. Hello, World</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+
+<span class="keyword">int</span> <span class="func">main</span>(<span class="keyword">void</span>) {
+    <span class="func">printf</span>(<span class="string">"Hello, World\n"</span>);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</div>
+
+        <p><code>#include &lt;stdio.h&gt;</code> is a preprocessor directive: it literally pastes the contents of the standard I/O header file into your source code before compilation. <code>main</code> is the entry point. It returns <code>int</code>: 0 means success, nonzero means failure. <code>printf</code> writes formatted text to standard output. <code>\n</code> is a newline. The semicolons and braces come from C, and every language that borrowed C&rsquo;s syntax (Java, JavaScript, Go, Rust, C++, C#) inherited them.</p>
+
+        <h3>The Compilation Pipeline</h3>
+
+        <div class="code-block"><span class="comment"># Compile and run</span>
+$ gcc hello.c -o hello
+$ ./hello
+Hello, World
+
+<span class="comment"># The four stages:</span>
+$ gcc -E hello.c    <span class="comment"># 1. Preprocessing: expand #include, #define</span>
+$ gcc -S hello.c    <span class="comment"># 2. Compilation: C → assembly (.s)</span>
+$ gcc -c hello.c    <span class="comment"># 3. Assembly: assembly → object file (.o)</span>
+$ gcc hello.o -o hello  <span class="comment"># 4. Linking: object files → executable</span></div>
+
+        <p>Understanding these stages matters. When you get a &ldquo;undefined reference&rdquo; error, that is a <em>linker</em> error (stage 4). When you get a &ldquo;undeclared identifier&rdquo; error, that is a <em>compiler</em> error (stage 2). Knowing which stage failed tells you where to look.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. Types and Variables</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="keyword">int</span> x = <span class="number">42</span>;               <span class="comment">/* integer (typically 32 bits) */</span>
+<span class="keyword">char</span> c = <span class="string">'A'</span>;              <span class="comment">/* character (8 bits) */</span>
+<span class="keyword">float</span> f = <span class="number">3.14f</span>;           <span class="comment">/* single-precision float (32 bits) */</span>
+<span class="keyword">double</span> d = <span class="number">3.14159265358979</span>; <span class="comment">/* double-precision float (64 bits) */</span>
+<span class="keyword">long</span> big = <span class="number">1000000000L</span>;     <span class="comment">/* at least 32 bits */</span>
+<span class="keyword">long</span> <span class="keyword">long</span> huge = <span class="number">9000000000000000000LL</span>; <span class="comment">/* at least 64 bits */</span>
+<span class="keyword">short</span> small = <span class="number">32767</span>;       <span class="comment">/* at least 16 bits */</span>
+<span class="keyword">unsigned</span> <span class="keyword">int</span> u = <span class="number">42</span>;       <span class="comment">/* non-negative only */</span>
+
+<span class="comment">/* sizeof tells you the size in bytes */</span>
+<span class="func">printf</span>(<span class="string">"int: %zu bytes\n"</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>));     <span class="comment">/* typically 4 */</span>
+<span class="func">printf</span>(<span class="string">"char: %zu bytes\n"</span>, <span class="keyword">sizeof</span>(<span class="keyword">char</span>));   <span class="comment">/* always 1 */</span>
+<span class="func">printf</span>(<span class="string">"double: %zu bytes\n"</span>, <span class="keyword">sizeof</span>(<span class="keyword">double</span>)); <span class="comment">/* typically 8 */</span></div>
+
+        <p>C&rsquo;s type sizes are not fully specified. An <code>int</code> is &ldquo;at least 16 bits.&rdquo; On modern 64-bit systems it is 32 bits, but the standard does not guarantee this. For portable code, use the fixed-width types from <code>&lt;stdint.h&gt;</code>:</p>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;stdint.h&gt;</span>
+
+<span class="type">int8_t</span>   a;   <span class="comment">/* exactly 8 bits, signed */</span>
+<span class="type">uint8_t</span>  b;   <span class="comment">/* exactly 8 bits, unsigned */</span>
+<span class="type">int32_t</span>  c;   <span class="comment">/* exactly 32 bits, signed */</span>
+<span class="type">uint64_t</span> d;   <span class="comment">/* exactly 64 bits, unsigned */</span>
+<span class="type">size_t</span>   n;   <span class="comment">/* unsigned, big enough for any object size */</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. Operators and Control Flow</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">/* Bitwise operators (C gives you direct access to bits) */</span>
+<span class="keyword">unsigned</span> flags = <span class="number">0</span>;
+flags |= (<span class="number">1</span> &lt;&lt; <span class="number">3</span>);     <span class="comment">/* set bit 3 */</span>
+flags &amp;= ~(<span class="number">1</span> &lt;&lt; <span class="number">3</span>);    <span class="comment">/* clear bit 3 */</span>
+<span class="keyword">if</span> (flags &amp; (<span class="number">1</span> &lt;&lt; <span class="number">3</span>))  <span class="comment">/* test bit 3 */</span>
+
+<span class="comment">/* Switch (falls through by default — unlike Go!) */</span>
+<span class="keyword">switch</span> (c) {
+<span class="keyword">case</span> <span class="string">'a'</span>:
+<span class="keyword">case</span> <span class="string">'e'</span>:
+<span class="keyword">case</span> <span class="string">'i'</span>:
+<span class="keyword">case</span> <span class="string">'o'</span>:
+<span class="keyword">case</span> <span class="string">'u'</span>:
+    <span class="func">printf</span>(<span class="string">"vowel\n"</span>);
+    <span class="keyword">break</span>;              <span class="comment">/* without break, execution falls through! */</span>
+<span class="keyword">default</span>:
+    <span class="func">printf</span>(<span class="string">"consonant\n"</span>);
+}
+
+<span class="comment">/* Loops */</span>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) { }    <span class="comment">/* classic for */</span>
+<span class="keyword">while</span> (n &gt; <span class="number">0</span>) { n--; }             <span class="comment">/* while */</span>
+<span class="keyword">do</span> { n++; } <span class="keyword">while</span> (n &lt; <span class="number">10</span>);        <span class="comment">/* do-while (body runs at least once) */</span>
+
+<span class="comment">/* Ternary operator */</span>
+<span class="keyword">int</span> abs_x = (x &gt;= <span class="number">0</span>) ? x : -x;</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. Functions</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">/* Declaration (prototype) — tells the compiler what to expect */</span>
+<span class="keyword">double</span> <span class="func">distance</span>(<span class="keyword">double</span> x1, <span class="keyword">double</span> y1, <span class="keyword">double</span> x2, <span class="keyword">double</span> y2);
+
+<span class="comment">/* Definition — the actual implementation */</span>
+<span class="keyword">double</span> <span class="func">distance</span>(<span class="keyword">double</span> x1, <span class="keyword">double</span> y1, <span class="keyword">double</span> x2, <span class="keyword">double</span> y2) {
+    <span class="keyword">double</span> dx = x2 - x1;
+    <span class="keyword">double</span> dy = y2 - y1;
+    <span class="keyword">return</span> <span class="func">sqrt</span>(dx*dx + dy*dy);
+}
+
+<span class="comment">/* C is pass-by-value ONLY */</span>
+<span class="keyword">void</span> <span class="func">double_it</span>(<span class="keyword">int</span> x) {
+    x *= <span class="number">2</span>;  <span class="comment">/* modifies local copy, caller's variable unchanged */</span>
+}
+
+<span class="comment">/* To modify the caller's variable, pass a pointer */</span>
+<span class="keyword">void</span> <span class="func">double_it</span>(<span class="keyword">int</span> *x) {
+    *x *= <span class="number">2</span>; <span class="comment">/* dereference the pointer to modify the original */</span>
+}
+
+<span class="keyword">int</span> n = <span class="number">5</span>;
+<span class="func">double_it</span>(&amp;n);  <span class="comment">/* pass the address of n */</span>
+<span class="comment">/* n is now 10 */</span>
+
+<span class="comment">/* static functions are visible only within this file */</span>
+<span class="keyword">static</span> <span class="keyword">int</span> <span class="func">helper</span>(<span class="keyword">int</span> x) { <span class="keyword">return</span> x + <span class="number">1</span>; }</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. Pointers</h2>
+        <!-- ============================================================ -->
+
+        <p>Pointers are what makes C C. A pointer is a variable that holds the memory address of another variable. That is all it is. But from this single concept flows almost everything that distinguishes C from higher-level languages.</p>
+
+        <div class="code-block"><span class="keyword">int</span> x = <span class="number">42</span>;
+<span class="keyword">int</span> *p = &amp;x;     <span class="comment">/* p holds the ADDRESS of x */</span>
+
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, *p);    <span class="comment">/* 42 — dereference: read the value at that address */</span>
+<span class="func">printf</span>(<span class="string">"%p\n"</span>, p);     <span class="comment">/* 0x7ffc... — the address itself */</span>
+
+*p = <span class="number">100</span>;              <span class="comment">/* modify x through the pointer */</span>
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, x);     <span class="comment">/* 100 */</span>
+
+<span class="comment">/* Pointer arithmetic */</span>
+<span class="keyword">int</span> arr[<span class="number">5</span>] = {<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>};
+<span class="keyword">int</span> *q = arr;           <span class="comment">/* array name decays to pointer to first element */</span>
+
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, *q);      <span class="comment">/* 10 */</span>
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, *(q+<span class="number">1</span>));  <span class="comment">/* 20 — pointer + 1 moves by sizeof(int) bytes */</span>
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, q[<span class="number">2</span>]);    <span class="comment">/* 30 — q[i] is exactly *(q+i) */</span>
+
+<span class="comment">/* NULL pointer */</span>
+<span class="keyword">int</span> *null_ptr = <span class="keyword">NULL</span>;   <span class="comment">/* points nowhere — dereferencing is undefined behavior */</span>
+
+<span class="comment">/* void pointer — generic pointer, can point to any type */</span>
+<span class="keyword">void</span> *generic = &amp;x;
+<span class="keyword">int</span> *back = (<span class="keyword">int</span> *)generic;  <span class="comment">/* must cast back to use it */</span></div>
+
+        <h3>Function Pointers</h3>
+
+        <div class="code-block"><span class="comment">/* Declare a function pointer */</span>
+<span class="keyword">int</span> (*operation)(<span class="keyword">int</span>, <span class="keyword">int</span>);
+
+<span class="keyword">int</span> <span class="func">add</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) { <span class="keyword">return</span> a + b; }
+<span class="keyword">int</span> <span class="func">mul</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) { <span class="keyword">return</span> a * b; }
+
+operation = add;
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, <span class="func">operation</span>(<span class="number">3</span>, <span class="number">4</span>));  <span class="comment">/* 7 */</span>
+
+operation = mul;
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, <span class="func">operation</span>(<span class="number">3</span>, <span class="number">4</span>));  <span class="comment">/* 12 */</span>
+
+<span class="comment">/* qsort uses a function pointer for the comparison */</span>
+<span class="keyword">int</span> <span class="func">compare_ints</span>(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b) {
+    <span class="keyword">return</span> (*(<span class="keyword">int</span> *)a - *(<span class="keyword">int</span> *)b);
+}
+
+<span class="keyword">int</span> nums[] = {<span class="number">5</span>, <span class="number">2</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">9</span>};
+<span class="func">qsort</span>(nums, <span class="number">5</span>, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), compare_ints);</div>
+
+        <p>Function pointers are how C does callbacks, polymorphism, and plugin architectures. The standard library&rsquo;s <code>qsort</code> and <code>bsearch</code> use function pointers to work with any type. This is C&rsquo;s version of generics &mdash; crude but effective.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Arrays and Strings</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">/* Stack-allocated array */</span>
+<span class="keyword">int</span> arr[<span class="number">5</span>] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+<span class="keyword">int</span> zeros[<span class="number">100</span>] = {<span class="number">0</span>};        <span class="comment">/* all zeros */</span>
+
+<span class="comment">/* sizeof pitfall */</span>
+<span class="func">printf</span>(<span class="string">"%zu\n"</span>, <span class="keyword">sizeof</span>(arr));        <span class="comment">/* 20 (5 * 4 bytes) */</span>
+<span class="func">printf</span>(<span class="string">"%zu\n"</span>, <span class="keyword">sizeof</span>(arr) / <span class="keyword">sizeof</span>(arr[<span class="number">0</span>]));  <span class="comment">/* 5 — number of elements */</span>
+
+<span class="comment">/* But this breaks when you pass an array to a function: */</span>
+<span class="keyword">void</span> <span class="func">foo</span>(<span class="keyword">int</span> arr[]) {
+    <span class="comment">/* sizeof(arr) is sizeof(int*), NOT the array size! */</span>
+    <span class="comment">/* Arrays decay to pointers when passed to functions. */</span>
+}</div>
+
+        <h3>C Strings</h3>
+
+        <p>C has no string type. A &ldquo;string&rdquo; is an array of <code>char</code> terminated by a null byte (<code>'\0'</code>). This is the source of a disproportionate number of bugs and security vulnerabilities.</p>
+
+        <div class="code-block"><span class="keyword">char</span> s1[] = <span class="string">"Hello"</span>;              <span class="comment">/* array of 6 chars: H, e, l, l, o, \0 */</span>
+<span class="keyword">char</span> *s2 = <span class="string">"Hello"</span>;               <span class="comment">/* pointer to string literal (read-only!) */</span>
+<span class="keyword">char</span> s3[<span class="number">20</span>];                      <span class="comment">/* buffer for up to 19 chars + null */</span>
+
+<span class="comment">/* string.h functions */</span>
+<span class="type">size_t</span> len = <span class="func">strlen</span>(s1);           <span class="comment">/* 5 (does NOT count the \0) */</span>
+<span class="func">strcpy</span>(s3, s1);                   <span class="comment">/* copy — DANGEROUS if dest too small */</span>
+<span class="func">strncpy</span>(s3, s1, <span class="keyword">sizeof</span>(s3) - <span class="number">1</span>); <span class="comment">/* safer: bounded copy */</span>
+s3[<span class="keyword">sizeof</span>(s3) - <span class="number">1</span>] = <span class="string">'\0'</span>;        <span class="comment">/* always null-terminate manually */</span>
+<span class="keyword">int</span> cmp = <span class="func">strcmp</span>(s1, s2);          <span class="comment">/* 0 if equal, &lt;0 or &gt;0 otherwise */</span>
+<span class="func">strcat</span>(s3, <span class="string">" World"</span>);             <span class="comment">/* concatenate — watch buffer size! */</span>
+<span class="keyword">char</span> *found = <span class="func">strstr</span>(s3, <span class="string">"World"</span>); <span class="comment">/* find substring, or NULL */</span></div>
+
+        <div class="concept-box">
+          <h4>Buffer Overflows</h4>
+          <p>C does not check array bounds. Writing past the end of a buffer overwrites whatever is next in memory. This is the root cause of a vast number of security vulnerabilities: stack smashing, code injection, remote code execution. Always use bounded functions (<code>strncpy</code>, <code>snprintf</code>, <code>fgets</code>) and always check sizes. The <code>gets()</code> function was so dangerous it was removed from the C standard entirely.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Structs</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="keyword">struct</span> Point {
+    <span class="keyword">double</span> x;
+    <span class="keyword">double</span> y;
+};
+
+<span class="comment">/* typedef saves you from writing "struct" everywhere */</span>
+<span class="keyword">typedef</span> <span class="keyword">struct</span> {
+    <span class="keyword">char</span> name[<span class="number">64</span>];
+    <span class="keyword">int</span> age;
+    <span class="keyword">double</span> gpa;
+} Student;
+
+<span class="comment">/* Initialization */</span>
+<span class="keyword">struct</span> Point p1 = {<span class="number">3.0</span>, <span class="number">4.0</span>};
+Student s = {<span class="string">"Alice"</span>, <span class="number">20</span>, <span class="number">3.8</span>};
+
+<span class="comment">/* Access fields with . */</span>
+<span class="func">printf</span>(<span class="string">"%s is %d\n"</span>, s.name, s.age);
+
+<span class="comment">/* Pointer to struct: use -> instead of . */</span>
+Student *sp = &amp;s;
+<span class="func">printf</span>(<span class="string">"%s\n"</span>, sp-&gt;name);  <span class="comment">/* same as (*sp).name */</span>
+
+<span class="comment">/* Structs are passed by value (copied). For large structs, pass a pointer. */</span>
+<span class="keyword">void</span> <span class="func">print_student</span>(<span class="keyword">const</span> Student *s) {
+    <span class="func">printf</span>(<span class="string">"%s, age %d, GPA %.1f\n"</span>, s-&gt;name, s-&gt;age, s-&gt;gpa);
+}</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Dynamic Memory</h2>
+        <!-- ============================================================ -->
+
+        <p>The stack is for local variables with known sizes. The heap is for data whose size is determined at runtime. You manage the heap manually: allocate with <code>malloc</code>, release with <code>free</code>. If you forget to free, memory leaks. If you free twice, undefined behavior. If you use after free, undefined behavior.</p>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
+
+<span class="comment">/* Allocate memory for n integers */</span>
+<span class="keyword">int</span> *arr = <span class="func">malloc</span>(n * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));
+<span class="keyword">if</span> (arr == <span class="keyword">NULL</span>) {
+    <span class="func">perror</span>(<span class="string">"malloc failed"</span>);
+    <span class="keyword">return</span> <span class="number">1</span>;
+}
+
+<span class="comment">/* Use it */</span>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) {
+    arr[i] = i * i;
+}
+
+<span class="comment">/* Resize */</span>
+arr = <span class="func">realloc</span>(arr, <span class="number">2</span> * n * <span class="keyword">sizeof</span>(<span class="keyword">int</span>));
+
+<span class="comment">/* Free when done */</span>
+<span class="func">free</span>(arr);
+arr = <span class="keyword">NULL</span>;  <span class="comment">/* good practice: prevent use-after-free */</span>
+
+<span class="comment">/* calloc: allocate and zero-initialize */</span>
+<span class="keyword">int</span> *zeros = <span class="func">calloc</span>(n, <span class="keyword">sizeof</span>(<span class="keyword">int</span>));  <span class="comment">/* all bytes set to 0 */</span></div>
+
+        <table class="comparison-table">
+          <tr><th>Function</th><th>Purpose</th></tr>
+          <tr><td><code>malloc(size)</code></td><td>Allocate <code>size</code> bytes (uninitialized)</td></tr>
+          <tr><td><code>calloc(n, size)</code></td><td>Allocate <code>n * size</code> bytes (zero-initialized)</td></tr>
+          <tr><td><code>realloc(ptr, size)</code></td><td>Resize existing allocation</td></tr>
+          <tr><td><code>free(ptr)</code></td><td>Release allocated memory</td></tr>
+        </table>
+
+        <p>Every <code>malloc</code> must have a corresponding <code>free</code>. Every <code>malloc</code> must be checked for <code>NULL</code>. This is the discipline C requires. There is no garbage collector, no RAII, no defer. You track every allocation yourself. Get it wrong and you get memory leaks, crashes, or security vulnerabilities. Get it right and you have software that runs for decades without consuming more memory than it needs.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. The Preprocessor</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">/* Include headers */</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>     <span class="comment">/* system header: search system paths */</span>
+<span class="preprocessor">#include</span> <span class="string">"myheader.h"</span>  <span class="comment">/* local header: search current directory first */</span>
+
+<span class="comment">/* Constants */</span>
+<span class="preprocessor">#define</span> MAX_SIZE <span class="number">1024</span>
+<span class="preprocessor">#define</span> PI <span class="number">3.14159265358979</span>
+
+<span class="comment">/* Macros (text substitution — use with caution) */</span>
+<span class="preprocessor">#define</span> MAX(a, b) ((a) &gt; (b) ? (a) : (b))
+<span class="preprocessor">#define</span> SQUARE(x) ((x) * (x))
+
+<span class="comment">/* The extra parentheses are critical. Without them: */</span>
+<span class="comment">/* SQUARE(1+2) would expand to (1+2 * 1+2) = 5, not 9 */</span>
+
+<span class="comment">/* Conditional compilation */</span>
+<span class="preprocessor">#ifdef</span> DEBUG
+    <span class="func">printf</span>(<span class="string">"Debug: x = %d\n"</span>, x);
+<span class="preprocessor">#endif</span>
+
+<span class="comment">/* Include guards (prevent double inclusion) */</span>
+<span class="preprocessor">#ifndef</span> MYHEADER_H
+<span class="preprocessor">#define</span> MYHEADER_H
+<span class="comment">/* ... header contents ... */</span>
+<span class="preprocessor">#endif</span></div>
+
+        <p>The preprocessor runs before the compiler. It does pure text substitution: <code>#include</code> pastes files, <code>#define</code> replaces tokens, <code>#ifdef</code> conditionally includes code. Macros are powerful but dangerous: they have no type checking, no scoping, and can produce surprising results. Prefer <code>const</code> variables and <code>inline</code> functions when possible.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">X. File I/O</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">/* Reading a file line by line */</span>
+<span class="type">FILE</span> *f = <span class="func">fopen</span>(<span class="string">"data.txt"</span>, <span class="string">"r"</span>);
+<span class="keyword">if</span> (f == <span class="keyword">NULL</span>) {
+    <span class="func">perror</span>(<span class="string">"fopen"</span>);
+    <span class="keyword">return</span> <span class="number">1</span>;
+}
+
+<span class="keyword">char</span> line[<span class="number">256</span>];
+<span class="keyword">while</span> (<span class="func">fgets</span>(line, <span class="keyword">sizeof</span>(line), f) != <span class="keyword">NULL</span>) {
+    <span class="func">printf</span>(<span class="string">"%s"</span>, line);
+}
+<span class="func">fclose</span>(f);
+
+<span class="comment">/* Writing formatted output */</span>
+<span class="type">FILE</span> *out = <span class="func">fopen</span>(<span class="string">"output.txt"</span>, <span class="string">"w"</span>);
+<span class="func">fprintf</span>(out, <span class="string">"Name: %s, Score: %d\n"</span>, <span class="string">"Alice"</span>, <span class="number">95</span>);
+<span class="func">fclose</span>(out);
+
+<span class="comment">/* Binary I/O */</span>
+<span class="keyword">int</span> data[<span class="number">100</span>];
+<span class="type">FILE</span> *bin = <span class="func">fopen</span>(<span class="string">"data.bin"</span>, <span class="string">"wb"</span>);
+<span class="func">fwrite</span>(data, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), <span class="number">100</span>, bin);
+<span class="func">fclose</span>(bin);</div>
+
+        <table class="comparison-table">
+          <tr><th>Mode</th><th>Description</th></tr>
+          <tr><td>"r"</td><td>Read (file must exist)</td></tr>
+          <tr><td>"w"</td><td>Write (creates or truncates)</td></tr>
+          <tr><td>"a"</td><td>Append (creates if needed)</td></tr>
+          <tr><td>"r+"</td><td>Read and write (file must exist)</td></tr>
+          <tr><td>"rb", "wb"</td><td>Binary mode (no newline translation)</td></tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XI. The Compilation Model</h2>
+        <!-- ============================================================ -->
+
+        <p>Real C projects split code across multiple files. Each <code>.c</code> file compiles independently into an object file (<code>.o</code>). The linker combines them.</p>
+
+        <div class="code-block"><span class="comment">/* === vector.h === */</span>
+<span class="preprocessor">#ifndef</span> VECTOR_H
+<span class="preprocessor">#define</span> VECTOR_H
+
+<span class="keyword">typedef</span> <span class="keyword">struct</span> {
+    <span class="keyword">double</span> x, y;
+} Vector;
+
+Vector <span class="func">vector_add</span>(Vector a, Vector b);
+<span class="keyword">double</span> <span class="func">vector_magnitude</span>(Vector v);
+
+<span class="preprocessor">#endif</span></div>
+
+        <div class="code-block"><span class="comment">/* === vector.c === */</span>
+<span class="preprocessor">#include</span> <span class="string">"vector.h"</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;math.h&gt;</span>
+
+Vector <span class="func">vector_add</span>(Vector a, Vector b) {
+    <span class="keyword">return</span> (Vector){a.x + b.x, a.y + b.y};
+}
+
+<span class="keyword">double</span> <span class="func">vector_magnitude</span>(Vector v) {
+    <span class="keyword">return</span> <span class="func">sqrt</span>(v.x * v.x + v.y * v.y);
+}</div>
+
+        <div class="code-block"><span class="comment"># Compile separately, then link</span>
+$ gcc -c main.c -o main.o
+$ gcc -c vector.c -o vector.o
+$ gcc main.o vector.o -o program -lm
+
+<span class="comment"># Or all at once</span>
+$ gcc main.c vector.c -o program -lm
+
+<span class="comment"># Useful flags</span>
+$ gcc -Wall -Wextra -std=c11 -g program.c -o program
+<span class="comment"># -Wall: enable most warnings</span>
+<span class="comment"># -Wextra: enable additional warnings</span>
+<span class="comment"># -std=c11: use the C11 standard</span>
+<span class="comment"># -g: include debug information (for gdb/lldb)</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XII. Undefined Behavior</h2>
+        <!-- ============================================================ -->
+
+        <p>Undefined behavior (UB) is the most important concept in C that most programmers do not understand well enough. When the C standard says a program has undefined behavior, it means <em>anything can happen</em>. The program may crash. It may silently produce wrong output. The compiler may remove your code entirely.</p>
+
+        <div class="code-block"><span class="comment">/* Common sources of undefined behavior */</span>
+
+<span class="keyword">int</span> x = INT_MAX;
+x = x + <span class="number">1</span>;               <span class="comment">/* UB: signed integer overflow */</span>
+
+<span class="keyword">int</span> *p = <span class="keyword">NULL</span>;
+*p = <span class="number">42</span>;                  <span class="comment">/* UB: null pointer dereference */</span>
+
+<span class="keyword">int</span> arr[<span class="number">5</span>];
+arr[<span class="number">10</span>] = <span class="number">99</span>;              <span class="comment">/* UB: out-of-bounds access */</span>
+
+<span class="keyword">int</span> *q = <span class="func">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>));
+<span class="func">free</span>(q);
+*q = <span class="number">42</span>;                  <span class="comment">/* UB: use-after-free */</span>
+
+<span class="keyword">int</span> y;
+<span class="func">printf</span>(<span class="string">"%d\n"</span>, y);         <span class="comment">/* UB: reading uninitialized variable */</span></div>
+
+        <p>The compiler assumes UB never happens and optimizes accordingly. If signed overflow is UB, the compiler can assume <code>x + 1 &gt; x</code> is always true and optimize out your overflow check. This is not a bug in the compiler &mdash; it is the compiler following the rules. Use <code>-fsanitize=undefined</code> and <code>-fsanitize=address</code> to catch UB at runtime.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIII. The Standard Library</h2>
+        <!-- ============================================================ -->
+
+        <table class="comparison-table">
+          <tr><th>Header</th><th>What It Provides</th></tr>
+          <tr><td>&lt;stdio.h&gt;</td><td>printf, scanf, fopen, fclose, fgets, fread, fwrite, sprintf, snprintf</td></tr>
+          <tr><td>&lt;stdlib.h&gt;</td><td>malloc, calloc, realloc, free, exit, atoi, qsort, bsearch, rand</td></tr>
+          <tr><td>&lt;string.h&gt;</td><td>strlen, strcpy, strncpy, strcmp, strcat, strstr, memcpy, memset</td></tr>
+          <tr><td>&lt;math.h&gt;</td><td>sqrt, pow, sin, cos, log, exp, ceil, floor, fabs (link with -lm)</td></tr>
+          <tr><td>&lt;ctype.h&gt;</td><td>isalpha, isdigit, isspace, toupper, tolower</td></tr>
+          <tr><td>&lt;assert.h&gt;</td><td>assert macro (abort if false; disabled by NDEBUG)</td></tr>
+          <tr><td>&lt;stdint.h&gt;</td><td>int8_t, uint32_t, int64_t, SIZE_MAX, INT32_MAX</td></tr>
+          <tr><td>&lt;stdbool.h&gt;</td><td>bool, true, false</td></tr>
+          <tr><td>&lt;errno.h&gt;</td><td>errno, ENOENT, ENOMEM — error codes for system calls</td></tr>
+          <tr><td>&lt;limits.h&gt;</td><td>INT_MAX, INT_MIN, CHAR_BIT — implementation limits</td></tr>
+          <tr><td>&lt;time.h&gt;</td><td>time, clock, difftime, strftime</td></tr>
+          <tr><td>&lt;signal.h&gt;</td><td>signal, raise, SIGINT, SIGSEGV — signal handling</td></tr>
+        </table>
+
+        <p>The standard library is small and minimal. Unlike Python or Go, C does not ship with an HTTP server or a JSON parser. The philosophy is: give you I/O, memory management, strings, math, and sorting. Everything else you build yourself or use a third-party library. This minimalism is why C runs on everything from spacecraft to toasters.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIV. Putting It Together</h2>
+        <!-- ============================================================ -->
+
+        <p>A complete linked list implementation demonstrating structs, pointers, dynamic memory, and error handling.</p>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;string.h&gt;</span>
+
+<span class="keyword">typedef</span> <span class="keyword">struct</span> Node {
+    <span class="keyword">int</span> key;
+    <span class="keyword">char</span> value[<span class="number">64</span>];
+    <span class="keyword">struct</span> Node *next;
+} Node;
+
+<span class="keyword">typedef</span> <span class="keyword">struct</span> {
+    Node *head;
+    <span class="type">size_t</span> size;
+} List;
+
+List *<span class="func">list_create</span>(<span class="keyword">void</span>) {
+    List *list = <span class="func">malloc</span>(<span class="keyword">sizeof</span>(List));
+    <span class="keyword">if</span> (!list) { <span class="func">perror</span>(<span class="string">"malloc"</span>); <span class="keyword">return</span> <span class="keyword">NULL</span>; }
+    list-&gt;head = <span class="keyword">NULL</span>;
+    list-&gt;size = <span class="number">0</span>;
+    <span class="keyword">return</span> list;
+}
+
+<span class="keyword">int</span> <span class="func">list_insert</span>(List *list, <span class="keyword">int</span> key, <span class="keyword">const</span> <span class="keyword">char</span> *value) {
+    Node *node = <span class="func">malloc</span>(<span class="keyword">sizeof</span>(Node));
+    <span class="keyword">if</span> (!node) { <span class="func">perror</span>(<span class="string">"malloc"</span>); <span class="keyword">return</span> -<span class="number">1</span>; }
+    node-&gt;key = key;
+    <span class="func">strncpy</span>(node-&gt;value, value, <span class="keyword">sizeof</span>(node-&gt;value) - <span class="number">1</span>);
+    node-&gt;value[<span class="keyword">sizeof</span>(node-&gt;value) - <span class="number">1</span>] = <span class="string">'\0'</span>;
+    node-&gt;next = list-&gt;head;
+    list-&gt;head = node;
+    list-&gt;size++;
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+
+Node *<span class="func">list_find</span>(<span class="keyword">const</span> List *list, <span class="keyword">int</span> key) {
+    <span class="keyword">for</span> (Node *n = list-&gt;head; n; n = n-&gt;next)
+        <span class="keyword">if</span> (n-&gt;key == key) <span class="keyword">return</span> n;
+    <span class="keyword">return</span> <span class="keyword">NULL</span>;
+}
+
+<span class="keyword">int</span> <span class="func">list_delete</span>(List *list, <span class="keyword">int</span> key) {
+    Node **pp = &amp;list-&gt;head;
+    <span class="keyword">while</span> (*pp) {
+        <span class="keyword">if</span> ((*pp)-&gt;key == key) {
+            Node *doomed = *pp;
+            *pp = doomed-&gt;next;
+            <span class="func">free</span>(doomed);
+            list-&gt;size--;
+            <span class="keyword">return</span> <span class="number">0</span>;
+        }
+        pp = &amp;(*pp)-&gt;next;
+    }
+    <span class="keyword">return</span> -<span class="number">1</span>;
+}
+
+<span class="keyword">void</span> <span class="func">list_print</span>(<span class="keyword">const</span> List *list) {
+    <span class="func">printf</span>(<span class="string">"List (%zu elements):\n"</span>, list-&gt;size);
+    <span class="keyword">for</span> (Node *n = list-&gt;head; n; n = n-&gt;next)
+        <span class="func">printf</span>(<span class="string">"  [%d] = \"%s\"\n"</span>, n-&gt;key, n-&gt;value);
+}
+
+<span class="keyword">void</span> <span class="func">list_destroy</span>(List *list) {
+    Node *cur = list-&gt;head;
+    <span class="keyword">while</span> (cur) {
+        Node *next = cur-&gt;next;
+        <span class="func">free</span>(cur);
+        cur = next;
+    }
+    <span class="func">free</span>(list);
+}
+
+<span class="keyword">int</span> <span class="func">main</span>(<span class="keyword">void</span>) {
+    List *list = <span class="func">list_create</span>();
+    <span class="keyword">if</span> (!list) <span class="keyword">return</span> <span class="number">1</span>;
+
+    <span class="func">list_insert</span>(list, <span class="number">1</span>, <span class="string">"hydrogen"</span>);
+    <span class="func">list_insert</span>(list, <span class="number">6</span>, <span class="string">"carbon"</span>);
+    <span class="func">list_insert</span>(list, <span class="number">8</span>, <span class="string">"oxygen"</span>);
+    <span class="func">list_insert</span>(list, <span class="number">26</span>, <span class="string">"iron"</span>);
+
+    <span class="func">list_print</span>(list);
+
+    Node *found = <span class="func">list_find</span>(list, <span class="number">6</span>);
+    <span class="keyword">if</span> (found) <span class="func">printf</span>(<span class="string">"\nFound: [%d] = \"%s\"\n"</span>, found-&gt;key, found-&gt;value);
+
+    <span class="func">printf</span>(<span class="string">"\nDeleting key 8...\n"</span>);
+    <span class="func">list_delete</span>(list, <span class="number">8</span>);
+    <span class="func">list_print</span>(list);
+
+    <span class="func">list_destroy</span>(list);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</div>
+
+        <div class="output-block">List (4 elements):
+  [26] = "iron"
+  [8] = "oxygen"
+  [6] = "carbon"
+  [1] = "hydrogen"
+
+Found: [6] = "carbon"
+
+Deleting key 8...
+List (3 elements):
+  [26] = "iron"
+  [6] = "carbon"
+  [1] = "hydrogen"</div>
+
+        <p>Notice the patterns: every <code>malloc</code> is checked, every allocation is freed in <code>list_destroy</code>, strings are bounded with <code>strncpy</code>, <code>const</code> marks read-only parameters, and the double-pointer trick in <code>list_delete</code> eliminates the need to special-case deleting the head node. This is idiomatic C: explicit, careful, and hiding nothing.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>C gives you everything and protects you from nothing. There is no bounds checking, no garbage collection, no type safety beyond what the compiler checks at compile time. When your program has a bug, the consequence is not an exception with a stack trace &mdash; it is a segfault, corrupted memory, or a security vulnerability.</p>
+
+        <p>That is the bargain. In exchange you get:</p>
+
+        <ul>
+          <li><strong>Performance.</strong> Native machine code, no runtime, no GC pauses. As close to the hardware as you can get without assembly.</li>
+          <li><strong>Portability.</strong> C compilers exist for every architecture on earth: x86, ARM, RISC-V, microcontrollers with 2 KB of RAM, supercomputers with terabytes.</li>
+          <li><strong>Longevity.</strong> Code written in the 1980s still compiles and runs. The language changes slowly. The ABI is stable. Your investment holds for decades.</li>
+          <li><strong>Universality.</strong> Every operating system, every language runtime, every serious library exposes a C API. If you know C, you can interface with anything.</li>
+        </ul>
+
+        <p>Learn C not because it is easy, but because everything else is built on it. When you understand C, you understand what <code>malloc</code> actually does, why buffer overflows are dangerous, how a virtual function table works, why your Python program uses so much memory, and what the operating system does when you open a file. You understand the machine.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

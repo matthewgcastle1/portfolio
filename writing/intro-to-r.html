@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to R</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Introduction to R</h1>
+      <p>The language built for statistics, from the ground up</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article>
+      <p>R is not a general-purpose language that happens to do statistics. It is a statistics language that happens to be Turing-complete. This distinction shapes everything about it: the syntax, the data structures, the standard library, and the way R programmers think.</p>
+
+      <p>Born in the early 1990s at the University of Auckland as a free implementation of the S language (Bell Labs, 1976), R was designed by statisticians for statisticians. Ross Ihaka and Robert Gentleman wanted a language where a linear regression was one line of code, where every operation naturally vectorized over data, and where plotting was a first-class activity rather than an afterthought.</p>
+
+      <p>Today R has over 20,000 packages on CRAN, dominates academic statistics and bioinformatics, and remains the language of choice for anyone whose primary job is data analysis rather than software engineering.</p>
+
+      <div class="quote-box">
+        "R is a language for thinking about data."
+        <div class="attribution">&mdash; Hadley Wickham</div>
+      </div>
+
+      <!-- I. The REPL and First Steps -->
+      <div class="section-divider">
+        <h2>I. The REPL and First Steps</h2>
+      </div>
+
+      <p>R is interactive by default. You type an expression, R evaluates it and prints the result. There is no <code>main()</code> function, no compilation step, no boilerplate.</p>
+
+<div class="code-block"><span class="comment"># This is a comment</span>
+<span class="number">2</span> + <span class="number">3</span>
+</div>
+<div class="output-block">[1] 5</div>
+
+      <p>The <code>[1]</code> prefix tells you this is the first element of the result vector. In R, there are no scalars. The number <code>5</code> is a numeric vector of length 1. This is the most important thing to understand about R: <strong>everything is a vector</strong>.</p>
+
+<div class="code-block"><span class="comment"># Assignment uses &lt;-  (not =, though = works in most cases)</span>
+x <span class="keyword">&lt;-</span> <span class="number">42</span>
+name <span class="keyword">&lt;-</span> <span class="string">"R"</span>
+
+<span class="comment"># Print explicitly</span>
+<span class="func">print</span>(x)
+<span class="func">cat</span>(<span class="string">"Hello from"</span>, name, <span class="string">"\n"</span>)
+</div>
+<div class="output-block">[1] 42
+Hello from R</div>
+
+      <p>The <code>&lt;-</code> arrow is R's preferred assignment operator. It reads naturally: "x gets 42." The <code>=</code> sign also works for assignment, but <code>&lt;-</code> is the convention and what you'll see in virtually all R code. The keyboard shortcut in RStudio is Alt+- (hyphen).</p>
+
+      <!-- II. Vectors: The Fundamental Unit -->
+      <div class="section-divider">
+        <h2>II. Vectors: The Fundamental Unit</h2>
+      </div>
+
+      <p>In Python, the fundamental unit is the object. In C, it's the byte. In R, it's the vector. You create vectors with the <code>c()</code> function (for "combine"):</p>
+
+<div class="code-block"><span class="comment"># Numeric vector</span>
+heights <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">5.8</span>, <span class="number">6.1</span>, <span class="number">5.5</span>, <span class="number">5.9</span>, <span class="number">6.3</span>)
+
+<span class="comment"># Character vector</span>
+names <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Carol"</span>, <span class="string">"Dave"</span>, <span class="string">"Eve"</span>)
+
+<span class="comment"># Logical vector</span>
+tall <span class="keyword">&lt;-</span> heights <span class="keyword">&gt;</span> <span class="number">6.0</span>
+<span class="func">print</span>(tall)
+</div>
+<div class="output-block">[1] FALSE  TRUE FALSE FALSE  TRUE</div>
+
+      <p>That last line is key. The comparison <code>heights > 6.0</code> didn't compare a single value&mdash;it compared every element of the vector at once, returning a logical vector of the same length. This is <strong>vectorization</strong>, and it is how R wants you to write code.</p>
+
+      <div class="concept-box">
+        <h4>Vectorized Operations</h4>
+        <p>Almost every operation in R is vectorized: arithmetic, comparisons, math functions, string functions. When you write <code>x + y</code> where both are vectors, R adds them element-by-element. When you write <code>sqrt(x)</code>, R computes the square root of every element. You rarely need explicit loops.</p>
+      </div>
+
+<div class="code-block"><span class="comment"># Arithmetic is element-wise</span>
+a <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)
+b <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>)
+
+a + b        <span class="comment"># [1] 11 22 33 44</span>
+a * b        <span class="comment"># [1]  10  40  90 160</span>
+a ^ <span class="number">2</span>        <span class="comment"># [1]  1  4  9 16</span>
+<span class="func">sqrt</span>(b)      <span class="comment"># [1] 3.162 4.472 5.477 6.325</span>
+
+<span class="comment"># Recycling: shorter vector is repeated</span>
+a + <span class="number">100</span>      <span class="comment"># [1] 101 102 103 104  (100 is recycled)</span>
+<span class="func">c</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>) + <span class="func">c</span>(<span class="number">10</span>,<span class="number">20</span>)  <span class="comment"># [1] 11 22 13 24 15 26</span>
+</div>
+
+      <p>The recycling rule is powerful but dangerous. If the longer vector's length isn't a multiple of the shorter one's, R gives a warning&mdash;but still produces a result. This is a common source of subtle bugs.</p>
+
+      <h3>Indexing: 1-Based and Powerful</h3>
+
+      <p>R uses 1-based indexing. The first element is <code>x[1]</code>, not <code>x[0]</code>.</p>
+
+<div class="code-block">x <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>)
+
+x[<span class="number">1</span>]          <span class="comment"># 10  (first element)</span>
+x[<span class="number">3</span>:<span class="number">5</span>]        <span class="comment"># 30 40 50  (range, inclusive on both ends)</span>
+x[<span class="func">c</span>(<span class="number">1</span>,<span class="number">4</span>)]     <span class="comment"># 10 40  (specific positions)</span>
+x[-<span class="number">2</span>]         <span class="comment"># 10 30 40 50  (negative = exclude)</span>
+x[x <span class="keyword">&gt;</span> <span class="number">25</span>]     <span class="comment"># 30 40 50  (logical indexing)</span>
+
+<span class="comment"># Named indexing</span>
+temps <span class="keyword">&lt;-</span> <span class="func">c</span>(mon=<span class="number">72</span>, tue=<span class="number">68</span>, wed=<span class="number">75</span>, thu=<span class="number">71</span>, fri=<span class="number">80</span>)
+temps[<span class="string">"wed"</span>]   <span class="comment"># 75</span>
+</div>
+
+      <p>Negative indexing in R means exclusion, not counting from the end. <code>x[-2]</code> returns everything except the second element. This is the opposite of Python's convention.</p>
+
+      <!-- III. Types and Coercion -->
+      <div class="section-divider">
+        <h2>III. Types and Coercion</h2>
+      </div>
+
+      <p>R has six atomic vector types, listed here from most to least restrictive:</p>
+
+      <table class="comparison-table">
+        <tr><th>Type</th><th>Example</th><th>Notes</th></tr>
+        <tr><td>logical</td><td><code>TRUE, FALSE</code></td><td>Can abbreviate as <code>T</code>, <code>F</code> (but don't&mdash;they can be overwritten)</td></tr>
+        <tr><td>integer</td><td><code>1L, 42L</code></td><td>The <code>L</code> suffix forces integer storage</td></tr>
+        <tr><td>double</td><td><code>3.14, 1e-5</code></td><td>Default numeric type. <code>numeric</code> = double.</td></tr>
+        <tr><td>complex</td><td><code>3+2i</code></td><td>Built-in complex number support</td></tr>
+        <tr><td>character</td><td><code>"hello"</code></td><td>Strings. No separate char type.</td></tr>
+        <tr><td>raw</td><td><code>as.raw(0xff)</code></td><td>Raw bytes. Rarely used directly.</td></tr>
+      </table>
+
+      <p>When you mix types in a vector, R silently coerces to the most general type. This hierarchy is: logical &rarr; integer &rarr; double &rarr; complex &rarr; character.</p>
+
+<div class="code-block"><span class="comment"># Coercion happens automatically</span>
+<span class="func">c</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="string">"three"</span>)         <span class="comment"># "1" "2" "three"  (all become character)</span>
+<span class="func">c</span>(<span class="keyword">TRUE</span>, <span class="keyword">FALSE</span>, <span class="number">3</span>)        <span class="comment"># 1 0 3  (logical becomes numeric)</span>
+
+<span class="comment"># This is useful: TRUE/FALSE as 1/0</span>
+x <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">4</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">1</span>, <span class="number">8</span>)
+<span class="func">sum</span>(x <span class="keyword">&gt;</span> <span class="number">5</span>)              <span class="comment"># 3  (count of elements greater than 5)</span>
+<span class="func">mean</span>(x <span class="keyword">&gt;</span> <span class="number">5</span>)             <span class="comment"># 0.5  (proportion greater than 5)</span>
+</div>
+
+      <p>The fact that <code>sum(x > 5)</code> counts how many elements exceed 5 is not a trick&mdash;it's a direct consequence of logical-to-numeric coercion. This pattern appears everywhere in R.</p>
+
+      <h3>Special Values</h3>
+
+<div class="code-block"><span class="keyword">NA</span>        <span class="comment"># Missing value (Not Available) &mdash; R's first-class citizen</span>
+<span class="keyword">NULL</span>      <span class="comment"># The empty object (length 0, no type)</span>
+<span class="keyword">Inf</span>       <span class="comment"># Positive infinity: 1/0</span>
+<span class="keyword">NaN</span>       <span class="comment"># Not a number: 0/0</span>
+
+<span class="comment"># NA is contagious</span>
+<span class="number">5</span> + <span class="keyword">NA</span>     <span class="comment"># NA  (anything involving NA yields NA)</span>
+<span class="func">mean</span>(<span class="func">c</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="keyword">NA</span>, <span class="number">4</span>))           <span class="comment"># NA</span>
+<span class="func">mean</span>(<span class="func">c</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="keyword">NA</span>, <span class="number">4</span>), na.rm=<span class="keyword">TRUE</span>)  <span class="comment"># 2.333</span>
+</div>
+
+      <p><code>NA</code> is one of R's most important features. It represents missing data&mdash;an everyday reality in statistics. Rather than crashing or silently producing wrong results, R forces you to decide how to handle missingness. Almost every statistical function has an <code>na.rm</code> parameter.</p>
+
+      <!-- IV. Matrices and Arrays -->
+      <div class="section-divider">
+        <h2>IV. Matrices and Arrays</h2>
+      </div>
+
+      <p>Matrices are 2D vectors. They store a single type and support vectorized linear algebra.</p>
+
+<div class="code-block"><span class="comment"># Create a matrix (fills column-by-column by default)</span>
+m <span class="keyword">&lt;-</span> <span class="func">matrix</span>(<span class="number">1</span>:<span class="number">12</span>, nrow=<span class="number">3</span>, ncol=<span class="number">4</span>)
+<span class="func">print</span>(m)
+</div>
+<div class="output-block">     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12</div>
+
+<div class="code-block"><span class="comment"># Matrix indexing: [row, col]</span>
+m[<span class="number">2</span>, <span class="number">3</span>]       <span class="comment"># 8  (row 2, column 3)</span>
+m[<span class="number">1</span>, ]        <span class="comment"># 1 4 7 10  (entire first row)</span>
+m[, <span class="number">2</span>]        <span class="comment"># 4 5 6  (entire second column)</span>
+m[<span class="number">1</span>:<span class="number">2</span>, <span class="number">3</span>:<span class="number">4</span>]   <span class="comment"># submatrix: rows 1-2, cols 3-4</span>
+
+<span class="comment"># Matrix operations</span>
+A <span class="keyword">&lt;-</span> <span class="func">matrix</span>(<span class="func">c</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>), nrow=<span class="number">2</span>)
+B <span class="keyword">&lt;-</span> <span class="func">matrix</span>(<span class="func">c</span>(<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>), nrow=<span class="number">2</span>)
+
+A <span class="keyword">*</span> B          <span class="comment"># Element-wise multiplication</span>
+A <span class="keyword">%*%</span> B        <span class="comment"># Matrix multiplication</span>
+<span class="func">t</span>(A)           <span class="comment"># Transpose</span>
+<span class="func">det</span>(A)         <span class="comment"># Determinant</span>
+<span class="func">solve</span>(A)       <span class="comment"># Inverse</span>
+<span class="func">eigen</span>(A)       <span class="comment"># Eigenvalues and eigenvectors</span>
+</div>
+
+      <p>Note the <code>%*%</code> operator for matrix multiplication. The plain <code>*</code> is always element-wise in R. R's linear algebra is backed by LAPACK and BLAS, so matrix operations are genuinely fast.</p>
+
+      <!-- V. Lists: R's Heterogeneous Container -->
+      <div class="section-divider">
+        <h2>V. Lists: R's Heterogeneous Container</h2>
+      </div>
+
+      <p>Vectors require all elements to be the same type. Lists can hold anything: different types, different lengths, even other lists.</p>
+
+<div class="code-block"><span class="comment"># A list can hold mixed types</span>
+person <span class="keyword">&lt;-</span> <span class="func">list</span>(
+  name = <span class="string">"Alice"</span>,
+  age = <span class="number">30</span>,
+  scores = <span class="func">c</span>(<span class="number">95</span>, <span class="number">88</span>, <span class="number">92</span>),
+  active = <span class="keyword">TRUE</span>
+)
+
+<span class="comment"># Three ways to access list elements</span>
+person[[<span class="number">1</span>]]         <span class="comment"># "Alice"  (by position, extracts the element)</span>
+person$name         <span class="comment"># "Alice"  (by name, using $)</span>
+person[<span class="string">"name"</span>]      <span class="comment"># A list containing "Alice" (single [ returns a sub-list)</span>
+
+<span class="comment"># [[ ]] extracts the element. [ ] returns a sub-list.</span>
+<span class="comment"># This is one of R's most confusing distinctions.</span>
+</div>
+
+      <div class="concept-box">
+        <h4>The [ ] vs [[ ]] Distinction</h4>
+        <p>Think of a list as a train with named cars. <code>train[1]</code> gives you a smaller train with just the first car (still a train/list). <code>train[[1]]</code> gives you the contents of the first car (the actual element). The <code>$</code> operator is shorthand for <code>[["name"]]</code>.</p>
+      </div>
+
+      <p>Lists are the building block of most complex R objects. Data frames are lists of equal-length vectors. Model outputs (<code>lm()</code>, <code>t.test()</code>) are lists. Almost any function that returns something structured returns a list.</p>
+
+      <!-- VI. Data Frames: R's Killer Feature -->
+      <div class="section-divider">
+        <h2>VI. Data Frames: R's Killer Feature</h2>
+      </div>
+
+      <p>The data frame is R's central data structure. It is a list of equal-length vectors&mdash;in other words, a table where each column can have a different type but all columns have the same number of rows.</p>
+
+<div class="code-block"><span class="comment"># Create a data frame</span>
+df <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+  name   = <span class="func">c</span>(<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Carol"</span>, <span class="string">"Dave"</span>, <span class="string">"Eve"</span>),
+  age    = <span class="func">c</span>(<span class="number">28</span>, <span class="number">35</span>, <span class="number">42</span>, <span class="number">31</span>, <span class="number">26</span>),
+  score  = <span class="func">c</span>(<span class="number">88</span>, <span class="number">92</span>, <span class="number">95</span>, <span class="number">79</span>, <span class="number">85</span>),
+  passed = <span class="func">c</span>(<span class="keyword">TRUE</span>, <span class="keyword">TRUE</span>, <span class="keyword">TRUE</span>, <span class="keyword">FALSE</span>, <span class="keyword">TRUE</span>)
+)
+
+<span class="func">print</span>(df)
+</div>
+<div class="output-block">   name age score passed
+1 Alice  28    88   TRUE
+2   Bob  35    92   TRUE
+3 Carol  42    95   TRUE
+4  Dave  31    79  FALSE
+5   Eve  26    85   TRUE</div>
+
+<div class="code-block"><span class="comment"># Accessing data</span>
+df$name            <span class="comment"># Column as vector: "Alice" "Bob" "Carol" "Dave" "Eve"</span>
+df[<span class="number">2</span>, ]            <span class="comment"># Row 2 (all columns)</span>
+df[, <span class="number">3</span>]            <span class="comment"># Column 3 as vector</span>
+df[df$age <span class="keyword">&gt;</span> <span class="number">30</span>, ]  <span class="comment"># Filter: rows where age > 30</span>
+
+<span class="comment"># Useful inspection functions</span>
+<span class="func">str</span>(df)       <span class="comment"># Structure: types and first values</span>
+<span class="func">summary</span>(df)   <span class="comment"># Statistical summary of each column</span>
+<span class="func">head</span>(df)      <span class="comment"># First 6 rows</span>
+<span class="func">nrow</span>(df)      <span class="comment"># Number of rows</span>
+<span class="func">ncol</span>(df)      <span class="comment"># Number of columns</span>
+<span class="func">names</span>(df)     <span class="comment"># Column names</span>
+</div>
+
+      <p>Data frames predate Python's pandas by nearly two decades. When Wes McKinney created pandas in 2008, he was explicitly modeling it on R's data frame. The concept of a named, typed, rectangular data structure with row/column indexing is R's most influential contribution to programming.</p>
+
+      <h3>Reading Data</h3>
+
+<div class="code-block"><span class="comment"># Read CSV files (base R)</span>
+data <span class="keyword">&lt;-</span> <span class="func">read.csv</span>(<span class="string">"data.csv"</span>)
+
+<span class="comment"># Read with options</span>
+data <span class="keyword">&lt;-</span> <span class="func">read.csv</span>(<span class="string">"data.csv"</span>,
+  header = <span class="keyword">TRUE</span>,            <span class="comment"># First row is column names</span>
+  stringsAsFactors = <span class="keyword">FALSE</span>,  <span class="comment"># Don't convert strings to factors</span>
+  na.strings = <span class="func">c</span>(<span class="string">"NA"</span>, <span class="string">""</span>, <span class="string">"."</span>)  <span class="comment"># Values to treat as NA</span>
+)
+
+<span class="comment"># Built-in datasets (R ships with dozens)</span>
+<span class="func">data</span>(mtcars)      <span class="comment"># Motor Trend Car Road Tests (32 cars, 11 variables)</span>
+<span class="func">data</span>(iris)        <span class="comment"># Edgar Anderson's Iris data (150 flowers, 5 variables)</span>
+<span class="func">head</span>(mtcars)
+</div>
+<div class="output-block">                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</div>
+
+      <!-- VII. Factors -->
+      <div class="section-divider">
+        <h2>VII. Factors</h2>
+      </div>
+
+      <p>Factors represent categorical data&mdash;variables with a fixed set of possible values. They are R's way of encoding what statisticians call "categorical" or "nominal" variables.</p>
+
+<div class="code-block"><span class="comment"># Create a factor</span>
+status <span class="keyword">&lt;-</span> <span class="func">factor</span>(<span class="func">c</span>(<span class="string">"low"</span>, <span class="string">"med"</span>, <span class="string">"high"</span>, <span class="string">"low"</span>, <span class="string">"high"</span>, <span class="string">"med"</span>))
+<span class="func">print</span>(status)
+<span class="func">levels</span>(status)
+</div>
+<div class="output-block">[1] low  med  high low  high med
+Levels: high low med
+[1] "high" "low"  "med"</div>
+
+<div class="code-block"><span class="comment"># Ordered factor (for ordinal data)</span>
+severity <span class="keyword">&lt;-</span> <span class="func">factor</span>(
+  <span class="func">c</span>(<span class="string">"mild"</span>, <span class="string">"severe"</span>, <span class="string">"moderate"</span>, <span class="string">"mild"</span>),
+  levels = <span class="func">c</span>(<span class="string">"mild"</span>, <span class="string">"moderate"</span>, <span class="string">"severe"</span>),
+  ordered = <span class="keyword">TRUE</span>
+)
+severity[<span class="number">1</span>] <span class="keyword">&lt;</span> severity[<span class="number">2</span>]  <span class="comment"># TRUE (mild &lt; severe)</span>
+
+<span class="comment"># Factors in statistical models</span>
+<span class="comment"># When you put a factor in a regression, R automatically creates</span>
+<span class="comment"># dummy variables (indicator variables). This is essential for</span>
+<span class="comment"># regression with categorical predictors.</span>
+</div>
+
+      <p>Factors confused a generation of R users because <code>read.csv()</code> used to convert all strings to factors by default. This was changed in R 4.0 (2020), but you'll still encounter factor-related confusion in older code and tutorials.</p>
+
+      <!-- VIII. Control Flow -->
+      <div class="section-divider">
+        <h2>VIII. Control Flow</h2>
+      </div>
+
+<div class="code-block"><span class="comment"># if/else</span>
+x <span class="keyword">&lt;-</span> <span class="number">15</span>
+<span class="keyword">if</span> (x <span class="keyword">&gt;</span> <span class="number">10</span>) {
+  <span class="func">cat</span>(<span class="string">"Greater than 10\n"</span>)
+} <span class="keyword">else if</span> (x <span class="keyword">&gt;</span> <span class="number">5</span>) {
+  <span class="func">cat</span>(<span class="string">"Between 5 and 10\n"</span>)
+} <span class="keyword">else</span> {
+  <span class="func">cat</span>(<span class="string">"5 or less\n"</span>)
+}
+
+<span class="comment"># Vectorized if: ifelse()</span>
+ages <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">15</span>, <span class="number">22</span>, <span class="number">17</span>, <span class="number">30</span>, <span class="number">12</span>)
+category <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(ages <span class="keyword">&gt;=</span> <span class="number">18</span>, <span class="string">"adult"</span>, <span class="string">"minor"</span>)
+<span class="comment"># "minor" "adult" "minor" "adult" "minor"</span>
+
+<span class="comment"># for loop</span>
+<span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">5</span>) {
+  <span class="func">cat</span>(i, <span class="string">" "</span>)
+}
+<span class="comment"># 1  2  3  4  5</span>
+
+<span class="comment"># while loop</span>
+n <span class="keyword">&lt;-</span> <span class="number">1</span>
+<span class="keyword">while</span> (n <span class="keyword">&lt;=</span> <span class="number">100</span>) {
+  n <span class="keyword">&lt;-</span> n <span class="keyword">*</span> <span class="number">2</span>
+}
+<span class="comment"># n is now 128</span>
+</div>
+
+      <div class="note-box">
+        <h4>Loops vs. Vectorization</h4>
+        <p>In most languages, loops are the natural way to process collections. In R, loops are a code smell. If you find yourself writing <code>for (i in 1:length(x))</code>, there is almost certainly a vectorized alternative that is both faster and clearer. Use <code>sum()</code>, <code>mean()</code>, <code>cumsum()</code>, <code>diff()</code>, <code>ifelse()</code>, or the <code>apply</code> family instead. R's vectorized operations are written in C internally and can be 10-100x faster than equivalent loops.</p>
+      </div>
+
+      <!-- IX. Functions -->
+      <div class="section-divider">
+        <h2>IX. Functions</h2>
+      </div>
+
+      <p>Functions are first-class objects in R. You create them with the <code>function</code> keyword and assign them to names like any other value.</p>
+
+<div class="code-block"><span class="comment"># Define a function</span>
+zscore <span class="keyword">&lt;-</span> <span class="keyword">function</span>(x) {
+  (x - <span class="func">mean</span>(x)) / <span class="func">sd</span>(x)
+}
+
+scores <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">85</span>, <span class="number">90</span>, <span class="number">78</span>, <span class="number">92</span>, <span class="number">88</span>)
+<span class="func">zscore</span>(scores)
+</div>
+<div class="output-block">[1] -0.3216  0.6433 -1.6081  0.9649  0.3216</div>
+
+<div class="code-block"><span class="comment"># Default arguments</span>
+greet <span class="keyword">&lt;-</span> <span class="keyword">function</span>(name, greeting = <span class="string">"Hello"</span>) {
+  <span class="func">paste</span>(greeting, name)
+}
+
+<span class="func">greet</span>(<span class="string">"World"</span>)                 <span class="comment"># "Hello World"</span>
+<span class="func">greet</span>(<span class="string">"World"</span>, <span class="string">"Goodbye"</span>)     <span class="comment"># "Goodbye World"</span>
+
+<span class="comment"># The last expression is the return value (explicit return() is optional)</span>
+add <span class="keyword">&lt;-</span> <span class="keyword">function</span>(a, b) {
+  a + b    <span class="comment"># implicitly returned</span>
+}
+
+<span class="comment"># Functions can take ... (varargs)</span>
+my_summary <span class="keyword">&lt;-</span> <span class="keyword">function</span>(...) {
+  vals <span class="keyword">&lt;-</span> <span class="func">c</span>(...)
+  <span class="func">list</span>(mean = <span class="func">mean</span>(vals), sd = <span class="func">sd</span>(vals), n = <span class="func">length</span>(vals))
+}
+
+<span class="func">my_summary</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)
+</div>
+<div class="output-block">$mean
+[1] 3
+
+$sd
+[1] 1.581139
+
+$n
+[1] 5</div>
+
+      <p>R uses lexical scoping. A function can access variables from its enclosing environment (closure). Functions are commonly passed to other functions&mdash;this is the core of the <code>apply</code> family.</p>
+
+      <!-- X. The Apply Family -->
+      <div class="section-divider">
+        <h2>X. The Apply Family</h2>
+      </div>
+
+      <p>The <code>apply</code> family replaces most loops. Each variant applies a function to elements of a data structure:</p>
+
+      <table class="comparison-table">
+        <tr><th>Function</th><th>Input</th><th>Output</th><th>Use Case</th></tr>
+        <tr><td><code>apply()</code></td><td>matrix/array</td><td>vector/matrix</td><td>Apply to rows or columns</td></tr>
+        <tr><td><code>sapply()</code></td><td>vector/list</td><td>vector/matrix</td><td>Simplified output</td></tr>
+        <tr><td><code>lapply()</code></td><td>vector/list</td><td>list</td><td>Always returns a list</td></tr>
+        <tr><td><code>tapply()</code></td><td>vector + factor</td><td>array</td><td>Group by and summarize</td></tr>
+        <tr><td><code>mapply()</code></td><td>multiple vectors</td><td>vector/matrix</td><td>Multivariate apply</td></tr>
+      </table>
+
+<div class="code-block"><span class="comment"># apply: operate on rows (1) or columns (2) of a matrix</span>
+m <span class="keyword">&lt;-</span> <span class="func">matrix</span>(<span class="number">1</span>:<span class="number">12</span>, nrow=<span class="number">3</span>)
+<span class="func">apply</span>(m, <span class="number">1</span>, sum)     <span class="comment"># Row sums:    22 26 30</span>
+<span class="func">apply</span>(m, <span class="number">2</span>, mean)    <span class="comment"># Column means: 2 5 8 11</span>
+
+<span class="comment"># sapply: apply a function to each element, simplify result</span>
+words <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="string">"hello"</span>, <span class="string">"world"</span>, <span class="string">"R"</span>)
+<span class="func">sapply</span>(words, nchar)   <span class="comment"># 5 5 1</span>
+
+<span class="comment"># lapply: same but always returns a list</span>
+<span class="func">lapply</span>(<span class="number">1</span>:<span class="number">3</span>, <span class="keyword">function</span>(n) n^<span class="number">2</span>)
+<span class="comment"># [[1]] 1  [[2]] 4  [[3]] 9</span>
+
+<span class="comment"># tapply: group by a factor and apply a function</span>
+scores <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">88</span>, <span class="number">92</span>, <span class="number">75</span>, <span class="number">95</span>, <span class="number">80</span>, <span class="number">85</span>)
+groups <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"A"</span>, <span class="string">"B"</span>)
+<span class="func">tapply</span>(scores, groups, mean)
+<span class="comment"># A: 86.67    B: 85.00</span>
+</div>
+
+      <p>The <code>apply</code> family is powerful but the interface is inconsistent. This is why the tidyverse's <code>purrr</code> package (with <code>map()</code>, <code>map_dbl()</code>, etc.) exists&mdash;it provides a cleaner, more predictable alternative.</p>
+
+      <!-- XI. Built-in Statistics -->
+      <div class="section-divider">
+        <h2>XI. Built-in Statistics</h2>
+      </div>
+
+      <p>R is the only major language where a t-test is one function call. Statistical functions are not in a library you import&mdash;they're built into the language.</p>
+
+<div class="code-block"><span class="comment"># Descriptive statistics</span>
+x <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="number">23</span>, <span class="number">29</span>, <span class="number">31</span>, <span class="number">25</span>, <span class="number">27</span>, <span class="number">35</span>, <span class="number">22</span>, <span class="number">28</span>, <span class="number">33</span>, <span class="number">30</span>)
+
+<span class="func">mean</span>(x)        <span class="comment"># 28.3</span>
+<span class="func">median</span>(x)      <span class="comment"># 28.5</span>
+<span class="func">sd</span>(x)          <span class="comment"># 4.11</span>
+<span class="func">var</span>(x)         <span class="comment"># 16.9</span>
+<span class="func">quantile</span>(x)    <span class="comment"># 0%:22  25%:25.5  50%:28.5  75%:31  100%:35</span>
+<span class="func">range</span>(x)       <span class="comment"># 22 35</span>
+<span class="func">cor</span>(x, x^<span class="number">2</span>)    <span class="comment"># correlation</span>
+
+<span class="comment"># Hypothesis testing</span>
+<span class="func">t.test</span>(x, mu = <span class="number">25</span>)  <span class="comment"># One-sample t-test: is the mean different from 25?</span>
+</div>
+<div class="output-block">	One Sample t-test
+
+data:  x
+t = 2.5387, df = 9, p-value = 0.03181
+alternative hypothesis: true mean is not equal to 25
+95 percent confidence interval:
+ 25.36 31.24
+sample estimates:
+mean of x
+     28.3</div>
+
+<div class="code-block"><span class="comment"># Linear regression</span>
+<span class="func">data</span>(mtcars)
+model <span class="keyword">&lt;-</span> <span class="func">lm</span>(mpg <span class="keyword">~</span> wt + hp, data = mtcars)
+<span class="func">summary</span>(model)
+</div>
+<div class="output-block">Coefficients:
+            Estimate Std. Error t value Pr(>|t|)
+(Intercept) 37.22727    1.59879  23.285  < 2e-16 ***
+wt          -3.87783    0.63273  -6.129 1.12e-06 ***
+hp          -0.03177    0.00903  -3.519  0.00145 **
+---
+Multiple R-squared:  0.8268,	Adjusted R-squared:  0.8148</div>
+
+      <p>That linear regression output tells you everything a statistician needs: coefficients, standard errors, t-values, p-values, significance codes, and R-squared. In Python, this requires importing statsmodels and writing substantially more code.</p>
+
+      <h3>The Formula Interface</h3>
+
+      <p>The <code>~</code> (tilde) is R's formula syntax. It means "modeled as" or "predicted by." This interface is used throughout R's statistical functions:</p>
+
+<div class="code-block"><span class="comment"># y ~ x                 simple regression</span>
+<span class="comment"># y ~ x1 + x2           multiple regression</span>
+<span class="comment"># y ~ x1 * x2           main effects + interaction</span>
+<span class="comment"># y ~ x1 + I(x1^2)      polynomial term</span>
+<span class="comment"># y ~ .                 all other variables in the data frame</span>
+<span class="comment"># y ~ x - 1             no intercept</span>
+
+<span class="comment"># Used everywhere:</span>
+<span class="func">lm</span>(mpg <span class="keyword">~</span> wt, data = mtcars)           <span class="comment"># linear model</span>
+<span class="func">glm</span>(am <span class="keyword">~</span> hp + wt, data = mtcars,
+    family = <span class="string">"binomial"</span>)                <span class="comment"># logistic regression</span>
+<span class="func">aov</span>(score <span class="keyword">~</span> group, data = df)           <span class="comment"># ANOVA</span>
+<span class="func">t.test</span>(score <span class="keyword">~</span> group, data = df)        <span class="comment"># two-sample t-test</span>
+<span class="func">boxplot</span>(mpg <span class="keyword">~</span> cyl, data = mtcars)       <span class="comment"># boxplot by groups</span>
+</div>
+
+      <p>The formula interface is elegant and powerful. <code>mpg ~ wt + hp</code> reads as "miles per gallon, as a function of weight and horsepower." No other language has anything like it.</p>
+
+      <!-- XII. Plotting: Base R Graphics -->
+      <div class="section-divider">
+        <h2>XII. Plotting: Base R Graphics</h2>
+      </div>
+
+      <p>R's base plotting is immediate and interactive. You call <code>plot()</code> and a window appears with your visualization. No imports, no setup.</p>
+
+<div class="code-block"><span class="comment"># Scatter plot</span>
+<span class="func">plot</span>(mtcars$wt, mtcars$mpg,
+     main = <span class="string">"Weight vs. MPG"</span>,
+     xlab = <span class="string">"Weight (1000 lbs)"</span>,
+     ylab = <span class="string">"Miles per Gallon"</span>,
+     pch = <span class="number">19</span>,         <span class="comment"># solid circles</span>
+     col = <span class="string">"steelblue"</span>)
+
+<span class="comment"># Add a regression line</span>
+<span class="func">abline</span>(<span class="func">lm</span>(mpg <span class="keyword">~</span> wt, data = mtcars), col = <span class="string">"red"</span>, lwd = <span class="number">2</span>)
+
+<span class="comment"># Histogram</span>
+<span class="func">hist</span>(mtcars$mpg, breaks = <span class="number">10</span>,
+     main = <span class="string">"Distribution of MPG"</span>,
+     col = <span class="string">"lightblue"</span>,
+     border = <span class="string">"white"</span>)
+
+<span class="comment"># Multiple plots in one window</span>
+<span class="func">par</span>(mfrow = <span class="func">c</span>(<span class="number">2</span>, <span class="number">2</span>))  <span class="comment"># 2x2 grid</span>
+<span class="func">plot</span>(model)            <span class="comment"># 4 diagnostic plots for a linear model</span>
+</div>
+
+      <p>Base R plotting has an imperative API: you create a plot, then add to it with <code>points()</code>, <code>lines()</code>, <code>abline()</code>, <code>text()</code>, <code>legend()</code>. It's not pretty by default, but it's fast to iterate on. For publication-quality graphics, most R users switch to <code>ggplot2</code>.</p>
+
+      <!-- XIII. The Tidyverse -->
+      <div class="section-divider">
+        <h2>XIII. The Tidyverse</h2>
+      </div>
+
+      <p>The tidyverse is a collection of packages by Hadley Wickham and collaborators that reimagines how R code should look. It is not part of base R, but it is so widely used that many people learn it first and base R second.</p>
+
+<div class="code-block"><span class="comment"># install.packages("tidyverse")  # one-time install</span>
+<span class="func">library</span>(tidyverse)
+
+<span class="comment"># The pipe operator: %>% (or |> in base R 4.1+)</span>
+<span class="comment"># Read left to right: "take mtcars, THEN filter, THEN select, THEN arrange"</span>
+mtcars <span class="keyword">%&gt;%</span>
+  <span class="func">filter</span>(cyl <span class="keyword">==</span> <span class="number">6</span>) <span class="keyword">%&gt;%</span>
+  <span class="func">select</span>(mpg, wt, hp) <span class="keyword">%&gt;%</span>
+  <span class="func">arrange</span>(<span class="func">desc</span>(mpg))
+</div>
+<div class="output-block">   mpg    wt  hp
+1 21.4 3.215 110
+2 21.0 2.620 110
+3 21.0 2.875 110
+4 19.2 3.440 123
+5 18.1 3.460 105
+6 17.8 3.440 123
+7 15.2 3.435 175</div>
+
+      <p>The pipe operator <code>%>%</code> is the tidyverse's signature. It takes the result of the left side and passes it as the first argument to the right side. This transforms deeply nested function calls into readable, linear pipelines.</p>
+
+      <h3>dplyr: Data Manipulation</h3>
+
+<div class="code-block"><span class="comment"># The five core dplyr verbs:</span>
+<span class="comment">#   filter()   - pick rows by condition</span>
+<span class="comment">#   select()   - pick columns by name</span>
+<span class="comment">#   mutate()   - create new columns</span>
+<span class="comment">#   arrange()  - sort rows</span>
+<span class="comment">#   summarize() - collapse to summary statistics</span>
+
+<span class="comment"># Combined with group_by() for split-apply-combine:</span>
+mtcars <span class="keyword">%&gt;%</span>
+  <span class="func">group_by</span>(cyl) <span class="keyword">%&gt;%</span>
+  <span class="func">summarize</span>(
+    avg_mpg = <span class="func">mean</span>(mpg),
+    avg_hp  = <span class="func">mean</span>(hp),
+    count   = <span class="func">n</span>()
+  )
+</div>
+<div class="output-block"># A tibble: 3 x 4
+    cyl avg_mpg avg_hp count
+  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt;
+1     4    26.7   82.6    11
+2     6    19.7  122.     7
+3     8    15.1  209.    14</div>
+
+      <h3>ggplot2: Grammar of Graphics</h3>
+
+      <p>ggplot2 is arguably the most influential data visualization library ever written. It implements Leland Wilkinson's "Grammar of Graphics"&mdash;the idea that any statistical graphic can be described as a combination of data, aesthetic mappings, and geometric objects.</p>
+
+<div class="code-block"><span class="comment"># A ggplot is built in layers</span>
+<span class="func">ggplot</span>(mtcars, <span class="func">aes</span>(x = wt, y = mpg, color = <span class="func">factor</span>(cyl))) <span class="keyword">+</span>
+  <span class="func">geom_point</span>(size = <span class="number">3</span>) <span class="keyword">+</span>
+  <span class="func">geom_smooth</span>(method = <span class="string">"lm"</span>, se = <span class="keyword">FALSE</span>) <span class="keyword">+</span>
+  <span class="func">labs</span>(
+    title = <span class="string">"Weight vs. Fuel Efficiency"</span>,
+    x = <span class="string">"Weight (1000 lbs)"</span>,
+    y = <span class="string">"Miles per Gallon"</span>,
+    color = <span class="string">"Cylinders"</span>
+  ) <span class="keyword">+</span>
+  <span class="func">theme_minimal</span>()
+
+<span class="comment"># Faceting: small multiples</span>
+<span class="func">ggplot</span>(mtcars, <span class="func">aes</span>(x = mpg)) <span class="keyword">+</span>
+  <span class="func">geom_histogram</span>(bins = <span class="number">10</span>, fill = <span class="string">"steelblue"</span>) <span class="keyword">+</span>
+  <span class="func">facet_wrap</span>(<span class="keyword">~</span> cyl, scales = <span class="string">"free_y"</span>) <span class="keyword">+</span>
+  <span class="func">theme_bw</span>()
+</div>
+
+      <p>The <code>+</code> operator in ggplot2 layers components together. <code>aes()</code> maps data columns to visual properties. <code>geom_*()</code> functions add visual elements. This declarative approach means you describe what you want, not how to draw it.</p>
+
+      <h3>tidyr: Reshaping Data</h3>
+
+<div class="code-block"><span class="comment"># Wide to long (pivot_longer)</span>
+wide_data <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+  name = <span class="func">c</span>(<span class="string">"Alice"</span>, <span class="string">"Bob"</span>),
+  math = <span class="func">c</span>(<span class="number">90</span>, <span class="number">85</span>),
+  science = <span class="func">c</span>(<span class="number">88</span>, <span class="number">92</span>)
+)
+
+wide_data <span class="keyword">%&gt;%</span>
+  <span class="func">pivot_longer</span>(cols = <span class="func">c</span>(math, science),
+               names_to = <span class="string">"subject"</span>,
+               values_to = <span class="string">"score"</span>)
+</div>
+<div class="output-block"># A tibble: 4 x 3
+  name  subject score
+  &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+1 Alice math       90
+2 Alice science    88
+3 Bob   math       85
+4 Bob   science    92</div>
+
+      <!-- XIV. String Manipulation -->
+      <div class="section-divider">
+        <h2>XIV. String Manipulation</h2>
+      </div>
+
+<div class="code-block"><span class="comment"># Base R strings</span>
+s <span class="keyword">&lt;-</span> <span class="string">"Hello, World"</span>
+<span class="func">nchar</span>(s)                     <span class="comment"># 12</span>
+<span class="func">toupper</span>(s)                   <span class="comment"># "HELLO, WORLD"</span>
+<span class="func">substring</span>(s, <span class="number">1</span>, <span class="number">5</span>)           <span class="comment"># "Hello"</span>
+<span class="func">paste</span>(<span class="string">"Hello"</span>, <span class="string">"World"</span>)      <span class="comment"># "Hello World" (space-separated by default)</span>
+<span class="func">paste0</span>(<span class="string">"Hello"</span>, <span class="string">"World"</span>)     <span class="comment"># "HelloWorld" (no separator)</span>
+<span class="func">gsub</span>(<span class="string">"o"</span>, <span class="string">"0"</span>, s)            <span class="comment"># "Hell0, W0rld"</span>
+<span class="func">strsplit</span>(<span class="string">"a,b,c"</span>, <span class="string">","</span>)       <span class="comment"># list("a", "b", "c")</span>
+
+<span class="comment"># sprintf for formatted strings</span>
+<span class="func">sprintf</span>(<span class="string">"The answer is %d (%.2f%%)"</span>, <span class="number">42</span>, <span class="number">99.5</span>)
+<span class="comment"># "The answer is 42 (99.50%)"</span>
+
+<span class="comment"># Regex</span>
+<span class="func">grepl</span>(<span class="string">"^[A-Z]"</span>, <span class="func">c</span>(<span class="string">"Hello"</span>, <span class="string">"world"</span>, <span class="string">"R"</span>))
+<span class="comment"># TRUE FALSE TRUE</span>
+</div>
+
+      <p>Base R's string functions are functional but quirky&mdash;<code>paste()</code> for concatenation, <code>nchar()</code> instead of <code>length()</code>, <code>gsub()</code> for replacement. The <code>stringr</code> package (part of the tidyverse) provides a more consistent interface where every function starts with <code>str_</code>.</p>
+
+      <!-- XV. Environments and Scoping -->
+      <div class="section-divider">
+        <h2>XV. Environments and Scoping</h2>
+      </div>
+
+      <p>R's scoping rules are sometimes surprising. Every function creates a new environment. R searches for variables from the innermost scope outward:</p>
+
+<div class="code-block">x <span class="keyword">&lt;-</span> <span class="number">10</span>
+
+f <span class="keyword">&lt;-</span> <span class="keyword">function</span>() {
+  x <span class="keyword">&lt;-</span> <span class="number">20</span>    <span class="comment"># local x, does NOT modify global x</span>
+  <span class="func">cat</span>(<span class="string">"Inside f: x ="</span>, x, <span class="string">"\n"</span>)
+}
+
+<span class="func">f</span>()
+<span class="func">cat</span>(<span class="string">"Global: x ="</span>, x, <span class="string">"\n"</span>)
+</div>
+<div class="output-block">Inside f: x = 20
+Global: x = 10</div>
+
+<div class="code-block"><span class="comment"># To modify a variable in the parent environment, use &lt;&lt;-</span>
+counter <span class="keyword">&lt;-</span> <span class="number">0</span>
+
+increment <span class="keyword">&lt;-</span> <span class="keyword">function</span>() {
+  counter <span class="keyword">&lt;&lt;-</span> counter + <span class="number">1</span>   <span class="comment"># superassignment: modifies parent scope</span>
+}
+
+<span class="func">increment</span>()
+<span class="func">increment</span>()
+<span class="func">cat</span>(<span class="string">"Counter:"</span>, counter, <span class="string">"\n"</span>)    <span class="comment"># Counter: 2</span>
+</div>
+
+      <p>The <code>&lt;&lt;-</code> superassignment operator searches parent environments until it finds the variable, then modifies it in place. Use it sparingly&mdash;it creates hidden side effects that make code harder to reason about.</p>
+
+      <!-- XVI. Packages and CRAN -->
+      <div class="section-divider">
+        <h2>XVI. Packages and CRAN</h2>
+      </div>
+
+      <p>CRAN (Comprehensive R Archive Network) is R's package repository. It has over 20,000 packages, each of which has been checked for basic quality and cross-platform compatibility.</p>
+
+<div class="code-block"><span class="comment"># Install a package (one-time)</span>
+<span class="func">install.packages</span>(<span class="string">"ggplot2"</span>)
+
+<span class="comment"># Load for use</span>
+<span class="func">library</span>(ggplot2)
+
+<span class="comment"># Key packages by domain:</span>
+<span class="comment">#</span>
+<span class="comment"># Data manipulation:  dplyr, tidyr, data.table</span>
+<span class="comment"># Visualization:      ggplot2, plotly, leaflet</span>
+<span class="comment"># Statistics:         lme4 (mixed models), survival, boot</span>
+<span class="comment"># Machine learning:   caret, tidymodels, xgboost, randomForest</span>
+<span class="comment"># Bioinformatics:     Bioconductor (3,000+ packages)</span>
+<span class="comment"># Time series:        forecast, zoo, tseries</span>
+<span class="comment"># Reporting:          rmarkdown, knitr, shiny</span>
+<span class="comment"># Text:               stringr, tidytext, tm</span>
+<span class="comment"># Web scraping:       rvest, httr</span>
+</div>
+
+      <div class="concept-box">
+        <h4>R vs. Python for Data Science</h4>
+        <p>The R vs. Python debate is essentially: do you want a language designed for statistics that can also program, or a language designed for programming that can also do statistics? R has superior statistical modeling, formula syntax, built-in datasets, and visualization (ggplot2). Python has a vastly larger ecosystem, better software engineering tools, and dominates deep learning. In practice, many data scientists use both.</p>
+      </div>
+
+      <!-- XVII. R Markdown and Reproducible Research -->
+      <div class="section-divider">
+        <h2>XVII. R Markdown and Reproducible Research</h2>
+      </div>
+
+      <p>R Markdown (<code>.Rmd</code> files) lets you weave together prose, code, and output into a single document. This is R's solution to the reproducibility crisis in science: instead of copying results into a Word document, you write a document that generates its own results.</p>
+
+<div class="code-block"><span class="comment"># An R Markdown document looks like this:</span>
+<span class="comment"># ---</span>
+<span class="comment"># title: "My Analysis"</span>
+<span class="comment"># output: html_document</span>
+<span class="comment"># ---</span>
+<span class="comment">#</span>
+<span class="comment"># ## Results</span>
+<span class="comment">#</span>
+<span class="comment"># The average MPG is `r mean(mtcars$mpg)`.</span>
+<span class="comment">#</span>
+<span class="comment"># ```{r}</span>
+<span class="comment"># ggplot(mtcars, aes(x=wt, y=mpg)) + geom_point()</span>
+<span class="comment"># ```</span>
+<span class="comment">#</span>
+<span class="comment"># When you "knit" this document, R executes all the code chunks,</span>
+<span class="comment"># inserts the outputs (including plots), and produces HTML, PDF,</span>
+<span class="comment"># or Word output. Change the data, re-knit, and every number and</span>
+<span class="comment"># plot updates automatically.</span>
+</div>
+
+      <p>Quarto (<code>.qmd</code>) is the next-generation successor to R Markdown, supporting R, Python, Julia, and Observable JS in the same document. It was released in 2022 and is gradually replacing R Markdown.</p>
+
+      <!-- XVIII. S3: R's Object System -->
+      <div class="section-divider">
+        <h2>XVIII. S3: R's Object System</h2>
+      </div>
+
+      <p>R has multiple object systems (S3, S4, R5/Reference Classes, R6). S3 is the simplest and most widely used. It's informal, duck-typed, and built on lists with a class attribute.</p>
+
+<div class="code-block"><span class="comment"># S3: just set a class attribute on a list</span>
+new_student <span class="keyword">&lt;-</span> <span class="keyword">function</span>(name, grades) {
+  obj <span class="keyword">&lt;-</span> <span class="func">list</span>(name = name, grades = grades)
+  <span class="func">class</span>(obj) <span class="keyword">&lt;-</span> <span class="string">"student"</span>
+  obj
+}
+
+<span class="comment"># Define methods by naming convention: generic.class</span>
+print.student <span class="keyword">&lt;-</span> <span class="keyword">function</span>(x, ...) {
+  <span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"Student: %s (GPA: %.2f)\n"</span>,
+      x$name, <span class="func">mean</span>(x$grades)))
+}
+
+summary.student <span class="keyword">&lt;-</span> <span class="keyword">function</span>(object, ...) {
+  <span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"Name: %s\nCourses: %d\nGPA: %.2f\nBest: %.0f\nWorst: %.0f\n"</span>,
+      object$name, <span class="func">length</span>(object$grades),
+      <span class="func">mean</span>(object$grades), <span class="func">max</span>(object$grades), <span class="func">min</span>(object$grades)))
+}
+
+s <span class="keyword">&lt;-</span> <span class="func">new_student</span>(<span class="string">"Alice"</span>, <span class="func">c</span>(<span class="number">92</span>, <span class="number">88</span>, <span class="number">95</span>, <span class="number">79</span>))
+<span class="func">print</span>(s)
+<span class="func">summary</span>(s)
+</div>
+<div class="output-block">Student: Alice (GPA: 88.50)
+Name: Alice
+Courses: 4
+GPA: 88.50
+Best: 95
+Worst: 79</div>
+
+      <p>S3 dispatch works by naming convention: when you call <code>print(s)</code> and <code>s</code> has class <code>"student"</code>, R looks for <code>print.student()</code>. This is how <code>summary()</code> produces completely different output for data frames, linear models, and t-tests&mdash;each has its own <code>summary.class</code> method.</p>
+
+      <!-- XIX. Error Handling -->
+      <div class="section-divider">
+        <h2>XIX. Error Handling</h2>
+      </div>
+
+<div class="code-block"><span class="comment"># tryCatch: R's try/except</span>
+result <span class="keyword">&lt;-</span> <span class="func">tryCatch</span>({
+  <span class="func">log</span>(-<span class="number">1</span>)    <span class="comment"># produces NaN with a warning</span>
+  <span class="number">10</span> / <span class="number">0</span>     <span class="comment"># Inf, not an error in R</span>
+  <span class="func">stop</span>(<span class="string">"Something went wrong"</span>)   <span class="comment"># explicitly throw an error</span>
+},
+warning = <span class="keyword">function</span>(w) {
+  <span class="func">cat</span>(<span class="string">"Warning caught:"</span>, <span class="func">conditionMessage</span>(w), <span class="string">"\n"</span>)
+},
+error = <span class="keyword">function</span>(e) {
+  <span class="func">cat</span>(<span class="string">"Error caught:"</span>, <span class="func">conditionMessage</span>(e), <span class="string">"\n"</span>)
+},
+finally = {
+  <span class="func">cat</span>(<span class="string">"Cleanup code runs always\n"</span>)
+})
+
+<span class="comment"># Simpler: try() wraps an expression and catches errors</span>
+result <span class="keyword">&lt;-</span> <span class="func">try</span>(<span class="func">log</span>(<span class="string">"not a number"</span>), silent = <span class="keyword">TRUE</span>)
+<span class="keyword">if</span> (<span class="func">inherits</span>(result, <span class="string">"try-error"</span>)) {
+  <span class="func">cat</span>(<span class="string">"Failed gracefully\n"</span>)
+}
+</div>
+
+      <p>R distinguishes between errors (execution stops), warnings (execution continues but something is suspicious), and messages (informational). In interactive use, warnings are often deferred and printed after the result. In scripts, you should check for them explicitly.</p>
+
+      <!-- XX. Putting It All Together -->
+      <div class="section-divider">
+        <h2>XX. Putting It All Together</h2>
+      </div>
+
+      <p>Here's a complete analysis that demonstrates how R's pieces fit together&mdash;reading data, cleaning, modeling, and visualizing:</p>
+
+<div class="code-block"><span class="comment"># ---------------------------------------------------</span>
+<span class="comment"># Exploratory analysis of the built-in mtcars dataset</span>
+<span class="comment"># ---------------------------------------------------</span>
+
+<span class="comment"># 1. Load and inspect</span>
+<span class="func">data</span>(mtcars)
+<span class="func">cat</span>(<span class="string">"Rows:"</span>, <span class="func">nrow</span>(mtcars), <span class="string">" Columns:"</span>, <span class="func">ncol</span>(mtcars), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"Variables:"</span>, <span class="func">paste</span>(<span class="func">names</span>(mtcars), collapse=<span class="string">", "</span>), <span class="string">"\n\n"</span>)
+
+<span class="comment"># 2. Descriptive statistics by group</span>
+<span class="func">cat</span>(<span class="string">"=== MPG by Cylinder Count ===\n"</span>)
+<span class="func">tapply</span>(mtcars$mpg, mtcars$cyl, <span class="keyword">function</span>(x) {
+  <span class="func">c</span>(mean = <span class="func">round</span>(<span class="func">mean</span>(x), <span class="number">1</span>),
+    sd   = <span class="func">round</span>(<span class="func">sd</span>(x), <span class="number">1</span>),
+    n    = <span class="func">length</span>(x))
+})
+
+<span class="comment"># 3. Correlation matrix of key variables</span>
+<span class="func">cat</span>(<span class="string">"\n=== Correlation Matrix ===\n"</span>)
+key_vars <span class="keyword">&lt;-</span> mtcars[, <span class="func">c</span>(<span class="string">"mpg"</span>, <span class="string">"wt"</span>, <span class="string">"hp"</span>, <span class="string">"disp"</span>)]
+<span class="func">round</span>(<span class="func">cor</span>(key_vars), <span class="number">2</span>)
+
+<span class="comment"># 4. Linear model</span>
+<span class="func">cat</span>(<span class="string">"\n=== Linear Model: mpg ~ wt + hp + cyl ===\n"</span>)
+model <span class="keyword">&lt;-</span> <span class="func">lm</span>(mpg <span class="keyword">~</span> wt + hp + cyl, data = mtcars)
+<span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"R-squared: %.3f\n"</span>, <span class="func">summary</span>(model)$r.squared))
+
+coeffs <span class="keyword">&lt;-</span> <span class="func">coef</span>(model)
+<span class="keyword">for</span> (nm <span class="keyword">in</span> <span class="func">names</span>(coeffs)) {
+  <span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"  %-12s %8.4f\n"</span>, nm, coeffs[nm]))
+}
+
+<span class="comment"># 5. Prediction</span>
+new_car <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(wt = <span class="number">3.0</span>, hp = <span class="number">150</span>, cyl = <span class="number">6</span>)
+pred <span class="keyword">&lt;-</span> <span class="func">predict</span>(model, new_car, interval = <span class="string">"confidence"</span>)
+<span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"\nPredicted MPG for a 3000lb, 150hp, 6-cyl car:\n"</span>))
+<span class="func">cat</span>(<span class="func">sprintf</span>(<span class="string">"  Estimate: %.1f  (95%% CI: %.1f to %.1f)\n"</span>,
+    pred[<span class="number">1</span>], pred[<span class="number">2</span>], pred[<span class="number">3</span>]))
+</div>
+<div class="output-block">Rows: 32  Columns: 11
+Variables: mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb
+
+=== MPG by Cylinder Count ===
+$`4`
+mean   sd    n
+ 26.7  4.5 11.0
+
+$`6`
+mean   sd    n
+ 19.7  1.5  7.0
+
+$`8`
+mean   sd    n
+ 15.1  2.6 14.0
+
+=== Correlation Matrix ===
+       mpg    wt    hp  disp
+mpg   1.00 -0.87 -0.78 -0.85
+wt   -0.87  1.00  0.66  0.89
+hp   -0.78  0.66  1.00  0.79
+disp -0.85  0.89  0.79  1.00
+
+=== Linear Model: mpg ~ wt + hp + cyl ===
+R-squared: 0.843
+  (Intercept)    36.1461
+  wt             -3.1910
+  hp             -0.0213
+  cyl            -0.7454
+
+Predicted MPG for a 3000lb, 150hp, 6-cyl car:
+  Estimate: 20.5  (95% CI: 19.3 to 21.8)</div>
+
+      <p>In 30 lines of code: data loading, grouped descriptive statistics, a correlation matrix, a multivariate regression with R-squared, and a prediction with confidence interval. This is what R was built for.</p>
+
+      <!-- XXI. What R Trades Away -->
+      <div class="section-divider">
+        <h2>XXI. What R Trades Away</h2>
+      </div>
+
+      <p>R's statistical focus comes with real costs:</p>
+
+      <table class="comparison-table">
+        <tr><th>Tradeoff</th><th>Consequence</th></tr>
+        <tr><td>Single-threaded by default</td><td>Computation-heavy tasks need explicit parallelization (parallel, future packages)</td></tr>
+        <tr><td>Everything in memory</td><td>Can't natively handle datasets larger than RAM (unlike Python + Dask or SQL)</td></tr>
+        <tr><td>Inconsistent base API</td><td><code>nchar()</code> for string length, <code>length()</code> for vector length, <code>nrow()</code> for rows&mdash;no consistency</td></tr>
+        <tr><td>Copy-on-modify semantics</td><td>Modifying a large data frame can trigger a full copy (though R is smart about this internally)</td></tr>
+        <tr><td>1-based indexing</td><td>Off-by-one confusion for anyone coming from C/Python/JavaScript</td></tr>
+        <tr><td>Weak software engineering tools</td><td>No static types, minimal IDE refactoring, package management is improving but still behind pip/npm</td></tr>
+        <tr><td>Slow loops</td><td>R loops are 10-100x slower than vectorized operations; you must learn the vectorized idioms</td></tr>
+      </table>
+
+      <p>These tradeoffs are reasonable if your primary job is data analysis, statistical modeling, or scientific reporting. They become painful if you're building a web application, a CLI tool, or a production data pipeline. R knows what it is, and the things it sacrifices are the things a statistician can afford to lose.</p>
+
+      <!-- Summary -->
+      <div class="section-divider">
+        <h2>Summary</h2>
+      </div>
+
+      <p>R is a language that reflects its users. Statisticians wanted a language where they could explore data interactively, fit models in one line, and produce publication-quality graphics without writing boilerplate. They got exactly that, at the cost of some of the niceties that general-purpose programmers take for granted.</p>
+
+      <p>The key ideas to remember:</p>
+
+      <ul>
+        <li><strong>Everything is a vector.</strong> The number <code>5</code> is a vector of length 1. This shapes every operation.</li>
+        <li><strong>Vectorize, don't loop.</strong> If you're writing a <code>for</code> loop, there's almost always a better way.</li>
+        <li><strong>Data frames are central.</strong> They are R's answer to the spreadsheet: typed columns, named rows, and a rich API for filtering, grouping, and summarizing.</li>
+        <li><strong>The formula interface is unique.</strong> <code>mpg ~ wt + hp</code> is more expressive than any other language's equivalent.</li>
+        <li><strong>NA is a feature, not a bug.</strong> Missing data is a fact of life in statistics. R makes you deal with it explicitly.</li>
+        <li><strong>The tidyverse is a dialect.</strong> Modern R code uses pipes (<code>%>%</code>), dplyr verbs, and ggplot2. Learn both base R and the tidyverse.</li>
+        <li><strong>CRAN is deep.</strong> Whatever statistical method you need, someone has written an R package for it.</li>
+      </ul>
+
+      <div class="quote-box">
+        "The best thing about R is that it was written by statisticians. The worst thing about R is that it was written by statisticians."
+        <div class="attribution">&mdash; Bo Cowgill, Google</div>
+      </div>
+
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

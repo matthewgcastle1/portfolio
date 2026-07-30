@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Laplace Transform</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .highlight-box p {
+      text-align: center;
+    }
+
+    .example-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .example-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table td:first-child {
+      font-family: Georgia, serif;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      border-radius: 3px;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; font-size: 0.78rem; }
+      .diagram-box { font-size: 0.72rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Laplace Transform</h1>
+      <p>Turning calculus into algebra</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Laplace Transform: Turning Calculus into Algebra</h1>
+        <div class="article-meta">Mathematics &amp; Engineering</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>The Big Idea</h2>
+
+        <p>Differential equations are hard. Algebraic equations are easy. The Laplace transform converts one into the other.</p>
+
+        <p>A second-order linear ODE with constant coefficients&mdash;the kind that describes springs, circuits, control systems, and most of the systems engineers actually build&mdash;becomes a polynomial equation after the Laplace transform. You solve the polynomial (easy), then invert the transform to get the time-domain solution. The entire procedure is mechanical. No guessing particular solutions, no variation of parameters, no ansatz. Just algebra.</p>
+
+        <p>But the Laplace transform is more than a computational trick. It reveals the structure of a system: its natural frequencies, its damping, its stability, its response to any input. The <strong>transfer function</strong>&mdash;the ratio of output to input in the Laplace domain&mdash;is the complete description of a linear system. Control theory, signal processing, and circuit analysis are all built on this idea.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. The Definition</h2>
+        <!-- ============================================================ -->
+
+        <div class="highlight-box">
+          <p><strong>The Laplace Transform</strong></p>
+          $$F(s) = \int_0^\infty f(t)\, e^{-st}\, dt$$
+          <p>Take a function of time $f(t)$, multiply by the decaying exponential $e^{-st}$, and integrate from $0$ to $\infty$.<br>The result $F(s)$ is a function of the complex variable $s = \sigma + j\omega$.</p>
+        </div>
+
+        <p>That is the entire definition. The notation $\mathcal{L}\{f(t)\} = F(s)$ is standard, and we will freely switch between $f(t)$ and $F(s)$ to mean a function and its transform.</p>
+
+        <p>Let&rsquo;s understand what each piece is doing.</p>
+
+        <h3>The Kernel $e^{-st}$</h3>
+
+        <p>The variable $s$ is complex: $s = \sigma + j\omega$, where $\sigma$ is the real part and $\omega$ is the imaginary part. So:</p>
+
+        <div class="math-box">
+          $$e^{-st} = e^{-(\sigma + j\omega)t} = e^{-\sigma t} \cdot e^{-j\omega t}$$
+          The first factor, $e^{-\sigma t}$, is a real exponential decay (for $\sigma > 0$). It acts as a convergence factor, forcing the integral to converge even for functions that grow without bound.<br><br>
+          The second factor, $e^{-j\omega t} = \cos(\omega t) - j\sin(\omega t)$, is a complex sinusoid. It &ldquo;probes&rdquo; the function $f(t)$ at frequency $\omega$, extracting the sinusoidal content.
+        </div>
+
+        <p>So the Laplace transform asks: how much of $f(t)$, <em>after being damped by $e^{-\sigma t}$</em>, looks like a sinusoid at frequency $\omega$? It is simultaneously a frequency decomposition and a damping analysis. The result $F(s)$ tells you the strength of each exponentially-weighted sinusoidal component.</p>
+
+        <h3>The Relationship to the Fourier Transform</h3>
+
+        <p>If you set $\sigma = 0$ (i.e., $s = j\omega$), the Laplace transform becomes the <a href="../demos/fourier-transform.html" style="color: #8b7355;">Fourier transform</a> (for functions that are zero for $t < 0$):</p>
+
+        <div class="math-box">
+          <span class="label">Fourier transform as a special case:</span>
+          $$F(j\omega) = \int_0^\infty f(t)\, e^{-j\omega t}\, dt = \mathcal{F}\{f(t)\}$$
+          The Fourier transform is the Laplace transform evaluated on the imaginary axis ($s = j\omega$).
+        </div>
+
+        <p>The Fourier transform decomposes a signal into pure sinusoids. The Laplace transform decomposes a signal into <em>exponentially growing or decaying</em> sinusoids. This generalization is why the Laplace transform can handle signals the Fourier transform cannot: exponentially growing functions, step functions, and impulses all have well-defined Laplace transforms but may not have Fourier transforms (because the integral diverges without the damping factor $e^{-\sigma t}$).</p>
+
+        <div class="concept-box">
+          <h4>Why the extra generality matters</h4>
+          <p>Many physical systems have solutions that grow, oscillate, or decay exponentially. A pure sinusoidal decomposition (Fourier) cannot represent a growing exponential. But the Laplace basis functions $e^{st} = e^{\sigma t}(\cos \omega t + j\sin \omega t)$ include growth ($\sigma > 0$), decay ($\sigma < 0$), pure oscillation ($\sigma = 0$), and everything in between. This is what makes the Laplace transform the natural tool for initial-value problems and transient analysis.</p>
+        </div>
+
+        <h3>The Region of Convergence</h3>
+
+        <p>The integral $\int_0^\infty f(t)\, e^{-st}\, dt$ converges only for values of $s$ where the exponential decay $e^{-\sigma t}$ overwhelms the growth of $f(t)$. The set of such $s$ values is the <strong>region of convergence</strong> (ROC), and it is always a half-plane $\operatorname{Re}(s) > \sigma_0$ for some $\sigma_0$.</p>
+
+        <p>For example: $\mathcal{L}\{e^{at}\}$ converges only for $\operatorname{Re}(s) > a$, because you need $e^{-\sigma t}$ to decay faster than $e^{at}$ grows. The ROC matters when you invert the transform, but for most practical applications you can safely ignore it as long as you work with signals and systems that are causal and stable.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. Computing Transforms</h2>
+        <!-- ============================================================ -->
+
+        <p>In practice, you rarely evaluate the integral directly. You build up a table of transform pairs and use the properties of the transform (linearity, shifting, differentiation) to handle complex cases. Here are the essential pairs, derived from the definition.</p>
+
+        <h3>The Core Transform Pairs</h3>
+
+        <div class="example-box">
+          <h4>1. The exponential: $f(t) = e^{at}$</h4>
+          <p>
+          $$F(s) = \int_0^\infty e^{at}\, e^{-st}\, dt = \int_0^\infty e^{-(s-a)t}\, dt = \frac{1}{s - a}$$
+          </p>
+          <p>This is the most important transform pair. Everything else is built from it. The exponential $e^{at}$ maps to the rational function $\frac{1}{s - a}$. The value $a$ becomes a <strong>pole</strong> of $F(s)$&mdash;a point where $F(s)$ blows up. The location of this pole in the complex s-plane tells you whether the exponential grows ($a > 0$, pole in right half-plane) or decays ($a < 0$, pole in left half-plane).</p>
+        </div>
+
+        <p>Setting a to specific values immediately gives you more pairs:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>$f(t)$ (for $t \geq 0$)</th>
+            <th>$F(s)$</th>
+            <th>Derivation</th>
+          </tr>
+          <tr>
+            <td>$1$ (unit step)</td>
+            <td>$\frac{1}{s}$</td>
+            <td>Set $a = 0$ in $e^{at}$</td>
+          </tr>
+          <tr>
+            <td>$e^{at}$</td>
+            <td>$\frac{1}{s - a}$</td>
+            <td>Direct integration</td>
+          </tr>
+          <tr>
+            <td>$t$</td>
+            <td>$\frac{1}{s^2}$</td>
+            <td>Differentiation property (see below)</td>
+          </tr>
+          <tr>
+            <td>$t^n$</td>
+            <td>$\frac{n!}{s^{n+1}}$</td>
+            <td>Repeated differentiation</td>
+          </tr>
+          <tr>
+            <td>$\sin(\omega t)$</td>
+            <td>$\frac{\omega}{s^2 + \omega^2}$</td>
+            <td>Euler: $\sin = (e^{j\omega t} - e^{-j\omega t})/2j$</td>
+          </tr>
+          <tr>
+            <td>$\cos(\omega t)$</td>
+            <td>$\frac{s}{s^2 + \omega^2}$</td>
+            <td>Euler: $\cos = (e^{j\omega t} + e^{-j\omega t})/2$</td>
+          </tr>
+          <tr>
+            <td>$e^{at}\sin(\omega t)$</td>
+            <td>$\frac{\omega}{(s-a)^2 + \omega^2}$</td>
+            <td>Frequency shift: replace $s$ with $s-a$</td>
+          </tr>
+          <tr>
+            <td>$e^{at}\cos(\omega t)$</td>
+            <td>$\frac{s-a}{(s-a)^2 + \omega^2}$</td>
+            <td>Frequency shift</td>
+          </tr>
+          <tr>
+            <td>$\delta(t)$ (Dirac delta)</td>
+            <td>$1$</td>
+            <td>Sifting property of $\delta$</td>
+          </tr>
+          <tr>
+            <td>$t\, e^{at}$</td>
+            <td>$\frac{1}{(s - a)^2}$</td>
+            <td>Differentiation in $s$</td>
+          </tr>
+        </table>
+
+        <p>The sine and cosine transforms deserve attention. Notice that $\sin(\omega t)$ has the transform $\frac{\omega}{s^2 + \omega^2}$, which has poles at $s = \pm j\omega$&mdash;purely imaginary. Poles on the imaginary axis correspond to eternal oscillation: the sinusoid neither grows nor decays. This is the first hint that the <em>location of the poles determines the character of the time-domain signal</em>.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. The Properties That Make It Powerful</h2>
+        <!-- ============================================================ -->
+
+        <p>The Laplace transform has algebraic properties that turn calculus operations into simple manipulations. These are what make it useful.</p>
+
+        <h3>Linearity</h3>
+
+        <div class="math-box">
+          $$\mathcal{L}\{a f(t) + b g(t)\} = a F(s) + b G(s)$$
+          The transform is linear. No surprise, since integration is linear.
+        </div>
+
+        <h3>The Differentiation Property (This Is the Key)</h3>
+
+        <div class="math-box">
+          <span class="label">First derivative:</span>
+          $$\mathcal{L}\{f'(t)\} = sF(s) - f(0)$$
+          <span class="label">Second derivative:</span>
+          $$\mathcal{L}\{f''(t)\} = s^2 F(s) - s f(0) - f'(0)$$
+          <span class="label">n-th derivative:</span>
+          $$\mathcal{L}\{f^{(n)}(t)\} = s^n F(s) - s^{n-1} f(0) - s^{n-2} f'(0) - \cdots - f^{(n-1)}(0)$$
+        </div>
+
+        <p><strong>This is the whole point of the Laplace transform.</strong> Differentiation in the time domain becomes multiplication by $s$ in the Laplace domain. A derivative&mdash;a calculus operation&mdash;becomes multiplication&mdash;an algebraic operation. A differential equation becomes a polynomial equation. And the initial conditions ($f(0)$, $f'(0)$, ...) appear automatically in the transformed equation. You do not need to find a general solution and then impose initial conditions as a separate step; the initial conditions are baked in from the start.</p>
+
+        <p>The proof is integration by parts. For the first derivative:</p>
+
+        <div class="math-box">
+          $$\mathcal{L}\{f'(t)\} = \int_0^\infty f'(t)\, e^{-st}\, dt = \bigl[f(t)e^{-st}\bigr]_0^\infty + s\int_0^\infty f(t)\, e^{-st}\, dt$$
+          The boundary term gives $-f(0)$ (assuming $f(t)e^{-st} \to 0$ as $t \to \infty$). The integral is $sF(s)$. So $\mathcal{L}\{f'(t)\} = sF(s) - f(0)$.
+        </div>
+
+        <h3>The Integration Property</h3>
+
+        <div class="math-box">
+          $$\mathcal{L}\left\{\int_0^t f(\tau)\, d\tau\right\} = \frac{F(s)}{s}$$
+          Integration in time becomes division by $s$. If differentiation is multiplication by $s$, then integration should be division&mdash;and it is.
+        </div>
+
+        <h3>The Convolution Property</h3>
+
+        <div class="math-box">
+          <span class="label">Convolution in time becomes multiplication in s:</span>
+          $$\mathcal{L}\{(f * g)(t)\} = \mathcal{L}\left\{\int_0^t f(\tau)\,g(t - \tau)\, d\tau\right\} = F(s) \cdot G(s)$$
+          This is why transfer functions multiply. If a system has impulse response $h(t)$, then the output $y(t) = (h * x)(t)$ for input $x(t)$, and $Y(s) = H(s) \cdot X(s)$. The complex integral of convolution becomes simple multiplication.
+        </div>
+
+        <h3>The Frequency Shift (s-Shifting)</h3>
+
+        <div class="math-box">
+          $$\mathcal{L}\{e^{at}f(t)\} = F(s - a)$$
+          Multiplying by an exponential in the time domain shifts the transform in the $s$-domain. This is why $e^{at}\sin(\omega t)$ has the same form as $\sin(\omega t)$ but with $s$ replaced by $s - a$.
+        </div>
+
+        <h3>The Time Shift (t-Shifting)</h3>
+
+        <div class="math-box">
+          $$\mathcal{L}\{f(t - a)\, u(t - a)\} = e^{-as} F(s)$$
+          Delaying a signal by $a$ in the time domain multiplies the transform by $e^{-as}$. The step function $u(t - a)$ ensures the signal is zero before the delay.
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. Solving Differential Equations</h2>
+        <!-- ============================================================ -->
+
+        <p>Now let&rsquo;s use the machinery. The procedure is always the same: (1) transform both sides, (2) solve for Y(s), (3) partial fractions, (4) invert using the table.</p>
+
+        <div class="example-box">
+          <h4>Example 1: First-order ODE</h4>
+          <p><strong>Problem:</strong> $y' + 3y = 6$, $\;y(0) = 0$</p>
+          <p><strong>Step 1: Transform both sides.</strong></p>
+          $$sY(s) - y(0) + 3Y(s) = \frac{6}{s}$$
+          $$sY(s) + 3Y(s) = \frac{6}{s} \quad \text{(since } y(0) = 0\text{)}$$
+          $$Y(s)(s + 3) = \frac{6}{s}$$
+          <p><strong>Step 2: Solve for Y(s).</strong></p>
+          $$Y(s) = \frac{6}{s(s + 3)}$$
+          <p><strong>Step 3: Partial fractions.</strong></p>
+          $$\frac{6}{s(s + 3)} = \frac{A}{s} + \frac{B}{s + 3}$$
+          $$6 = A(s + 3) + Bs$$
+          $$s = 0:\; A = 2 \qquad s = -3:\; B = -2$$
+          $$Y(s) = \frac{2}{s} - \frac{2}{s + 3}$$
+          <p><strong>Step 4: Invert using the table.</strong></p>
+          $$y(t) = 2 - 2e^{-3t}$$
+          <p>The solution starts at $y(0) = 0$, decays exponentially toward the steady state $y = 2$. The pole at $s = -3$ gives the decay rate: the time constant is $\tau = 1/3$ seconds.</p>
+        </div>
+
+        <div class="example-box">
+          <h4>Example 2: Second-order ODE (damped oscillator)</h4>
+          <p><strong>Problem:</strong> $y'' + 2y' + 5y = 0$, $\;y(0) = 1$, $y'(0) = 0$</p>
+          <p>This describes a damped spring-mass system (or an RLC circuit).</p>
+          <p><strong>Transform:</strong></p>
+          $$s^2 Y - s - 0 + 2(sY - 1) + 5Y = 0$$
+          $$Y(s^2 + 2s + 5) = s + 2$$
+          $$Y(s) = \frac{s + 2}{s^2 + 2s + 5}$$
+          <p><strong>Complete the square in the denominator:</strong></p>
+          $$s^2 + 2s + 5 = (s + 1)^2 + 4 = (s + 1)^2 + 2^2$$
+          <p><strong>Rewrite the numerator:</strong></p>
+          $$Y(s) = \frac{s + 1}{(s+1)^2 + 2^2} + \frac{1}{2} \cdot \frac{2}{(s+1)^2 + 2^2}$$
+          <p><strong>Invert using s-shift ($a = -1$, $\omega = 2$):</strong></p>
+          $$y(t) = e^{-t}\cos(2t) + \tfrac{1}{2}\,e^{-t}\sin(2t)$$
+          <p>The poles of $Y(s)$ are at $s = -1 \pm 2j$. The real part ($-1$) gives the exponential decay rate. The imaginary part ($\pm 2$) gives the oscillation frequency. The system oscillates at frequency 2 rad/s while decaying with time constant 1 second. The pole locations told you this <em>before</em> you inverted the transform.</p>
+        </div>
+
+        <div class="example-box">
+          <h4>Example 3: Driven system (forced response)</h4>
+          <p><strong>Problem:</strong> $y'' + 4y = \sin(3t)$, $\;y(0) = 0$, $y'(0) = 0$</p>
+          <p>An undamped oscillator (natural frequency 2 rad/s) driven by a sinusoid at frequency 3 rad/s.</p>
+          <p><strong>Transform:</strong></p>
+          $$s^2 Y + 4Y = \frac{3}{s^2 + 9}$$
+          $$Y(s) = \frac{3}{(s^2 + 4)(s^2 + 9)}$$
+          <p><strong>Partial fractions:</strong></p>
+          $$\frac{3}{(s^2+4)(s^2+9)} = \frac{A}{s^2+4} + \frac{B}{s^2+9}$$
+          $$3 = A(s^2+9) + B(s^2+4)$$
+          $$s^2 = -4:\; 3 = 5A \Rightarrow A = \tfrac{3}{5} \qquad s^2 = -9:\; 3 = -5B \Rightarrow B = -\tfrac{3}{5}$$
+          $$Y(s) = \frac{3}{10} \cdot \frac{2}{s^2+4} - \frac{1}{5} \cdot \frac{3}{s^2+9}$$
+          <p><strong>Invert:</strong></p>
+          $$y(t) = \tfrac{3}{10}\sin(2t) - \tfrac{1}{5}\sin(3t)$$
+          <p>The response is a superposition of two sinusoids: the system&rsquo;s natural frequency (2 rad/s) and the driving frequency (3 rad/s). The natural mode appears because the initial conditions are zero and the system &ldquo;rings&rdquo; at its natural frequency while simultaneously being driven at the forcing frequency. The amplitudes depend on how close the driving frequency is to the natural frequency; at resonance (driving at 2 rad/s), the response would grow without bound.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. The s-Plane: Poles, Zeros, and System Behavior</h2>
+        <!-- ============================================================ -->
+
+        <p>This is where the Laplace transform transitions from a computational tool into a way of <em>thinking</em>. Every rational function F(s) = N(s)/D(s) has <strong>poles</strong> (roots of D(s), where F blows up) and <strong>zeros</strong> (roots of N(s), where F vanishes). The positions of the poles in the complex s-plane determine everything about the system&rsquo;s behavior.</p>
+
+        <div class="diagram-box">
+<pre>
+The s-plane:            j&omega; (imaginary axis)
+                          |
+                          |       &times; pole at &minus;1+2j
+      UNSTABLE            |      (decaying oscillation)
+      (poles here         |
+       mean growing   ----+---&sigma;--&gt;  (real axis)
+       signals)           |
+                          |       &times; pole at &minus;1&minus;2j
+      STABLE              |
+      (poles here         |
+       mean decaying      |
+       signals)
+
+  Left half-plane: stable (decaying).
+  Right half-plane: unstable (growing).
+  Imaginary axis: marginal (eternal oscillation).
+  Real axis: pure exponentials (no oscillation).
+  Off-axis: oscillating exponentials.
+</pre>
+        </div>
+
+        <div class="concept-box">
+          <h4>Poles decode time-domain behavior</h4>
+          <p><strong>Real pole at $s = -a$ ($a > 0$):</strong> The term $e^{-at}$ in the time domain. A decaying exponential with time constant $\tau = 1/a$. Further left = faster decay.</p>
+          <p><strong>Real pole at $s = +a$:</strong> The term $e^{at}$. An exponentially growing signal. The system is unstable.</p>
+          <p><strong>Complex conjugate poles at $s = -\sigma \pm j\omega$:</strong> The term $e^{-\sigma t}(A\cos\omega t + B\sin\omega t)$. A decaying sinusoid. The real part $-\sigma$ sets the decay rate; the imaginary part $\omega$ sets the oscillation frequency.</p>
+          <p><strong>Poles on the imaginary axis at $s = \pm j\omega$:</strong> The term $A\cos\omega t + B\sin\omega t$. A pure, eternal sinusoid. No growth, no decay.</p>
+          <p><strong>Pole at the origin $s = 0$:</strong> A constant (step function). Integration introduces a pole at the origin.</p>
+          <p><strong>Repeated pole at $s = -a$ (multiplicity $n$):</strong> The term $t^{n-1}e^{-at}$. Polynomial growth modulated by exponential decay.</p>
+        </div>
+
+        <p>This is the power of the Laplace domain. You do not need to solve the ODE to know the qualitative behavior. You just need the poles. A control engineer designing a feedback system moves the poles around (by adjusting controller gains) until the system has the desired transient response: fast enough decay, minimal oscillation, no instability. The entire field of classical control theory&mdash;root locus, Bode plots, Nyquist stability&mdash;is built on manipulating pole locations.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Transfer Functions</h2>
+        <!-- ============================================================ -->
+
+        <p>For a linear time-invariant (LTI) system with input x(t) and output y(t), the relationship in the Laplace domain is:</p>
+
+        <div class="highlight-box">
+          $$Y(s) = H(s) \cdot X(s)$$
+          <p>$H(s)$ is the <strong>transfer function</strong>: the ratio of output to input in the Laplace domain.<br>It is the Laplace transform of the impulse response $h(t)$.</p>
+        </div>
+
+        <p>The transfer function completely characterizes the system. Given $H(s)$, you can find the response to <em>any</em> input by multiplying: $Y(s) = H(s)\,X(s)$, then inverting. You can determine stability (all poles of $H(s)$ in the left half-plane?). You can find the frequency response (evaluate $H(j\omega)$, the Fourier transform of $h(t)$, to see how the system responds to each frequency). You can cascade systems by multiplying their transfer functions: $H_{\text{total}}(s) = H_1(s) \cdot H_2(s)$.</p>
+
+        <div class="example-box">
+          <h4>Example: An RC low-pass filter</h4>
+          <p>An RC circuit with input voltage $x(t)$ and output voltage across the capacitor $y(t)$ obeys:</p>
+          $$RC\, y' + y = x$$
+          <p>Transform (with zero initial conditions for the transfer function):</p>
+          $$RC \cdot sY + Y = X$$
+          $$Y(1 + RCs) = X$$
+          $$H(s) = \frac{Y}{X} = \frac{1}{1 + RCs} = \frac{1/RC}{s + 1/RC}$$
+          <p>One pole at $s = -1/RC$. The time constant is $\tau = RC$. The cutoff frequency is $\omega_c = 1/RC$.</p>
+          <p>Frequency response: $H(j\omega) = 1/(1 + j\omega RC)$. The magnitude $|H(j\omega)| = 1/\sqrt{1 + \omega^2 R^2 C^2}$ decreases with frequency. At $\omega = 1/RC$, the magnitude is $1/\sqrt{2} \approx -3$ dB. This is the classic first-order low-pass response.</p>
+        </div>
+
+        <div class="example-box">
+          <h4>Example: A mass-spring-damper system</h4>
+          <p>Mass $m$, damping coefficient $c$, spring constant $k$:</p>
+          $$my'' + cy' + ky = x(t)$$
+          <p>Transfer function:</p>
+          $$H(s) = \frac{1}{ms^2 + cs + k}$$
+          <p>The poles are at $s = \frac{-c \pm \sqrt{c^2 - 4mk}}{2m}$.</p>
+          <p><strong>Underdamped</strong> ($c^2 < 4mk$): Complex poles. The system oscillates while decaying. Most interesting case.</p>
+          <p><strong>Critically damped</strong> ($c^2 = 4mk$): Repeated real pole. Fastest decay without oscillation.</p>
+          <p><strong>Overdamped</strong> ($c^2 > 4mk$): Two distinct real poles. Sluggish, no oscillation.</p>
+          <p>The natural frequency is $\omega_n = \sqrt{k/m}$. The damping ratio is $\zeta = c/(2\sqrt{mk})$. The standard form of the denominator is $s^2 + 2\zeta\omega_n s + \omega_n^2$, and the poles are at $s = -\zeta\omega_n \pm \omega_n\sqrt{\zeta^2 - 1}$. Every second-order system is characterized by these two numbers.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Partial Fractions and the Inverse Transform</h2>
+        <!-- ============================================================ -->
+
+        <p>The inverse Laplace transform is formally given by the <strong>Bromwich integral</strong>, a contour integral in the complex plane:</p>
+
+        <div class="math-box">
+          <span class="label">The inverse Laplace transform:</span>
+          $$f(t) = \frac{1}{2\pi j} \int_{\sigma - j\infty}^{\sigma + j\infty} F(s)\, e^{st}\, ds$$
+          This is a line integral along a vertical contour in the $s$-plane, to the right of all poles. It is evaluated using the <a href="../demos/complex-analysis.html" style="color: #8b7355;">residue theorem</a>: $f(t) = \sum \text{(residues of } F(s)e^{st} \text{ at all poles)}$.
+        </div>
+
+        <p>In practice, you almost never compute this integral directly. Instead, you decompose F(s) into partial fractions&mdash;a sum of simple terms, each corresponding to a single pole&mdash;and invert each term using the table. The procedure is purely algebraic.</p>
+
+        <div class="concept-box">
+          <h4>The partial fraction recipe</h4>
+          <p><strong>Distinct real poles:</strong> $\frac{A}{s-a} + \frac{B}{s-b} + \cdots$ Invert to $Ae^{at} + Be^{bt} + \cdots$</p>
+          <p><strong>Complex conjugate poles:</strong> Group into pairs. Complete the square. Match to the $e^{at}\cos$ and $e^{at}\sin$ patterns.</p>
+          <p><strong>Repeated poles:</strong> $\frac{A}{s-a} + \frac{B}{(s-a)^2} + \frac{C}{(s-a)^3} + \cdots$ Invert to $Ae^{at} + Bte^{at} + \frac{C}{2}t^2 e^{at} + \cdots$</p>
+          <p>Every rational F(s) can be decomposed this way, and every term in the decomposition corresponds to a single mode of the system&rsquo;s response.</p>
+        </div>
+
+        <p>The deep point: partial fraction decomposition decomposes the system&rsquo;s response into its <em>natural modes</em>. Each pole contributes one mode. The time-domain solution is a sum of modes, each an exponential (possibly oscillating, possibly growing or decaying) determined by its pole location. The Laplace transform reveals that the behavior of any LTI system is nothing but a superposition of exponentials.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Applications</h2>
+        <!-- ============================================================ -->
+
+        <h3>Circuit Analysis</h3>
+
+        <p>In the Laplace domain, circuit elements have <strong>impedances</strong> that are algebraic functions of s:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Element</th>
+            <th>Time domain</th>
+            <th>Laplace impedance Z(s)</th>
+          </tr>
+          <tr>
+            <td>Resistor</td>
+            <td>$v = Ri$</td>
+            <td>$R$</td>
+          </tr>
+          <tr>
+            <td>Capacitor</td>
+            <td>$i = C\,dv/dt$</td>
+            <td>$1/(Cs)$</td>
+          </tr>
+          <tr>
+            <td>Inductor</td>
+            <td>$v = L\,di/dt$</td>
+            <td>$Ls$</td>
+          </tr>
+        </table>
+
+        <p>With Laplace impedances, you can analyze any circuit using Ohm&rsquo;s law and Kirchhoff&rsquo;s laws in the s-domain, exactly as you would with pure resistors at DC. The derivatives disappear. Capacitors and inductors become frequency-dependent resistors. The entire circuit becomes an algebraic system.</p>
+
+        <h3>Control Theory</h3>
+
+        <p>A feedback control system has a forward-path transfer function G(s) and a feedback transfer function H(s). The closed-loop transfer function is:</p>
+
+        <div class="math-box">
+          $$T(s) = \frac{G(s)}{1 + G(s)H(s)}$$
+          The poles of $T(s)$ determine stability. If any pole of $1 + G(s)H(s) = 0$ lies in the right half-plane, the closed-loop system is unstable. The entire discipline of control design is the art of placing these poles.
+        </div>
+
+        <p>The <strong>root locus</strong> plots how the closed-loop poles move as you vary a gain parameter. The <strong>Bode plot</strong> shows the magnitude and phase of $G(j\omega)$ as a function of frequency. The <strong>Nyquist criterion</strong> determines stability from the frequency response alone. All of these are tools for understanding and manipulating the transfer function.</p>
+
+        <h3>Signal Processing</h3>
+
+        <p>Analog filters (Butterworth, Chebyshev, Bessel, elliptic) are designed by specifying the desired locations of poles and zeros in the s-plane. The transfer function is then implemented as an electronic circuit (using the impedance table above). Digital filters are the discrete-time analog, using the <strong>z-transform</strong> instead of the Laplace transform (the z-transform is to discrete time what the Laplace transform is to continuous time).</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. The Deeper View</h2>
+        <!-- ============================================================ -->
+
+        <h3>Why Exponentials?</h3>
+
+        <p>The Laplace transform decomposes everything into exponentials. Why?</p>
+
+        <p>Because exponentials are <strong>eigenfunctions of LTI systems</strong>. If you input $e^{st}$ into any linear time-invariant system, the output is $H(s) \cdot e^{st}$&mdash;the same exponential, scaled by the transfer function evaluated at $s$. The system cannot change the functional form of an exponential input; it can only scale and shift it. This is why the Laplace transform diagonalizes LTI systems: in the basis of exponentials, the system&rsquo;s action is just multiplication by $H(s)$.</p>
+
+        <div class="math-box">
+          <span class="label">Exponentials as eigenfunctions:</span><br>
+          If $L$ is a linear, time-invariant operator, then:
+          $$L\{e^{st}\} = H(s) \cdot e^{st}$$
+          This is the eigenvalue equation: $e^{st}$ is the eigenfunction, $H(s)$ is the eigenvalue. The Laplace transform is a <a href="../demos/change-of-basis.html" style="color: #8b7355;">change of basis</a> from time to the eigenbasis of $L$. In this basis, the operator $L$ is diagonal, and applying it is just multiplication.
+        </div>
+
+        <p>This connects the Laplace transform to the broader structure of linear algebra. The Fourier transform decomposes functions into the eigenbasis of the translation operator (or, equivalently, the differentiation operator restricted to the imaginary axis). The Laplace transform extends this to the full complex plane, capturing growth and decay as well as oscillation. Both are instances of the spectral theorem: every &ldquo;nice&rdquo; linear operator can be diagonalized by choosing the right basis, and the transform to that basis is an integral transform whose kernel is the operator&rsquo;s eigenfunction.</p>
+
+        <h3>The Laplace Transform and Complex Analysis</h3>
+
+        <p>F(s) is an analytic function of the complex variable s (within its region of convergence). The poles and zeros of F(s) are the same objects studied in <a href="../demos/complex-analysis.html" style="color: #8b7355;">complex analysis</a>. The inverse transform is a contour integral evaluated by the residue theorem. The location of poles determines convergence, stability, and time-domain behavior. The machinery of complex analysis&mdash;analytic continuation, Laurent series, residues&mdash;is the mathematical foundation underlying the Laplace transform.</p>
+
+        <p>This is not a coincidence. The Laplace transform is, at its core, a tool of complex analysis applied to the study of linear systems. The s-plane is the complex plane, the transfer function is a meromorphic function, and the inverse transform is a contour integral. The entire theory is unified by the mathematics of complex functions.</p>
+
+        <h3>Limitations</h3>
+
+        <p>The Laplace transform works for <strong>linear, time-invariant</strong> systems. It does not work for nonlinear systems (you cannot separate the modes), time-varying systems (the coefficients change, so there is no fixed transfer function), or systems with non-constant coefficients (Bessel equations, Legendre equations&mdash;these require other techniques like series solutions or numerical methods).</p>
+
+        <p>It also assumes causality (f(t) = 0 for t &lt; 0) and typically requires f(t) to not grow faster than some exponential. These are mild restrictions for engineering applications but matter in pure mathematics.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>The Laplace transform is three things at once:</p>
+
+        <ol>
+          <li><strong>A computational tool.</strong> It turns differential equations into algebraic equations. You transform, solve by algebra, and invert. Initial conditions are included automatically. This is the most common use in engineering courses.</li>
+          <li><strong>A way of thinking.</strong> The s-plane, poles, zeros, and transfer functions give you a language for describing what systems <em>do</em>&mdash;their stability, their natural frequencies, their transient and steady-state behavior&mdash;without solving any equations. This is how engineers actually design systems.</li>
+          <li><strong>A deep mathematical structure.</strong> It is a change of basis to the eigenfunctions of LTI operators, a generalization of the Fourier transform to the full complex plane, and an application of complex analysis to the study of linear systems. The residue theorem, the spectral theorem, and the theory of analytic functions all converge here.</li>
+        </ol>
+
+        <p>It is one of those rare tools that is simultaneously practical and profound.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

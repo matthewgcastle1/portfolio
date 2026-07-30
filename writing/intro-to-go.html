@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Go</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Introduction to Go</h1>
+      <p>A language that chose simplicity and meant it</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Introduction to Go: The Language That Chose Simplicity</h1>
+        <div class="article-meta">Computer Science</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Why Go</h2>
+
+        <p>Go was created at Google in 2007 by Robert Griesemer, Rob Pike, and Ken Thompson. Thompson co-created Unix and C. Pike co-created UTF-8 and Plan 9. They designed Go because they were frustrated. C++ compilation at Google took 45 minutes. The language had become so complex that even experts disagreed about what code meant. The build system was a separate problem from the language. Concurrency was an afterthought bolted onto a sequential model.</p>
+
+        <p>Go is their answer: a language that compiles in seconds, has a tiny specification, handles concurrency as a first-class feature, and deliberately omits most of what other languages consider essential. No inheritance. No exceptions. No operator overloading. No implicit conversions. No macros. No header files. One way to write a loop.</p>
+
+        <p>The result feels like C with garbage collection, goroutines, and a proper string type. If you know C, you can read Go immediately. If you know any language at all, you can learn Go in a weekend. That is not an accident. It is the entire design philosophy.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;Simplicity is complicated.&rdquo;</p>
+          <div class="attribution">&mdash; Rob Pike</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. Hello, World</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="keyword">package</span> main
+
+<span class="keyword">import</span> <span class="string">"fmt"</span>
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    fmt.<span class="func">Println</span>(<span class="string">"Hello, World"</span>)
+}</div>
+
+        <p>Every Go program starts with a <code>package</code> declaration. The <code>main</code> package is the entry point. <code>import</code> pulls in packages. <code>fmt</code> is the formatted I/O package (like C&rsquo;s stdio). <code>func main()</code> is where execution begins. No semicolons needed (the lexer inserts them). Braces are required, but the opening brace must be on the same line as the statement.</p>
+
+        <p>Run it:</p>
+
+        <div class="code-block">$ go run main.go
+Hello, World</div>
+
+        <p>Build a binary:</p>
+
+        <div class="code-block">$ go build -o hello main.go
+$ ./hello
+Hello, World</div>
+
+        <p>The binary is statically linked. It has no dependencies. You can copy it to any machine with the same OS and architecture and it will run. No runtime to install, no shared libraries to manage. This is one of Go&rsquo;s most underappreciated features for deployment.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. Variables and Types</h2>
+        <!-- ============================================================ -->
+
+        <p>Go is statically typed. Types go <em>after</em> names (the opposite of C), which reads more naturally in complex declarations.</p>
+
+        <div class="code-block"><span class="keyword">var</span> x <span class="type">int</span> = <span class="number">42</span>          <span class="comment">// explicit type</span>
+<span class="keyword">var</span> y = <span class="number">42</span>               <span class="comment">// type inferred (int)</span>
+z := <span class="number">42</span>                  <span class="comment">// short declaration (inside functions only)</span>
+
+<span class="keyword">var</span> name <span class="type">string</span> = <span class="string">"Go"</span>
+<span class="keyword">var</span> pi <span class="type">float64</span> = <span class="number">3.14159</span>
+<span class="keyword">var</span> active <span class="type">bool</span> = <span class="keyword">true</span></div>
+
+        <p>The <code>:=</code> shorthand is idiomatic for local variables. Outside functions, you must use <code>var</code>.</p>
+
+        <h3>Zero Values</h3>
+
+        <p>Every type has a zero value. Uninitialized variables are not undefined&mdash;they are zero-valued. This eliminates an entire class of bugs.</p>
+
+        <table class="comparison-table">
+          <tr><th>Type</th><th>Zero Value</th></tr>
+          <tr><td>int, float64</td><td>0</td></tr>
+          <tr><td>string</td><td>"" (empty string)</td></tr>
+          <tr><td>bool</td><td>false</td></tr>
+          <tr><td>pointer, slice, map, channel, function, interface</td><td>nil</td></tr>
+        </table>
+
+        <h3>Basic Types</h3>
+
+        <div class="code-block"><span class="comment">// Integers: sized and unsized</span>
+<span class="keyword">var</span> a <span class="type">int</span>     <span class="comment">// platform-dependent (64-bit on 64-bit systems)</span>
+<span class="keyword">var</span> b <span class="type">int8</span>    <span class="comment">// -128 to 127</span>
+<span class="keyword">var</span> c <span class="type">int16</span>
+<span class="keyword">var</span> d <span class="type">int32</span>
+<span class="keyword">var</span> e <span class="type">int64</span>
+<span class="keyword">var</span> f <span class="type">uint8</span>   <span class="comment">// unsigned: 0 to 255 (alias: byte)</span>
+
+<span class="comment">// Floats</span>
+<span class="keyword">var</span> g <span class="type">float32</span>
+<span class="keyword">var</span> h <span class="type">float64</span> <span class="comment">// default for float literals</span>
+
+<span class="comment">// Other</span>
+<span class="keyword">var</span> i <span class="type">byte</span>    <span class="comment">// alias for uint8</span>
+<span class="keyword">var</span> j <span class="type">rune</span>    <span class="comment">// alias for int32 (a Unicode code point)</span></div>
+
+        <p>There are no implicit numeric conversions. You must explicitly cast: <code>float64(x)</code>, <code>int(y)</code>. This catches type errors at compile time that C would silently allow.</p>
+
+        <h3>Constants</h3>
+
+        <div class="code-block"><span class="keyword">const</span> Pi = <span class="number">3.14159265358979</span>
+<span class="keyword">const</span> MaxRetries = <span class="number">3</span>
+
+<span class="comment">// iota: auto-incrementing constant generator</span>
+<span class="keyword">const</span> (
+    Sunday = <span class="keyword">iota</span>  <span class="comment">// 0</span>
+    Monday         <span class="comment">// 1</span>
+    Tuesday        <span class="comment">// 2</span>
+    Wednesday      <span class="comment">// 3</span>
+    Thursday       <span class="comment">// 4</span>
+    Friday         <span class="comment">// 5</span>
+    Saturday       <span class="comment">// 6</span>
+)
+
+<span class="comment">// iota with expressions (bit flags)</span>
+<span class="keyword">const</span> (
+    Read    = <span class="number">1</span> &lt;&lt; <span class="keyword">iota</span> <span class="comment">// 1</span>
+    Write                  <span class="comment">// 2</span>
+    Execute                <span class="comment">// 4</span>
+)</div>
+
+        <p><code>iota</code> is Go&rsquo;s replacement for C enums. It starts at 0 and increments within a <code>const</code> block. You can apply expressions to it, and the expression is repeated for each subsequent constant.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. Control Flow</h2>
+        <!-- ============================================================ -->
+
+        <p>Go has one loop construct: <code>for</code>. No <code>while</code>, no <code>do-while</code>. The <code>for</code> keyword does everything.</p>
+
+        <div class="code-block"><span class="comment">// Classic C-style for loop</span>
+<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ {
+    fmt.<span class="func">Println</span>(i)
+}
+
+<span class="comment">// While loop (omit init and post)</span>
+<span class="keyword">for</span> x &gt; <span class="number">0</span> {
+    x--
+}
+
+<span class="comment">// Infinite loop (omit everything)</span>
+<span class="keyword">for</span> {
+    <span class="comment">// runs forever until break or return</span>
+}
+
+<span class="comment">// Range over a slice</span>
+nums := []<span class="type">int</span>{<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>}
+<span class="keyword">for</span> i, v := <span class="keyword">range</span> nums {
+    fmt.<span class="func">Printf</span>(<span class="string">"index %d, value %d\n"</span>, i, v)
+}
+
+<span class="comment">// Range over a string (iterates runes, not bytes)</span>
+<span class="keyword">for</span> i, ch := <span class="keyword">range</span> <span class="string">"Hello, &#19990;&#30028;"</span> {
+    fmt.<span class="func">Printf</span>(<span class="string">"%d: %c\n"</span>, i, ch)
+}</div>
+
+        <p>If statements can include a short statement before the condition:</p>
+
+        <div class="code-block"><span class="keyword">if</span> err := doSomething(); err != <span class="keyword">nil</span> {
+    <span class="comment">// handle error</span>
+    <span class="comment">// err is scoped to this if/else block</span>
+}
+
+<span class="comment">// Switch (no fall-through by default, no break needed)</span>
+<span class="keyword">switch</span> day {
+<span class="keyword">case</span> <span class="string">"Monday"</span>, <span class="string">"Tuesday"</span>, <span class="string">"Wednesday"</span>, <span class="string">"Thursday"</span>, <span class="string">"Friday"</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"Weekday"</span>)
+<span class="keyword">case</span> <span class="string">"Saturday"</span>, <span class="string">"Sunday"</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"Weekend"</span>)
+<span class="keyword">default</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"Unknown"</span>)
+}
+
+<span class="comment">// Type switch</span>
+<span class="keyword">switch</span> v := x.(<span class="keyword">type</span>) {
+<span class="keyword">case</span> <span class="type">int</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"int:"</span>, v)
+<span class="keyword">case</span> <span class="type">string</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"string:"</span>, v)
+}</div>
+
+        <p>Go&rsquo;s switch does not fall through by default (the opposite of C). If you want fall-through, use the <code>fallthrough</code> keyword explicitly. This eliminates one of the most common C bugs.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. Functions</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Basic function</span>
+<span class="keyword">func</span> <span class="func">add</span>(a <span class="type">int</span>, b <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> a + b
+}
+
+<span class="comment">// Shorthand: consecutive params of the same type</span>
+<span class="keyword">func</span> <span class="func">add</span>(a, b <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> a + b
+}</div>
+
+        <h3>Multiple Return Values</h3>
+
+        <p>This is one of Go&rsquo;s most distinctive features. Functions can return multiple values, and this is the idiomatic way to handle errors.</p>
+
+        <div class="code-block"><span class="keyword">func</span> <span class="func">divide</span>(a, b <span class="type">float64</span>) (<span class="type">float64</span>, <span class="type">error</span>) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">return</span> <span class="number">0</span>, fmt.<span class="func">Errorf</span>(<span class="string">"division by zero"</span>)
+    }
+    <span class="keyword">return</span> a / b, <span class="keyword">nil</span>
+}
+
+<span class="comment">// Calling it:</span>
+result, err := <span class="func">divide</span>(<span class="number">10</span>, <span class="number">3</span>)
+<span class="keyword">if</span> err != <span class="keyword">nil</span> {
+    fmt.<span class="func">Println</span>(<span class="string">"Error:"</span>, err)
+    <span class="keyword">return</span>
+}
+fmt.<span class="func">Println</span>(result) <span class="comment">// 3.3333...</span></div>
+
+        <p>The pattern <code>result, err := f()</code> followed by <code>if err != nil</code> is the most common pattern in Go. You will write it hundreds of times. Some people find this verbose. The Go team considers it a virtue: error handling is explicit, visible, and impossible to accidentally ignore (the compiler rejects unused variables).</p>
+
+        <h3>Named Return Values</h3>
+
+        <div class="code-block"><span class="keyword">func</span> <span class="func">split</span>(sum <span class="type">int</span>) (x, y <span class="type">int</span>) {
+    x = sum * <span class="number">4</span> / <span class="number">9</span>
+    y = sum - x
+    <span class="keyword">return</span> <span class="comment">// "naked" return: returns x and y</span>
+}</div>
+
+        <h3>Functions as Values</h3>
+
+        <div class="code-block"><span class="comment">// Functions are first-class values</span>
+<span class="keyword">func</span> <span class="func">apply</span>(f <span class="keyword">func</span>(<span class="type">int</span>) <span class="type">int</span>, x <span class="type">int</span>) <span class="type">int</span> {
+    <span class="keyword">return</span> <span class="func">f</span>(x)
+}
+
+double := <span class="keyword">func</span>(n <span class="type">int</span>) <span class="type">int</span> { <span class="keyword">return</span> n * <span class="number">2</span> }
+fmt.<span class="func">Println</span>(<span class="func">apply</span>(double, <span class="number">5</span>)) <span class="comment">// 10</span>
+
+<span class="comment">// Closures</span>
+<span class="keyword">func</span> <span class="func">counter</span>() <span class="keyword">func</span>() <span class="type">int</span> {
+    n := <span class="number">0</span>
+    <span class="keyword">return</span> <span class="keyword">func</span>() <span class="type">int</span> {
+        n++
+        <span class="keyword">return</span> n
+    }
+}
+
+c := <span class="func">counter</span>()
+fmt.<span class="func">Println</span>(<span class="func">c</span>()) <span class="comment">// 1</span>
+fmt.<span class="func">Println</span>(<span class="func">c</span>()) <span class="comment">// 2</span>
+fmt.<span class="func">Println</span>(<span class="func">c</span>()) <span class="comment">// 3</span></div>
+
+        <h3>Defer</h3>
+
+        <div class="code-block"><span class="keyword">func</span> <span class="func">readFile</span>(path <span class="type">string</span>) (<span class="type">string</span>, <span class="type">error</span>) {
+    f, err := os.<span class="func">Open</span>(path)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="string">""</span>, err
+    }
+    <span class="keyword">defer</span> f.<span class="func">Close</span>() <span class="comment">// runs when the function returns, no matter what</span>
+
+    data, err := io.<span class="func">ReadAll</span>(f)
+    <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+        <span class="keyword">return</span> <span class="string">""</span>, err
+    }
+    <span class="keyword">return</span> <span class="type">string</span>(data), <span class="keyword">nil</span>
+}</div>
+
+        <p><code>defer</code> schedules a function call to run when the surrounding function returns. It is Go&rsquo;s replacement for RAII, try/finally, and destructors. You open a resource, immediately defer its cleanup, and never worry about forgetting to close it. Deferred calls execute in LIFO (last-in, first-out) order.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. Structs and Methods</h2>
+        <!-- ============================================================ -->
+
+        <p>Go has no classes. It has <strong>structs</strong> (data) and <strong>methods</strong> (functions attached to types). This is closer to C than to Java or Python.</p>
+
+        <div class="code-block"><span class="keyword">type</span> <span class="type">Point</span> <span class="keyword">struct</span> {
+    X, Y <span class="type">float64</span>
+}
+
+<span class="comment">// Method with a value receiver</span>
+<span class="keyword">func</span> (p <span class="type">Point</span>) <span class="func">Distance</span>() <span class="type">float64</span> {
+    <span class="keyword">return</span> math.<span class="func">Sqrt</span>(p.X*p.X + p.Y*p.Y)
+}
+
+<span class="comment">// Method with a pointer receiver (can modify the struct)</span>
+<span class="keyword">func</span> (p *<span class="type">Point</span>) <span class="func">Scale</span>(factor <span class="type">float64</span>) {
+    p.X *= factor
+    p.Y *= factor
+}
+
+<span class="comment">// Usage</span>
+p := <span class="type">Point</span>{<span class="number">3</span>, <span class="number">4</span>}
+fmt.<span class="func">Println</span>(p.<span class="func">Distance</span>()) <span class="comment">// 5</span>
+p.<span class="func">Scale</span>(<span class="number">2</span>)
+fmt.<span class="func">Println</span>(p) <span class="comment">// {6 8}</span></div>
+
+        <p>The <code>(p Point)</code> before the function name is the <strong>receiver</strong>. It is syntactic sugar: <code>p.Distance()</code> is equivalent to <code>Distance(p)</code>. Methods are just functions. There is no <code>this</code> or <code>self</code>; the receiver is an explicit, named parameter.</p>
+
+        <p>Use a <strong>pointer receiver</strong> (<code>*Point</code>) when the method needs to modify the struct or when the struct is large (to avoid copying). Use a <strong>value receiver</strong> (<code>Point</code>) when the method only reads.</p>
+
+        <h3>Struct Embedding (Composition, Not Inheritance)</h3>
+
+        <div class="code-block"><span class="keyword">type</span> <span class="type">Animal</span> <span class="keyword">struct</span> {
+    Name <span class="type">string</span>
+}
+
+<span class="keyword">func</span> (a <span class="type">Animal</span>) <span class="func">Speak</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> a.Name + <span class="string">" makes a sound"</span>
+}
+
+<span class="keyword">type</span> <span class="type">Dog</span> <span class="keyword">struct</span> {
+    <span class="type">Animal</span>        <span class="comment">// embedded struct (no field name)</span>
+    Breed <span class="type">string</span>
+}
+
+d := <span class="type">Dog</span>{
+    Animal: <span class="type">Animal</span>{Name: <span class="string">"Rex"</span>},
+    Breed:  <span class="string">"German Shepherd"</span>,
+}
+
+fmt.<span class="func">Println</span>(d.Name)    <span class="comment">// "Rex" — promoted from Animal</span>
+fmt.<span class="func">Println</span>(d.<span class="func">Speak</span>()) <span class="comment">// "Rex makes a sound" — promoted method</span></div>
+
+        <p>Embedding promotes the inner struct&rsquo;s fields and methods to the outer struct. It looks like inheritance but is <em>composition</em>. <code>Dog</code> is not a subtype of <code>Animal</code>. It contains an <code>Animal</code>. You can access promoted fields directly (<code>d.Name</code>) or through the embedded field (<code>d.Animal.Name</code>). There is no method resolution order, no virtual dispatch, no diamond problem.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Interfaces</h2>
+        <!-- ============================================================ -->
+
+        <p>Interfaces in Go are satisfied <strong>implicitly</strong>. There is no <code>implements</code> keyword. If a type has the methods an interface requires, it satisfies the interface. This is structural typing, not nominal typing, and it is one of Go&rsquo;s best design decisions.</p>
+
+        <div class="code-block"><span class="keyword">type</span> <span class="type">Shape</span> <span class="keyword">interface</span> {
+    <span class="func">Area</span>() <span class="type">float64</span>
+    <span class="func">Perimeter</span>() <span class="type">float64</span>
+}
+
+<span class="keyword">type</span> <span class="type">Circle</span> <span class="keyword">struct</span> {
+    Radius <span class="type">float64</span>
+}
+
+<span class="keyword">func</span> (c <span class="type">Circle</span>) <span class="func">Area</span>() <span class="type">float64</span>      { <span class="keyword">return</span> math.Pi * c.Radius * c.Radius }
+<span class="keyword">func</span> (c <span class="type">Circle</span>) <span class="func">Perimeter</span>() <span class="type">float64</span> { <span class="keyword">return</span> <span class="number">2</span> * math.Pi * c.Radius }
+
+<span class="keyword">type</span> <span class="type">Rectangle</span> <span class="keyword">struct</span> {
+    Width, Height <span class="type">float64</span>
+}
+
+<span class="keyword">func</span> (r <span class="type">Rectangle</span>) <span class="func">Area</span>() <span class="type">float64</span>      { <span class="keyword">return</span> r.Width * r.Height }
+<span class="keyword">func</span> (r <span class="type">Rectangle</span>) <span class="func">Perimeter</span>() <span class="type">float64</span> { <span class="keyword">return</span> <span class="number">2</span>*(r.Width + r.Height) }
+
+<span class="comment">// Both Circle and Rectangle satisfy Shape — no declaration needed</span>
+<span class="keyword">func</span> <span class="func">printShape</span>(s <span class="type">Shape</span>) {
+    fmt.<span class="func">Printf</span>(<span class="string">"Area: %.2f, Perimeter: %.2f\n"</span>, s.<span class="func">Area</span>(), s.<span class="func">Perimeter</span>())
+}
+
+<span class="func">printShape</span>(<span class="type">Circle</span>{Radius: <span class="number">5</span>})
+<span class="func">printShape</span>(<span class="type">Rectangle</span>{Width: <span class="number">3</span>, Height: <span class="number">4</span>})</div>
+
+        <p>The key insight: the <code>Circle</code> and <code>Rectangle</code> types know nothing about the <code>Shape</code> interface. They do not import it. They do not declare that they implement it. They just happen to have the right methods. The interface is satisfied automatically. This decouples the interface definition from the implementation and enables powerful patterns where interfaces are defined by consumers, not providers.</p>
+
+        <h3>The Key Standard Interfaces</h3>
+
+        <div class="code-block"><span class="comment">// The empty interface — satisfied by every type</span>
+<span class="keyword">interface</span>{} <span class="comment">// or, since Go 1.18: any</span>
+
+<span class="comment">// The most important interfaces in the standard library:</span>
+
+<span class="keyword">type</span> <span class="type">Reader</span> <span class="keyword">interface</span> {
+    <span class="func">Read</span>(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>)
+}
+
+<span class="keyword">type</span> <span class="type">Writer</span> <span class="keyword">interface</span> {
+    <span class="func">Write</span>(p []<span class="type">byte</span>) (n <span class="type">int</span>, err <span class="type">error</span>)
+}
+
+<span class="keyword">type</span> <span class="type">Stringer</span> <span class="keyword">interface</span> {
+    <span class="func">String</span>() <span class="type">string</span>
+}
+
+<span class="keyword">type</span> error <span class="keyword">interface</span> {
+    <span class="func">Error</span>() <span class="type">string</span>
+}</div>
+
+        <p><code>io.Reader</code> and <code>io.Writer</code> are the backbone of Go&rsquo;s I/O system. Files, network connections, HTTP bodies, buffers, compressors, and encryptors all implement these interfaces. You can compose them freely: wrap a file in a buffered reader, wrap that in a gzip reader, wrap that in a JSON decoder. Each layer knows nothing about the others.</p>
+
+        <div class="note-box">
+          <h4>Go proverb: &ldquo;The bigger the interface, the weaker the abstraction.&rdquo;</h4>
+          <p>Go interfaces are typically small: one or two methods. <code>io.Reader</code> has one method. <code>error</code> has one method. <code>fmt.Stringer</code> has one method. Small interfaces are easy to implement, easy to compose, and hard to get wrong. This is the opposite of Java, where interfaces often have a dozen methods and an <code>AbstractFactoryBeanManager</code> implementing them.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Slices and Arrays</h2>
+        <!-- ============================================================ -->
+
+        <p>Arrays in Go have a fixed size and are values (they copy on assignment). You almost never use them directly. Instead, you use <strong>slices</strong>: dynamically-sized views into arrays.</p>
+
+        <div class="code-block"><span class="comment">// Array (fixed size, rarely used directly)</span>
+<span class="keyword">var</span> a [<span class="number">5</span>]<span class="type">int</span> <span class="comment">// [0 0 0 0 0]</span>
+
+<span class="comment">// Slice (dynamic, this is what you use)</span>
+s := []<span class="type">int</span>{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>}
+
+<span class="comment">// Make a slice with length 5, capacity 10</span>
+s2 := <span class="builtin">make</span>([]<span class="type">int</span>, <span class="number">5</span>, <span class="number">10</span>)
+
+<span class="comment">// Append (grows the slice if needed)</span>
+s = <span class="builtin">append</span>(s, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>)
+
+<span class="comment">// Slicing (like Python, but no negative indices)</span>
+first3 := s[:<span class="number">3</span>]   <span class="comment">// [1 2 3]</span>
+last3  := s[<span class="number">5</span>:]   <span class="comment">// [6 7 8]</span>
+middle := s[<span class="number">2</span>:<span class="number">5</span>]  <span class="comment">// [3 4 5]</span>
+
+<span class="comment">// Length and capacity</span>
+fmt.<span class="func">Println</span>(<span class="builtin">len</span>(s), <span class="builtin">cap</span>(s))
+
+<span class="comment">// Iterate</span>
+<span class="keyword">for</span> i, v := <span class="keyword">range</span> s {
+    fmt.<span class="func">Printf</span>(<span class="string">"s[%d] = %d\n"</span>, i, v)
+}</div>
+
+        <p>A slice is a three-word struct under the hood: a pointer to the underlying array, a length, and a capacity. Slicing does not copy data; it creates a new header pointing into the same array. This is efficient but means that modifying a slice element affects all slices sharing that array. If you need an independent copy, use <code>copy()</code> or the <code>slices.Clone()</code> function.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Maps</h2>
+        <!-- ============================================================ -->
+
+        <p>Maps are Go&rsquo;s built-in hash table. They are the equivalent of Python&rsquo;s <code>dict</code>, Java&rsquo;s <code>HashMap</code>, or C++&rsquo;s <code>unordered_map</code>.</p>
+
+        <div class="code-block"><span class="comment">// Create a map</span>
+m := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)
+
+<span class="comment">// Or with a literal</span>
+ages := <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>{
+    <span class="string">"Alice"</span>: <span class="number">30</span>,
+    <span class="string">"Bob"</span>:   <span class="number">25</span>,
+    <span class="string">"Carol"</span>: <span class="number">35</span>,
+}
+
+<span class="comment">// Insert or update</span>
+ages[<span class="string">"Dave"</span>] = <span class="number">28</span>
+
+<span class="comment">// Lookup</span>
+age := ages[<span class="string">"Alice"</span>] <span class="comment">// 30</span>
+
+<span class="comment">// Lookup with existence check (the "comma ok" idiom)</span>
+age, ok := ages[<span class="string">"Eve"</span>]
+<span class="keyword">if</span> !ok {
+    fmt.<span class="func">Println</span>(<span class="string">"Eve not found"</span>)
+}
+
+<span class="comment">// Delete</span>
+<span class="builtin">delete</span>(ages, <span class="string">"Bob"</span>)
+
+<span class="comment">// Iterate (order is randomized by design)</span>
+<span class="keyword">for</span> name, age := <span class="keyword">range</span> ages {
+    fmt.<span class="func">Printf</span>(<span class="string">"%s is %d\n"</span>, name, age)
+}
+
+<span class="comment">// Length</span>
+fmt.<span class="func">Println</span>(<span class="builtin">len</span>(ages))</div>
+
+        <p>Key points about maps:</p>
+
+        <ul>
+          <li>Maps are reference types. Passing a map to a function does not copy it.</li>
+          <li>The zero value of a map is <code>nil</code>. Reading from a nil map returns the zero value. <em>Writing</em> to a nil map panics. Always initialize with <code>make</code> or a literal.</li>
+          <li>Looking up a missing key returns the zero value for the value type (0, "", false, nil). Use the two-value form (<code>v, ok := m[k]</code>) to distinguish &ldquo;key exists with zero value&rdquo; from &ldquo;key missing.&rdquo;</li>
+          <li>Map iteration order is deliberately randomized. Do not rely on it. If you need sorted output, extract the keys into a slice, sort it, and iterate the slice.</li>
+          <li>Maps are not safe for concurrent use. If multiple goroutines read and write the same map, you need a mutex or <code>sync.Map</code>.</li>
+        </ul>
+
+        <h3>Maps as Sets</h3>
+
+        <p>Go has no built-in set type. The idiomatic replacement is a <code>map[T]bool</code> or <code>map[T]struct{}</code>:</p>
+
+        <div class="code-block"><span class="comment">// Set of strings</span>
+seen := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">bool</span>)
+seen[<span class="string">"apple"</span>] = <span class="keyword">true</span>
+seen[<span class="string">"banana"</span>] = <span class="keyword">true</span>
+
+<span class="keyword">if</span> seen[<span class="string">"apple"</span>] {
+    fmt.<span class="func">Println</span>(<span class="string">"already seen apple"</span>)
+}
+
+<span class="comment">// Memory-efficient version: struct{} takes zero bytes</span>
+type void = <span class="keyword">struct</span>{}
+seen2 := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]void)
+seen2[<span class="string">"apple"</span>] = void{}
+_, exists := seen2[<span class="string">"apple"</span>] <span class="comment">// exists == true</span></div>
+
+        <h3>Maps for Counting and Grouping</h3>
+
+        <div class="code-block"><span class="comment">// Word frequency counter</span>
+<span class="keyword">func</span> <span class="func">wordCount</span>(text <span class="type">string</span>) <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span> {
+    counts := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)
+    <span class="keyword">for</span> _, word := <span class="keyword">range</span> strings.<span class="func">Fields</span>(text) {
+        counts[word]++  <span class="comment">// zero value of int is 0, so this just works</span>
+    }
+    <span class="keyword">return</span> counts
+}
+
+<span class="comment">// Group by first letter</span>
+<span class="keyword">func</span> <span class="func">groupByFirstLetter</span>(words []<span class="type">string</span>) <span class="keyword">map</span>[<span class="type">byte</span>][]<span class="type">string</span> {
+    groups := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">byte</span>][]<span class="type">string</span>)
+    <span class="keyword">for</span> _, w := <span class="keyword">range</span> words {
+        key := w[<span class="number">0</span>]
+        groups[key] = <span class="builtin">append</span>(groups[key], w)
+    }
+    <span class="keyword">return</span> groups
+}
+
+<span class="comment">// Adjacency list for a graph</span>
+graph := <span class="keyword">map</span>[<span class="type">string</span>][]<span class="type">string</span>{
+    <span class="string">"A"</span>: {<span class="string">"B"</span>, <span class="string">"C"</span>},
+    <span class="string">"B"</span>: {<span class="string">"A"</span>, <span class="string">"D"</span>},
+    <span class="string">"C"</span>: {<span class="string">"A"</span>},
+    <span class="string">"D"</span>: {<span class="string">"B"</span>},
+}</div>
+
+        <p>Maps are the workhorse data structure in Go. Because the zero value of a slice is nil and <code>append</code> handles nil slices gracefully, you can build up <code>map[K][]V</code> structures (group-by, adjacency lists, inverted indices) without any initialization boilerplate.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. Error Handling</h2>
+        <!-- ============================================================ -->
+
+        <p>Go has no exceptions. Functions that can fail return an <code>error</code> as the last return value. The caller checks it explicitly.</p>
+
+        <div class="code-block"><span class="comment">// The error interface is built-in:</span>
+<span class="comment">// type error interface { Error() string }</span>
+
+<span class="comment">// Creating errors</span>
+err1 := errors.<span class="func">New</span>(<span class="string">"something went wrong"</span>)
+err2 := fmt.<span class="func">Errorf</span>(<span class="string">"failed to open %s: %w"</span>, filename, err) <span class="comment">// wrapping</span>
+
+<span class="comment">// Custom error types</span>
+<span class="keyword">type</span> <span class="type">NotFoundError</span> <span class="keyword">struct</span> {
+    Name <span class="type">string</span>
+}
+
+<span class="keyword">func</span> (e *<span class="type">NotFoundError</span>) <span class="func">Error</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> e.Name + <span class="string">" not found"</span>
+}
+
+<span class="comment">// Checking error types</span>
+<span class="keyword">var</span> nfe *<span class="type">NotFoundError</span>
+<span class="keyword">if</span> errors.<span class="func">As</span>(err, &amp;nfe) {
+    fmt.<span class="func">Println</span>(<span class="string">"Missing:"</span>, nfe.Name)
+}
+
+<span class="comment">// Checking sentinel errors</span>
+<span class="keyword">if</span> errors.<span class="func">Is</span>(err, os.ErrNotExist) {
+    fmt.<span class="func">Println</span>(<span class="string">"File does not exist"</span>)
+}</div>
+
+        <p>The <code>%w</code> verb in <code>fmt.Errorf</code> wraps the original error, creating a chain. <code>errors.Is</code> walks the chain to check for a specific sentinel error. <code>errors.As</code> walks the chain to find an error of a specific type. This is Go&rsquo;s approach to structured error handling: simple, explicit, composable.</p>
+
+        <p>For truly unrecoverable errors (out of memory, index out of bounds, nil pointer dereference), Go has <code>panic</code> and <code>recover</code>. These are not exceptions. They are for bugs, not expected errors. You should almost never use <code>panic</code> in library code.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">X. Goroutines and Channels</h2>
+        <!-- ============================================================ -->
+
+        <p>This is Go&rsquo;s signature feature. Goroutines are lightweight concurrent functions. Channels are typed conduits for communication between goroutines. Together, they implement Tony Hoare&rsquo;s CSP (Communicating Sequential Processes) model of concurrency.</p>
+
+        <h3>Goroutines</h3>
+
+        <div class="code-block"><span class="comment">// Launch a goroutine: just put "go" before a function call</span>
+<span class="keyword">go</span> <span class="func">doSomething</span>()
+
+<span class="comment">// With an anonymous function</span>
+<span class="keyword">go</span> <span class="keyword">func</span>() {
+    fmt.<span class="func">Println</span>(<span class="string">"running in a goroutine"</span>)
+}()
+
+<span class="comment">// A goroutine is NOT a thread.</span>
+<span class="comment">// It starts with ~8 KB of stack (grows as needed).</span>
+<span class="comment">// The Go runtime multiplexes thousands of goroutines</span>
+<span class="comment">// onto a small number of OS threads (M:N scheduling).</span>
+<span class="comment">// You can easily run 100,000 goroutines on a laptop.</span></div>
+
+        <p>A goroutine costs about 8 KB of memory. A thread costs about 1&ndash;8 MB. This means you can have tens of thousands of goroutines where you could have maybe a hundred threads. The Go runtime scheduler handles the mapping to OS threads, including preemption (since Go 1.14), work stealing, and blocking I/O integration.</p>
+
+        <h3>Channels</h3>
+
+        <div class="code-block"><span class="comment">// Create a channel</span>
+ch := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)       <span class="comment">// unbuffered</span>
+bch := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, <span class="number">10</span>) <span class="comment">// buffered (capacity 10)</span>
+
+<span class="comment">// Send a value</span>
+ch &lt;- <span class="number">42</span>
+
+<span class="comment">// Receive a value</span>
+v := &lt;-ch
+
+<span class="comment">// Close a channel (signals "no more values")</span>
+<span class="builtin">close</span>(ch)
+
+<span class="comment">// Range over a channel (loops until closed)</span>
+<span class="keyword">for</span> v := <span class="keyword">range</span> ch {
+    fmt.<span class="func">Println</span>(v)
+}</div>
+
+        <p>An <strong>unbuffered channel</strong> blocks the sender until a receiver is ready, and vice versa. This provides synchronization: the two goroutines rendezvous at the channel operation. A <strong>buffered channel</strong> blocks only when the buffer is full (send) or empty (receive). Choose unbuffered when you want synchronization, buffered when you want to decouple producer and consumer speeds.</p>
+
+        <h3>Example: Concurrent Web Fetcher</h3>
+
+        <div class="code-block"><span class="keyword">func</span> <span class="func">fetchAll</span>(urls []<span class="type">string</span>) []<span class="type">string</span> {
+    results := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">string</span>, <span class="builtin">len</span>(urls))
+
+    <span class="keyword">for</span> _, url := <span class="keyword">range</span> urls {
+        <span class="keyword">go</span> <span class="keyword">func</span>(u <span class="type">string</span>) {
+            resp, err := http.<span class="func">Get</span>(u)
+            <span class="keyword">if</span> err != <span class="keyword">nil</span> {
+                results &lt;- fmt.<span class="func">Sprintf</span>(<span class="string">"%s: error: %v"</span>, u, err)
+                <span class="keyword">return</span>
+            }
+            <span class="keyword">defer</span> resp.Body.<span class="func">Close</span>()
+            results &lt;- fmt.<span class="func">Sprintf</span>(<span class="string">"%s: %s"</span>, u, resp.Status)
+        }(url)
+    }
+
+    <span class="keyword">var</span> out []<span class="type">string</span>
+    <span class="keyword">for</span> <span class="keyword">range</span> urls {
+        out = <span class="builtin">append</span>(out, &lt;-results)
+    }
+    <span class="keyword">return</span> out
+}</div>
+
+        <p>This fetches all URLs concurrently. Each goroutine sends its result on the channel. The main function collects all results. The URLs are fetched in parallel, but the results are gathered sequentially. No threads, no thread pools, no callbacks, no async/await. Just <code>go</code> and channels.</p>
+
+        <h3>Example: Pipeline Pattern</h3>
+
+        <div class="code-block"><span class="comment">// Generate numbers</span>
+<span class="keyword">func</span> <span class="func">generate</span>(nums ...<span class="type">int</span>) &lt;-<span class="keyword">chan</span> <span class="type">int</span> {
+    out := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)
+    <span class="keyword">go</span> <span class="keyword">func</span>() {
+        <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums {
+            out &lt;- n
+        }
+        <span class="builtin">close</span>(out)
+    }()
+    <span class="keyword">return</span> out
+}
+
+<span class="comment">// Square each number</span>
+<span class="keyword">func</span> <span class="func">square</span>(in &lt;-<span class="keyword">chan</span> <span class="type">int</span>) &lt;-<span class="keyword">chan</span> <span class="type">int</span> {
+    out := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)
+    <span class="keyword">go</span> <span class="keyword">func</span>() {
+        <span class="keyword">for</span> n := <span class="keyword">range</span> in {
+            out &lt;- n * n
+        }
+        <span class="builtin">close</span>(out)
+    }()
+    <span class="keyword">return</span> out
+}
+
+<span class="comment">// Use: generate → square → print</span>
+<span class="keyword">for</span> v := <span class="keyword">range</span> <span class="func">square</span>(<span class="func">generate</span>(<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)) {
+    fmt.<span class="func">Println</span>(v) <span class="comment">// 4, 9, 16</span>
+}</div>
+
+        <p>Each stage runs in its own goroutine. Data flows through channels. Stages are composable. You can add filtering, fan-out, fan-in, and rate limiting by inserting new stages into the pipeline. This is the CSP model in practice.</p>
+
+        <h3>Select</h3>
+
+        <div class="code-block"><span class="comment">// select is like switch, but for channel operations</span>
+<span class="keyword">select</span> {
+<span class="keyword">case</span> msg := &lt;-ch1:
+    fmt.<span class="func">Println</span>(<span class="string">"received from ch1:"</span>, msg)
+<span class="keyword">case</span> msg := &lt;-ch2:
+    fmt.<span class="func">Println</span>(<span class="string">"received from ch2:"</span>, msg)
+<span class="keyword">case</span> ch3 &lt;- <span class="number">42</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"sent 42 to ch3"</span>)
+<span class="keyword">case</span> &lt;-time.<span class="func">After</span>(<span class="number">5</span> * time.Second):
+    fmt.<span class="func">Println</span>(<span class="string">"timed out"</span>)
+<span class="keyword">default</span>:
+    fmt.<span class="func">Println</span>(<span class="string">"no channel ready"</span>)
+}</div>
+
+        <p><code>select</code> blocks until one of its cases can proceed, then executes that case. If multiple are ready, it picks one at random. With a <code>default</code> case, it never blocks (non-blocking I/O). <code>select</code> is how you multiplex channels, implement timeouts, and build cancellation into concurrent code.</p>
+
+        <h3>Synchronization: sync.WaitGroup and sync.Mutex</h3>
+
+        <div class="code-block"><span class="comment">// WaitGroup: wait for a collection of goroutines to finish</span>
+<span class="keyword">var</span> wg sync.<span class="type">WaitGroup</span>
+
+<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ {
+    wg.<span class="func">Add</span>(<span class="number">1</span>)
+    <span class="keyword">go</span> <span class="keyword">func</span>(id <span class="type">int</span>) {
+        <span class="keyword">defer</span> wg.<span class="func">Done</span>()
+        fmt.<span class="func">Printf</span>(<span class="string">"Worker %d done\n"</span>, id)
+    }(i)
+}
+wg.<span class="func">Wait</span>() <span class="comment">// blocks until all 5 goroutines call Done()</span>
+
+<span class="comment">// Mutex: protect shared state</span>
+<span class="keyword">var</span> (
+    mu      sync.<span class="type">Mutex</span>
+    balance <span class="type">int</span>
+)
+
+<span class="keyword">func</span> <span class="func">deposit</span>(amount <span class="type">int</span>) {
+    mu.<span class="func">Lock</span>()
+    balance += amount
+    mu.<span class="func">Unlock</span>()
+}
+
+<span class="comment">// Or more idiomatically with defer:</span>
+<span class="keyword">func</span> <span class="func">deposit</span>(amount <span class="type">int</span>) {
+    mu.<span class="func">Lock</span>()
+    <span class="keyword">defer</span> mu.<span class="func">Unlock</span>()
+    balance += amount
+}</div>
+
+        <div class="quote-box">
+          <p>&ldquo;Don&rsquo;t communicate by sharing memory; share memory by communicating.&rdquo;</p>
+          <div class="attribution">&mdash; Go Proverb</div>
+        </div>
+
+        <p>This is Go&rsquo;s concurrency philosophy. Instead of protecting shared data with mutexes (which is error-prone), pass data between goroutines through channels. The channel send/receive inherently synchronizes the goroutines. Use mutexes when channel communication is genuinely awkward (counters, caches, connection pools), but prefer channels for coordination and data flow.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XI. Packages and Modules</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Initialize a module</span>
+$ go mod init github.com/user/myproject
+
+<span class="comment">// Add a dependency</span>
+$ go get github.com/some/library@latest
+
+<span class="comment">// This creates go.mod:</span>
+module github.com/user/myproject
+
+go 1.22
+
+require (
+    github.com/some/library v1.2.3
+)</div>
+
+        <p>Go&rsquo;s module system uses semantic versioning. Dependencies are specified by their Git URL. <code>go.sum</code> pins exact hashes for reproducibility. There is no central registry (unlike npm or PyPI); packages are fetched directly from their source repository. The Go module proxy (<code>proxy.golang.org</code>) caches and serves modules for reliability and speed.</p>
+
+        <h3>Package Naming</h3>
+
+        <div class="code-block"><span class="comment">// File: math/vector.go</span>
+<span class="keyword">package</span> math
+
+<span class="comment">// Exported (capitalized): visible outside the package</span>
+<span class="keyword">func</span> <span class="func">Add</span>(a, b <span class="type">float64</span>) <span class="type">float64</span> { <span class="keyword">return</span> a + b }
+
+<span class="comment">// Unexported (lowercase): visible only within the package</span>
+<span class="keyword">func</span> <span class="func">clamp</span>(x, lo, hi <span class="type">float64</span>) <span class="type">float64</span> {
+    <span class="keyword">if</span> x &lt; lo { <span class="keyword">return</span> lo }
+    <span class="keyword">if</span> x &gt; hi { <span class="keyword">return</span> hi }
+    <span class="keyword">return</span> x
+}</div>
+
+        <p>Visibility is determined by capitalization. <code>Add</code> is exported (public). <code>clamp</code> is unexported (private to the package). No <code>public</code>, <code>private</code>, or <code>protected</code> keywords. This is one of Go&rsquo;s most distinctive design choices: the casing of the first letter is the entire access control system.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XII. Generics</h2>
+        <!-- ============================================================ -->
+
+        <p>Go added generics in version 1.18 (2022). They are deliberately minimal compared to C++ templates or Haskell type classes.</p>
+
+        <div class="code-block"><span class="comment">// A generic function</span>
+<span class="keyword">func</span> <span class="func">Min</span>[<span class="type">T</span> cmp.<span class="type">Ordered</span>](a, b <span class="type">T</span>) <span class="type">T</span> {
+    <span class="keyword">if</span> a &lt; b {
+        <span class="keyword">return</span> a
+    }
+    <span class="keyword">return</span> b
+}
+
+fmt.<span class="func">Println</span>(<span class="func">Min</span>(<span class="number">3</span>, <span class="number">7</span>))       <span class="comment">// 3 (int)</span>
+fmt.<span class="func">Println</span>(<span class="func">Min</span>(<span class="string">"a"</span>, <span class="string">"z"</span>)) <span class="comment">// "a" (string)</span>
+
+<span class="comment">// A generic data structure</span>
+<span class="keyword">type</span> <span class="type">Stack</span>[<span class="type">T</span> <span class="keyword">any</span>] <span class="keyword">struct</span> {
+    items []<span class="type">T</span>
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[<span class="type">T</span>]) <span class="func">Push</span>(item <span class="type">T</span>) {
+    s.items = <span class="builtin">append</span>(s.items, item)
+}
+
+<span class="keyword">func</span> (s *<span class="type">Stack</span>[<span class="type">T</span>]) <span class="func">Pop</span>() (<span class="type">T</span>, <span class="type">bool</span>) {
+    <span class="keyword">if</span> <span class="builtin">len</span>(s.items) == <span class="number">0</span> {
+        <span class="keyword">var</span> zero <span class="type">T</span>
+        <span class="keyword">return</span> zero, <span class="keyword">false</span>
+    }
+    item := s.items[<span class="builtin">len</span>(s.items)-<span class="number">1</span>]
+    s.items = s.items[:<span class="builtin">len</span>(s.items)-<span class="number">1</span>]
+    <span class="keyword">return</span> item, <span class="keyword">true</span>
+}
+
+<span class="comment">// Usage</span>
+s := &amp;<span class="type">Stack</span>[<span class="type">int</span>]{}
+s.<span class="func">Push</span>(<span class="number">1</span>)
+s.<span class="func">Push</span>(<span class="number">2</span>)
+v, _ := s.<span class="func">Pop</span>() <span class="comment">// v == 2</span></div>
+
+        <p>Type constraints (<code>cmp.Ordered</code>, <code>any</code>) specify what operations are available on the type parameter. <code>any</code> is an alias for <code>interface{}</code>&mdash;no constraints. <code>cmp.Ordered</code> allows <code>&lt;</code>, <code>&gt;</code>, etc. You can define custom constraints as interface types.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIII. Testing</h2>
+        <!-- ============================================================ -->
+
+        <p>Testing is built into the language and the toolchain. No framework needed.</p>
+
+        <div class="code-block"><span class="comment">// File: math_test.go (must end in _test.go)</span>
+<span class="keyword">package</span> math
+
+<span class="keyword">import</span> <span class="string">"testing"</span>
+
+<span class="keyword">func</span> <span class="func">TestAdd</span>(t *testing.<span class="type">T</span>) {
+    got := <span class="func">Add</span>(<span class="number">2</span>, <span class="number">3</span>)
+    want := <span class="number">5.0</span>
+    <span class="keyword">if</span> got != want {
+        t.<span class="func">Errorf</span>(<span class="string">"Add(2, 3) = %f, want %f"</span>, got, want)
+    }
+}
+
+<span class="comment">// Table-driven tests (idiomatic Go)</span>
+<span class="keyword">func</span> <span class="func">TestAddTable</span>(t *testing.<span class="type">T</span>) {
+    tests := []<span class="keyword">struct</span> {
+        a, b, want <span class="type">float64</span>
+    }{
+        {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>},
+        {<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>},
+        {<span class="number">-1</span>, <span class="number">1</span>, <span class="number">0</span>},
+        {<span class="number">1e18</span>, <span class="number">1e18</span>, <span class="number">2e18</span>},
+    }
+
+    <span class="keyword">for</span> _, tt := <span class="keyword">range</span> tests {
+        got := <span class="func">Add</span>(tt.a, tt.b)
+        <span class="keyword">if</span> got != tt.want {
+            t.<span class="func">Errorf</span>(<span class="string">"Add(%f, %f) = %f, want %f"</span>, tt.a, tt.b, got, tt.want)
+        }
+    }
+}
+
+<span class="comment">// Benchmarks</span>
+<span class="keyword">func</span> <span class="func">BenchmarkAdd</span>(b *testing.<span class="type">B</span>) {
+    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ {
+        <span class="func">Add</span>(<span class="number">2</span>, <span class="number">3</span>)
+    }
+}</div>
+
+        <div class="code-block">$ go test ./...                  <span class="comment"># run all tests</span>
+$ go test -v ./...               <span class="comment"># verbose output</span>
+$ go test -run TestAdd ./...     <span class="comment"># run specific test</span>
+$ go test -bench=. ./...         <span class="comment"># run benchmarks</span>
+$ go test -race ./...            <span class="comment"># enable the race detector</span>
+$ go test -cover ./...           <span class="comment"># show coverage percentage</span></div>
+
+        <p>The <code>-race</code> flag deserves special attention. It enables Go&rsquo;s built-in race detector, which instruments all memory accesses and reports data races at runtime. It catches real concurrency bugs with minimal false positives. Run it in CI. It has saved millions of developer hours.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIV. The Standard Library</h2>
+        <!-- ============================================================ -->
+
+        <p>Go&rsquo;s standard library is comprehensive enough that many projects need no external dependencies at all. The most important packages:</p>
+
+        <table class="comparison-table">
+          <tr><th>Package</th><th>What It Does</th></tr>
+          <tr><td>fmt</td><td>Formatted I/O (Printf, Sprintf, Scanf)</td></tr>
+          <tr><td>net/http</td><td>HTTP client and server. Production-ready out of the box.</td></tr>
+          <tr><td>encoding/json</td><td>JSON marshal/unmarshal via struct tags</td></tr>
+          <tr><td>io</td><td>Reader/Writer interfaces, composition utilities</td></tr>
+          <tr><td>os</td><td>OS interaction: files, env vars, processes</td></tr>
+          <tr><td>strings, strconv</td><td>String manipulation and conversion</td></tr>
+          <tr><td>sync</td><td>Mutex, WaitGroup, Once, Pool</td></tr>
+          <tr><td>context</td><td>Cancellation, deadlines, and request-scoped values</td></tr>
+          <tr><td>testing</td><td>Testing and benchmarking framework</td></tr>
+          <tr><td>database/sql</td><td>Generic SQL database interface</td></tr>
+          <tr><td>crypto/*</td><td>TLS, AES, SHA, RSA, ECDSA, etc.</td></tr>
+          <tr><td>log/slog</td><td>Structured logging (Go 1.21+)</td></tr>
+          <tr><td>slices, maps</td><td>Generic slice/map utilities (Go 1.21+)</td></tr>
+        </table>
+
+        <h3>A Complete HTTP Server in 15 Lines</h3>
+
+        <div class="code-block"><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    <span class="string">"log"</span>
+    <span class="string">"net/http"</span>
+)
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    http.<span class="func">HandleFunc</span>(<span class="string">"/"</span>, <span class="keyword">func</span>(w http.<span class="type">ResponseWriter</span>, r *http.<span class="type">Request</span>) {
+        fmt.<span class="func">Fprintf</span>(w, <span class="string">"Hello, %s"</span>, r.URL.Path[<span class="number">1</span>:])
+    })
+    log.<span class="func">Fatal</span>(http.<span class="func">ListenAndServe</span>(<span class="string">":8080"</span>, <span class="keyword">nil</span>))
+}</div>
+
+        <p>This is a production-quality HTTP server. <code>net/http</code> handles TLS, HTTP/2, keep-alive, timeouts, and graceful shutdown. It is what Docker, Kubernetes, and most Go microservices are built on. No framework needed.</p>
+
+        <h3>JSON</h3>
+
+        <div class="code-block"><span class="keyword">type</span> <span class="type">User</span> <span class="keyword">struct</span> {
+    Name  <span class="type">string</span> <span class="string">`json:"name"`</span>
+    Email <span class="type">string</span> <span class="string">`json:"email"`</span>
+    Age   <span class="type">int</span>    <span class="string">`json:"age,omitempty"`</span>
+}
+
+<span class="comment">// Marshal (struct → JSON)</span>
+u := <span class="type">User</span>{Name: <span class="string">"Alice"</span>, Email: <span class="string">"alice@example.com"</span>, Age: <span class="number">30</span>}
+data, err := json.<span class="func">Marshal</span>(u)
+<span class="comment">// data: {"name":"Alice","email":"alice@example.com","age":30}</span>
+
+<span class="comment">// Unmarshal (JSON → struct)</span>
+<span class="keyword">var</span> u2 <span class="type">User</span>
+err = json.<span class="func">Unmarshal</span>(data, &amp;u2)</div>
+
+        <p>Struct tags (the backtick strings after field types) tell the JSON encoder/decoder how to map fields. <code>omitempty</code> omits zero-valued fields. The same tag system is used by database drivers, YAML parsers, and validation libraries.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XV. What Go Leaves Out</h2>
+        <!-- ============================================================ -->
+
+        <p>The omissions are as important as the inclusions. Each was deliberate.</p>
+
+        <table class="comparison-table">
+          <tr><th>Feature</th><th>Go&rsquo;s Alternative</th><th>Why</th></tr>
+          <tr><td>Classes and inheritance</td><td>Structs, methods, embedding, interfaces</td><td>Composition over inheritance. No fragile base class problem. No diamond inheritance.</td></tr>
+          <tr><td>Exceptions (try/catch)</td><td>Multiple return values, error interface</td><td>Errors are values. Control flow is always visible. No hidden exception paths.</td></tr>
+          <tr><td>Operator overloading</td><td>Named methods</td><td>Code does what it looks like it does. + always means addition.</td></tr>
+          <tr><td>Implicit conversions</td><td>Explicit casts</td><td>No silent data loss or type confusion.</td></tr>
+          <tr><td>Macros / preprocessor</td><td>go generate, code generation tools</td><td>One language, not two. The code you read is the code that runs.</td></tr>
+          <tr><td>Header files</td><td>Packages import directly</td><td>No duplicate declarations. No circular include hell.</td></tr>
+          <tr><td>Ternary operator (? :)</td><td>if/else statement</td><td>One way to write conditionals.</td></tr>
+          <tr><td>Enums</td><td>iota constants</td><td>Simpler. Less machinery.</td></tr>
+        </table>
+
+        <p>The philosophy is: every feature you add to a language makes every other feature harder to use, because the feature space is combinatorial. Go optimizes for the total cost of a feature over the lifetime of a large codebase maintained by a large team. Features that save a line of code but add cognitive load were cut.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;A little copying is better than a little dependency.&rdquo;</p>
+          <div class="attribution">&mdash; Go Proverb</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XVI. Putting It Together</h2>
+        <!-- ============================================================ -->
+
+        <p>Here is a complete, working program that demonstrates most of what we have covered: structs, interfaces, maps, goroutines, channels, error handling, and the standard library.</p>
+
+        <div class="code-block"><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+    <span class="string">"fmt"</span>
+    <span class="string">"math"</span>
+    <span class="string">"sort"</span>
+    <span class="string">"sync"</span>
+)
+
+<span class="comment">// --- Types ---</span>
+
+<span class="keyword">type</span> <span class="type">Point</span> <span class="keyword">struct</span>{ X, Y <span class="type">float64</span> }
+
+<span class="keyword">func</span> (p <span class="type">Point</span>) <span class="func">DistanceTo</span>(other <span class="type">Point</span>) <span class="type">float64</span> {
+    dx, dy := p.X-other.X, p.Y-other.Y
+    <span class="keyword">return</span> math.<span class="func">Sqrt</span>(dx*dx + dy*dy)
+}
+
+<span class="keyword">func</span> (p <span class="type">Point</span>) <span class="func">String</span>() <span class="type">string</span> {
+    <span class="keyword">return</span> fmt.<span class="func">Sprintf</span>(<span class="string">"(%.1f, %.1f)"</span>, p.X, p.Y)
+}
+
+<span class="comment">// --- Concurrent nearest-neighbor search ---</span>
+
+<span class="keyword">type</span> <span class="type">Result</span> <span class="keyword">struct</span> {
+    Point    <span class="type">Point</span>
+    Distance <span class="type">float64</span>
+}
+
+<span class="keyword">func</span> <span class="func">findNearest</span>(query <span class="type">Point</span>, points []<span class="type">Point</span>, workers <span class="type">int</span>) <span class="type">Result</span> {
+    ch := <span class="builtin">make</span>(<span class="keyword">chan</span> <span class="type">Result</span>, workers)
+    chunkSize := (<span class="builtin">len</span>(points) + workers - <span class="number">1</span>) / workers
+
+    <span class="keyword">var</span> wg sync.<span class="type">WaitGroup</span>
+    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; workers; i++ {
+        start := i * chunkSize
+        end := start + chunkSize
+        <span class="keyword">if</span> end &gt; <span class="builtin">len</span>(points) {
+            end = <span class="builtin">len</span>(points)
+        }
+        <span class="keyword">if</span> start &gt;= end {
+            <span class="keyword">continue</span>
+        }
+
+        wg.<span class="func">Add</span>(<span class="number">1</span>)
+        <span class="keyword">go</span> <span class="keyword">func</span>(chunk []<span class="type">Point</span>) {
+            <span class="keyword">defer</span> wg.<span class="func">Done</span>()
+            best := <span class="type">Result</span>{chunk[<span class="number">0</span>], query.<span class="func">DistanceTo</span>(chunk[<span class="number">0</span>])}
+            <span class="keyword">for</span> _, p := <span class="keyword">range</span> chunk[<span class="number">1</span>:] {
+                d := query.<span class="func">DistanceTo</span>(p)
+                <span class="keyword">if</span> d &lt; best.Distance {
+                    best = <span class="type">Result</span>{p, d}
+                }
+            }
+            ch &lt;- best
+        }(points[start:end])
+    }
+
+    <span class="keyword">go</span> <span class="keyword">func</span>() { wg.<span class="func">Wait</span>(); <span class="builtin">close</span>(ch) }()
+
+    best := <span class="type">Result</span>{Distance: math.<span class="func">Inf</span>(<span class="number">1</span>)}
+    <span class="keyword">for</span> r := <span class="keyword">range</span> ch {
+        <span class="keyword">if</span> r.Distance &lt; best.Distance {
+            best = r
+        }
+    }
+    <span class="keyword">return</span> best
+}
+
+<span class="keyword">func</span> <span class="func">main</span>() {
+    <span class="comment">// Build a dataset</span>
+    points := []<span class="type">Point</span>{
+        {<span class="number">1</span>, <span class="number">2</span>}, {<span class="number">3</span>, <span class="number">4</span>}, {<span class="number">5</span>, <span class="number">1</span>}, {<span class="number">7</span>, <span class="number">8</span>}, {<span class="number">2</span>, <span class="number">9</span>},
+        {<span class="number">6</span>, <span class="number">3</span>}, {<span class="number">8</span>, <span class="number">5</span>}, {<span class="number">4</span>, <span class="number">7</span>}, {<span class="number">9</span>, <span class="number">2</span>}, {<span class="number">0</span>, <span class="number">6</span>},
+    }
+
+    query := <span class="type">Point</span>{<span class="number">4.5</span>, <span class="number">4.5</span>}
+    result := <span class="func">findNearest</span>(query, points, <span class="number">3</span>)
+    fmt.<span class="func">Printf</span>(<span class="string">"Nearest to %s: %s (distance %.2f)\n"</span>,
+        query, result.Point, result.Distance)
+
+    <span class="comment">// Group points by quadrant using a map</span>
+    quadrants := <span class="builtin">make</span>(<span class="keyword">map</span>[<span class="type">string</span>][]<span class="type">Point</span>)
+    <span class="keyword">for</span> _, p := <span class="keyword">range</span> points {
+        <span class="keyword">var</span> q <span class="type">string</span>
+        <span class="keyword">switch</span> {
+        <span class="keyword">case</span> p.X &gt;= <span class="number">5</span> &amp;&amp; p.Y &gt;= <span class="number">5</span>: q = <span class="string">"NE"</span>
+        <span class="keyword">case</span> p.X &lt; <span class="number">5</span> &amp;&amp; p.Y &gt;= <span class="number">5</span>:  q = <span class="string">"NW"</span>
+        <span class="keyword">case</span> p.X &lt; <span class="number">5</span> &amp;&amp; p.Y &lt; <span class="number">5</span>:   q = <span class="string">"SW"</span>
+        <span class="keyword">default</span>:                     q = <span class="string">"SE"</span>
+        }
+        quadrants[q] = <span class="builtin">append</span>(quadrants[q], p)
+    }
+
+    <span class="comment">// Print sorted by quadrant name</span>
+    keys := <span class="builtin">make</span>([]<span class="type">string</span>, <span class="number">0</span>, <span class="builtin">len</span>(quadrants))
+    <span class="keyword">for</span> k := <span class="keyword">range</span> quadrants {
+        keys = <span class="builtin">append</span>(keys, k)
+    }
+    sort.<span class="func">Strings</span>(keys)
+
+    <span class="keyword">for</span> _, k := <span class="keyword">range</span> keys {
+        fmt.<span class="func">Printf</span>(<span class="string">"%s: %v\n"</span>, k, quadrants[k])
+    }
+}</div>
+
+        <div class="output-block">Nearest to (4.5, 4.5): (3.0, 4.0) (distance 1.58)
+NE: [(7.0, 8.0) (8.0, 5.0)]
+NW: [(2.0, 9.0) (4.0, 7.0) (0.0, 6.0)]
+SE: [(5.0, 1.0) (6.0, 3.0) (9.0, 2.0)]
+SW: [(1.0, 2.0) (3.0, 4.0)]</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>Go is not trying to be the most expressive language, or the most powerful, or the most academically interesting. It is trying to be the most <em>practical</em> language for building software that is correct, concurrent, readable, and deployable. Its entire design can be summarized in a few principles:</p>
+
+        <ul>
+          <li><strong>Composition over inheritance.</strong> Structs embed other structs. Interfaces are small and implicitly satisfied.</li>
+          <li><strong>Errors are values, not exceptions.</strong> Control flow is always visible. You always know where errors are handled.</li>
+          <li><strong>Concurrency is a first-class feature.</strong> Goroutines are cheap. Channels are typed. <code>select</code> multiplexes. The race detector catches bugs.</li>
+          <li><strong>One obvious way to do things.</strong> One loop construct. One string type. One way to handle errors. <code>gofmt</code> formats all code identically.</li>
+          <li><strong>Fast compilation.</strong> The compiler is fast enough that the edit-compile-run cycle feels like an interpreted language. Large codebases compile in seconds.</li>
+          <li><strong>Batteries included.</strong> HTTP server, JSON, crypto, testing, benchmarking, profiling, race detection&mdash;all in the standard library.</li>
+        </ul>
+
+        <p>The language you learn in a weekend is the same language that runs Docker, Kubernetes, Terraform, Prometheus, CockroachDB, and a significant fraction of the infrastructure of the modern internet. That is the argument for simplicity.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

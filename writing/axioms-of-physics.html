@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Axioms of Physics</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .axiom-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #2c2c2c;
+    }
+
+    .axiom-box .axiom-title {
+      font-weight: 700;
+      color: #1a3a3a;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .derivation-box {
+      background-color: #f0f7f0;
+      border-left: 4px solid #5a8a5a;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #2c2c2c;
+    }
+
+    .derivation-box .deriv-title {
+      font-weight: 700;
+      color: #2a5a2a;
+      margin-bottom: 0.5rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+    }
+
+    .problem-box {
+      background-color: #fff5f5;
+      border-left: 4px solid #c0392b;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .problem-box .problem-title {
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 0.5rem;
+    }
+
+    .axiom-ref {
+      display: inline-block;
+      background-color: #8b7355;
+      color: white;
+      padding: 0.1rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      vertical-align: middle;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-size: 0.95rem;
+    }
+
+    .dep-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.88rem;
+    }
+
+    .dep-table th {
+      background-color: #8b7355;
+      color: white;
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .dep-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #e0d9ce;
+      color: #5a5a5a;
+    }
+
+    .dep-table tr:nth-child(even) {
+      background-color: #f9f6f0;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Axioms of Physics</h1>
+      <p>Can the laws of nature be derived from a handful of postulates?</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Axioms of Physics: Deriving the Laws of Nature from First Principles</h1>
+        <div class="article-meta">Physics & Mathematics</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>The Question</h2>
+
+        <p>Mathematics is built from axioms. From Euclid&rsquo;s five postulates, all of geometry follows. From the Peano axioms, all of arithmetic. From ZFC, all of set theory. The axioms are stated, and everything else is derived through logic and proof. (See the companion articles on <a href="axiomatic-foundations.html" style="color:#8b7355;">axiomatic foundations</a> and <a href="axioms-and-proof.html" style="color:#8b7355;">axioms and proof</a>.)</p>
+
+        <p>Can physics be axiomatized in the same way?</p>
+
+        <p>The answer is: partially. Physics is an empirical science&mdash;its &ldquo;axioms&rdquo; are not self-evident truths but empirical observations elevated to the status of postulates because no experiment has ever contradicted them. And physics is not complete: we do not have a quantum theory of gravity, we do not know what dark matter is, and the Standard Model has 19 free parameters that must be measured, not derived. A complete axiomatization of physics is not currently possible.</p>
+
+        <p>But we can do something remarkable. We can identify a small number of principles&mdash;far fewer than most people would guess&mdash;from which an enormous amount of physics can be <em>derived</em> using only mathematics and logic. Not merely summarized or restated, but genuinely derived, the way a theorem is derived from axioms.</p>
+
+        <p>This article attempts it. We will state the axioms, then derive Newton&rsquo;s laws, Maxwell&rsquo;s equations, special relativity, general relativity, and the structure of quantum mechanics from them. The goal is not completeness but compression: how much of physics follows from how little?</p>
+
+        <div class="note-box">
+          <p><strong>A caveat on &ldquo;axiom&rdquo;:</strong> In mathematics, an axiom is accepted without proof. In physics, every axiom is ultimately an empirical claim that could be falsified by experiment. We use &ldquo;axiom&rdquo; here to mean: a principle that we take as given, from which other laws are derived. The axioms of physics are not logically necessary&mdash;they describe <em>this</em> universe, not all conceivable ones.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">The Axioms</h2>
+        <!-- ============================================================ -->
+
+        <p>We propose seven axioms. From these, the major laws of classical mechanics, electromagnetism, special relativity, general relativity, and quantum mechanics can be derived. The axioms fall into three categories: a <em>framework</em> (how dynamics work), <em>symmetries</em> (what transformations leave the laws unchanged), and <em>content</em> (what specific fields and interactions exist).</p>
+
+        <h3>Framework</h3>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 1: The Principle of Least Action</div>
+          <p>The time evolution of any physical system is determined by requiring the action to be stationary:</p>
+          $$\delta S = 0, \quad \text{where } S = \int L(q,\, \dot{q},\, t)\, dt$$
+          <p>The Lagrangian $L$ is a function of the system&rsquo;s generalized coordinates $q$, their time derivatives $\dot{q}$, and possibly time $t$. The physical trajectory is the one for which the action $S$ is stationary under small variations that vanish at the endpoints.</p>
+          <p><em>This axiom does not specify which Lagrangian nature uses. It says only that whatever the Lagrangian is, dynamics follow from $\delta S = 0$. The specific Lagrangian is determined by the symmetry and content axioms below.</em></p>
+        </div>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 2: The Quantum Postulate</div>
+          <p>The state of a physical system is described by a vector $|\psi\rangle$ in a complex Hilbert space. Observable quantities correspond to Hermitian operators on this space. The probability of measuring eigenvalue $a$ is $|\langle a|\psi\rangle|^2$. Between measurements, the state evolves unitarily.</p>
+          <p>Equivalently (Feynman&rsquo;s formulation): the probability amplitude for a system to go from state A to state B is the sum over all possible paths, each weighted by $e^{iS/\hbar}$:</p>
+          $$K(B, A) = \int e^{iS[\text{path}]/\hbar}\, \mathcal{D}[\text{path}]$$
+          <p><em>In the classical limit ($\hbar \to 0$), paths near the stationary-action path dominate, recovering Axiom 1. The classical principle of least action is the macroscopic shadow of the quantum path integral.</em></p>
+        </div>
+
+        <h3>Symmetries</h3>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 3: Poincar&eacute; Invariance</div>
+          <p>The laws of physics are the same in all inertial reference frames. The symmetry group of spacetime is the Poincar&eacute; group: the group of translations, rotations, and boosts (changes of velocity) that preserve the spacetime interval:</p>
+          $$ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$$
+          <p>This implies: (a) there exists a maximum speed $c$ that is the same in all frames, (b) spacetime has the geometry of Minkowski space, and (c) all Lagrangians must be Lorentz scalars (invariant under Lorentz transformations).</p>
+          <p><em>In the low-velocity limit ($v \ll c$), Poincar&eacute; invariance reduces to Galilean invariance, and special relativity reduces to Newtonian mechanics.</em></p>
+        </div>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 4: The Equivalence Principle</div>
+          <p>Gravity is locally indistinguishable from acceleration. No local experiment can distinguish between a uniform gravitational field and a uniformly accelerating reference frame. This implies that gravity is not a force but a manifestation of spacetime curvature, and that the laws of physics must be valid in all coordinate systems (general covariance).</p>
+          <p><em>The Lagrangian must be a scalar under general coordinate transformations.</em></p>
+          <p><em>Axiom 3 describes flat spacetime (no gravity). Axiom 4 generalizes to curved spacetime. In regions where gravity is negligible, Axiom 4 reduces to Axiom 3.</em></p>
+        </div>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 5: Local Gauge Invariance</div>
+          <p>The Lagrangian is invariant under local (spacetime-dependent) transformations of internal symmetry groups. The specific gauge group of the known forces is:</p>
+          $$G = SU(3) \times SU(2) \times U(1)$$
+          <p>Each factor gives rise to a force: $SU(3)$ generates the strong nuclear force (8 gluons), $SU(2)$ generates the weak nuclear force ($W^\pm$, $Z$ bosons), and $U(1)$ generates electromagnetism (photon). Requiring local gauge invariance forces the existence of these gauge bosons and determines the form of their interactions.</p>
+          <p><em>Gauge invariance is the most productive axiom in physics. It takes a free-particle theory and generates all the forces of nature from the requirement that the Lagrangian remain unchanged under local phase rotations.</em></p>
+        </div>
+
+        <h3>Content</h3>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 6: The Particle Content</div>
+          <p>The matter fields of the universe are:</p>
+          <ul style="margin: 0.5rem 0 0.5rem 1.5rem; font-size: 0.9rem;">
+            <li><strong>Quarks:</strong> 6 flavors (up, down, charm, strange, top, bottom), each in 3 colors. Spin-$\frac{1}{2}$.</li>
+            <li><strong>Leptons:</strong> 6 types (electron, muon, tau, and their neutrinos). Spin-$\frac{1}{2}$.</li>
+            <li><strong>Higgs:</strong> 1 scalar doublet. Spin-0. Its vacuum expectation value breaks $SU(2) \times U(1)$ symmetry and gives mass to the W, Z, and fermions.</li>
+          </ul>
+          <p>These fields transform under specific representations of the gauge group $G$.</p>
+          <p><em>This axiom is the least satisfying. It is essentially a list. We do not know why there are three generations, why these specific representations, or why the masses are what they are. A deeper theory might derive this content from something more fundamental.</em></p>
+        </div>
+
+        <div class="axiom-box">
+          <div class="axiom-title">Axiom 7: The Cosmological Principle</div>
+          <p>On sufficiently large scales, the universe is homogeneous (the same everywhere) and isotropic (the same in all directions). The gravitational dynamics of the universe as a whole follow from Axioms 1 and 4 applied to a homogeneous, isotropic spacetime.</p>
+          <p><em>This is an empirical observation confirmed by the cosmic microwave background (uniform to 1 part in 100,000). Combined with general relativity, it yields the Friedmann equations governing cosmic expansion.</em></p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">What Follows: The Derivations</h2>
+        <!-- ============================================================ -->
+
+        <p>Now we derive the major laws of physics from these axioms. Each derivation will reference which axioms it uses. The goal is to show that a few principles generate a vast web of consequences.</p>
+
+        <!-- ============================================================ -->
+        <h3>1. Newton&rsquo;s Laws of Motion</h3>
+
+        <p><span class="axiom-ref">A1</span> <span class="axiom-ref">A3</span> (low-velocity limit)</p>
+
+        <p>Begin with Axiom 1 (least action) and Axiom 3 (Poincar&eacute; invariance) in the non-relativistic limit, where Poincar&eacute; symmetry reduces to Galilean symmetry.</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: Newton&rsquo;s Second Law</div>
+          <p><strong>Step 1:</strong> By Axiom 3 (Galilean limit), the Lagrangian for a free particle must be invariant under translations, rotations, and Galilean boosts. The most general such Lagrangian is:</p>
+          $$L_{\text{free}} = \tfrac{1}{2}mv^2$$
+          <p>This is the unique Galilean-invariant Lagrangian (up to a constant and total time derivative). The mass $m$ is a parameter.</p>
+          <p><strong>Step 2:</strong> Allow interactions through a scalar potential $V(\mathbf{x}, t)$ (the simplest Galilean-invariant coupling):</p>
+          $$L = \tfrac{1}{2}mv^2 - V(\mathbf{x})$$
+          <p><strong>Step 3:</strong> Apply the Euler&ndash;Lagrange equation (from Axiom 1):</p>
+          $$\frac{d}{dt}\frac{\partial L}{\partial v} - \frac{\partial L}{\partial x} = 0$$
+          $$\frac{d}{dt}(mv) = -\frac{dV}{dx}$$
+          $$m\mathbf{a} = \mathbf{F} \quad \text{(Newton's Second Law)}$$
+          <p><strong>Step 4:</strong> Newton&rsquo;s First Law (inertia) is the special case $\mathbf{F} = 0$: a free particle moves at constant velocity. Newton&rsquo;s Third Law (action-reaction) follows from translational invariance via Noether&rsquo;s theorem: if the Lagrangian of a two-particle system is translation-invariant, total momentum is conserved, implying $\mathbf{F}_{12} = -\mathbf{F}_{21}$.</p>
+        </div>
+
+        <p>All three of Newton&rsquo;s laws are derived. They are not independent axioms&mdash;they are consequences of the action principle and Galilean symmetry.</p>
+
+        <!-- ============================================================ -->
+        <h3>2. Conservation Laws</h3>
+
+        <p><span class="axiom-ref">A1</span> <span class="axiom-ref">A3</span></p>
+
+        <p>Noether&rsquo;s theorem (a mathematical consequence of Axiom 1) connects each continuous symmetry of the Lagrangian to a conserved quantity. Combined with the symmetries of Axiom 3:</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: Conservation Laws from Symmetry</div>
+          <p>Noether&rsquo;s theorem: if the action $S$ is invariant under a continuous transformation, there exists a conserved current.</p>
+          <p>Time translation invariance ($L$ doesn&rsquo;t depend on $t$) $\Rightarrow$ Energy is conserved</p>
+          <p>Spatial translation invariance ($L$ doesn&rsquo;t depend on $\mathbf{x}$) $\Rightarrow$ Momentum is conserved</p>
+          <p>Rotational invariance ($L$ doesn&rsquo;t depend on angle) $\Rightarrow$ Angular momentum is conserved</p>
+          <p>These are not separate axioms. They are theorems derived from the structure of the action principle plus the symmetries of spacetime. Energy conservation is <em>because</em> the laws of physics do not change over time. Momentum conservation is <em>because</em> the laws of physics are the same everywhere in space.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h3>3. Special Relativity</h3>
+
+        <p><span class="axiom-ref">A3</span></p>
+
+        <p>Special relativity is not a separate theory. It is the direct consequence of Axiom 3.</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: The Lorentz Transformations</div>
+          <p><strong>Step 1:</strong> Axiom 3 states that the spacetime interval $ds^2 = -c^2 dt^2 + dx^2 + dy^2 + dz^2$ is the same in all inertial frames.</p>
+          <p><strong>Step 2:</strong> Find all linear transformations that preserve this interval. These are the Lorentz transformations. For a boost along the x-axis at velocity $v$:</p>
+          $$t' = \gamma\!\left(t - \frac{vx}{c^2}\right)$$
+          $$x' = \gamma(x - vt)$$
+          $$\text{where } \gamma = \frac{1}{\sqrt{1 - v^2/c^2}}$$
+          <p><strong>Step 3:</strong> From the Lorentz transformations, derive:</p>
+          <p>Time dilation: moving clocks run slow by factor $\gamma$</p>
+          <p>Length contraction: moving objects are shortened by factor $\gamma$</p>
+          <p>Velocity addition: $u' = \dfrac{u - v}{1 - uv/c^2}$</p>
+          <p>Mass-energy equivalence: $E = mc^2$</p>
+          <p>All of special relativity follows from the single statement that the spacetime interval is invariant.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h3>4. Maxwell&rsquo;s Equations</h3>
+
+        <p><span class="axiom-ref">A1</span> <span class="axiom-ref">A3</span> <span class="axiom-ref">A5</span> (U(1) part)</p>
+
+        <p>This is one of the most beautiful derivations in physics. Maxwell&rsquo;s four equations&mdash;which took decades of experimental and theoretical work to assemble&mdash;follow inevitably from three axioms.</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: Maxwell&rsquo;s Equations from Gauge Symmetry</div>
+          <p><strong>Step 1:</strong> Consider a complex matter field $\psi$ with Lagrangian invariant under global $U(1)$ phase rotations: $\psi \to e^{i\alpha}\psi$. By Noether&rsquo;s theorem (Axiom 1), this gives conservation of electric charge.</p>
+          <p><strong>Step 2:</strong> Now promote this to a <em>local</em> symmetry (Axiom 5): require invariance under $\psi \to e^{i\alpha(x,t)}\psi$, where the phase $\alpha$ can vary from point to point in spacetime.</p>
+          <p><strong>Step 3:</strong> The ordinary derivative $\partial_\mu \psi$ does not transform covariantly under local $U(1)$. To fix this, introduce a new field $A_\mu$ (the four-potential) and define the covariant derivative:</p>
+          $$D_\mu = \partial_\mu + ieA_\mu$$
+          <p>The field $A_\mu$ must transform as $A_\mu \to A_\mu - \frac{1}{e}\partial_\mu \alpha$ to maintain invariance. This is the gauge transformation of electromagnetism.</p>
+          <p><strong>Step 4:</strong> Construct the field strength tensor (a gauge-invariant object):</p>
+          $$F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu$$
+          <p><strong>Step 5:</strong> Write the simplest Lorentz-invariant (Axiom 3), gauge-invariant Lagrangian:</p>
+          $$\mathcal{L} = -\tfrac{1}{4}F_{\mu\nu}F^{\mu\nu}$$
+          <p>This is the <em>unique</em> renormalizable, Lorentz-invariant, gauge-invariant, parity-conserving Lagrangian with at most two derivatives. There is essentially no freedom here. The symmetries dictate the Lagrangian.</p>
+          <p><strong>Step 6:</strong> Apply the Euler&ndash;Lagrange equations to this Lagrangian. The result is:</p>
+          $$\partial_\mu F^{\mu\nu} = J^\nu$$
+          <p>Written out in components, this gives exactly Maxwell&rsquo;s four equations:</p>
+          $$\nabla \cdot \mathbf{E} = \rho/\epsilon_0 \quad \text{(Gauss's law)}$$
+          $$\nabla \cdot \mathbf{B} = 0 \quad \text{(no magnetic monopoles)}$$
+          $$\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t} \quad \text{(Faraday's law)}$$
+          $$\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t} \quad \text{(Ampère–Maxwell law)}$$
+          <p>The two homogeneous equations ($\nabla \cdot \mathbf{B} = 0$ and Faraday&rsquo;s law) follow automatically from the definition of $F_{\mu\nu}$ in terms of $A_\mu$ (they are the Bianchi identity). The two inhomogeneous equations are the Euler&ndash;Lagrange equations.</p>
+        </div>
+
+        <p>Let this sink in. Maxwell&rsquo;s equations were assembled over decades by Coulomb, Amp&egrave;re, Faraday, and Maxwell through painstaking experiments. But they were <em>inevitable</em>. Given the action principle, Lorentz invariance, and $U(1)$ gauge symmetry, there is essentially one possible theory of a massless spin-1 field. Nature had no choice.</p>
+
+        <p><strong>The speed of light.</strong> Maxwell&rsquo;s equations predict electromagnetic waves traveling at speed $c = 1/\sqrt{\mu_0 \epsilon_0}$. This speed is a consequence of the equations, which are themselves a consequence of the axioms. The constancy of $c$ in all frames is built into Axiom 3 (Poincar&eacute; invariance). Historically, Einstein discovered special relativity by noticing that Maxwell&rsquo;s equations demand a frame-invariant speed. In our axiomatic framework, the logic runs the other way: Poincar&eacute; invariance is the axiom, and the invariant speed of light is a derived consequence.</p>
+
+        <!-- ============================================================ -->
+        <h3>5. General Relativity</h3>
+
+        <p><span class="axiom-ref">A1</span> <span class="axiom-ref">A4</span></p>
+
+        <p>General relativity follows from combining the action principle with the equivalence principle.</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: Einstein&rsquo;s Field Equations</div>
+          <p><strong>Step 1:</strong> By Axiom 4 (equivalence principle), gravity is curvature of spacetime. The geometry is described by a metric tensor $g_{\mu\nu}(x)$ that determines distances:</p>
+          $$ds^2 = g_{\mu\nu}\, dx^\mu\, dx^\nu$$
+          <p>In flat spacetime (no gravity), this reduces to the Minkowski metric of Axiom 3.</p>
+          <p><strong>Step 2:</strong> By Axiom 4 (general covariance), the Lagrangian must be a scalar under arbitrary coordinate transformations. We need a scalar built from the metric and its derivatives that measures curvature.</p>
+          <p><strong>Step 3:</strong> The Riemann curvature tensor $R^\rho{}_{\sigma\mu\nu}$ is the unique tensor built from $g_{\mu\nu}$ and its first and second derivatives that measures spacetime curvature. Contract it to get the Ricci scalar $R = g^{\mu\nu}R_{\mu\nu}$.</p>
+          <p><strong>Step 4:</strong> The simplest generally covariant action is the Einstein&ndash;Hilbert action:</p>
+          $$S = \frac{c^4}{16\pi G} \int R\,\sqrt{-g}\; d^4x + S_{\text{matter}}$$
+          <p>This is the unique action that (a) is a scalar under general coordinate transformations, (b) involves at most second derivatives of the metric, and (c) reduces to Newtonian gravity in the weak-field limit. The coupling constant $G$ (Newton&rsquo;s gravitational constant) must be determined experimentally.</p>
+          <p><strong>Step 5:</strong> Apply Axiom 1 ($\delta S = 0$ with respect to variations of the metric $g_{\mu\nu}$):</p>
+          $$R_{\mu\nu} - \tfrac{1}{2}g_{\mu\nu}R = \frac{8\pi G}{c^4}\, T_{\mu\nu}$$
+          <p>These are Einstein&rsquo;s field equations. The left side is pure geometry (spacetime curvature). The right side is matter and energy (the stress-energy tensor $T_{\mu\nu}$). Matter tells spacetime how to curve; curved spacetime tells matter how to move.</p>
+        </div>
+
+        <p><strong>What this derives:</strong> From Einstein&rsquo;s field equations, one can derive: Newtonian gravity (weak-field limit), gravitational time dilation, the bending of light by massive objects, black holes (Schwarzschild solution), gravitational waves, the expansion of the universe (Friedmann equations, using Axiom 7), and the precession of Mercury&rsquo;s orbit.</p>
+
+        <p><strong>The cosmological constant.</strong> There is one subtlety. The equivalence principle allows an additional term $\Lambda g_{\mu\nu}$ in the field equations (the cosmological constant), corresponding to a constant energy density of empty space. This is permitted by all the axioms and must be included. Its observed value is extremely small but nonzero, driving the accelerating expansion of the universe. Whether $\Lambda$ should be counted as an additional axiom or a parameter is a matter of taste.</p>
+
+        <!-- ============================================================ -->
+        <h3>6. Quantum Mechanics</h3>
+
+        <p><span class="axiom-ref">A2</span></p>
+
+        <p>The major results of quantum mechanics follow from the quantum postulate.</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: The Schr&ouml;dinger Equation</div>
+          <p><strong>Step 1:</strong> By Axiom 2, the state of a system is $|\psi\rangle$ in Hilbert space, and time evolution is unitary: $|\psi(t)\rangle = U(t)|\psi(0)\rangle$.</p>
+          <p><strong>Step 2:</strong> Unitarity and time-translation symmetry (from Axiom 3) imply $U(t) = e^{-iHt/\hbar}$ for some Hermitian operator $H$ (the Hamiltonian). Differentiate:</p>
+          $$i\hbar \frac{d|\psi\rangle}{dt} = H|\psi\rangle \quad \text{(Schrödinger equation)}$$
+          <p><strong>Step 3:</strong> For a particle with Hamiltonian $H = \frac{p^2}{2m} + V(x)$, in the position basis:</p>
+          $$i\hbar \frac{\partial \psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2 \psi}{\partial x^2} + V(x)\psi$$
+          <p>This is the familiar Schr&ouml;dinger equation from introductory quantum mechanics.</p>
+        </div>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: The Uncertainty Principle</div>
+          <p><strong>Step 1:</strong> By Axiom 2, position and momentum are represented by operators. The canonical commutation relation $[\hat{x}, \hat{p}] = i\hbar$ follows from the structure of the Hilbert space and the requirement that the quantum theory reduce to classical mechanics in the appropriate limit.</p>
+          <p><strong>Step 2:</strong> For any two operators with $[A, B] = iC$, the Robertson inequality gives:</p>
+          $$\Delta A \cdot \Delta B \geq \frac{|\langle C \rangle|}{2}$$
+          <p><strong>Step 3:</strong> Applied to position and momentum:</p>
+          $$\Delta x \cdot \Delta p \geq \frac{\hbar}{2} \quad \text{(Heisenberg's Uncertainty Principle)}$$
+          <p>This is not a statement about measurement limitations. It is a mathematical consequence of the wave-like structure of quantum states. A state cannot simultaneously have a precise position and a precise momentum because these operators do not commute.</p>
+        </div>
+
+        <p><strong>What else follows from Axiom 2:</strong> Superposition and interference (linearity of Hilbert space), entanglement (tensor product structure of multi-particle states), the no-cloning theorem (linearity of quantum mechanics), tunneling (non-zero amplitude in classically forbidden regions), and the discrete energy levels of atoms (eigenvalue structure of the Hamiltonian).</p>
+
+        <!-- ============================================================ -->
+        <h3>7. The Standard Model Forces</h3>
+
+        <p><span class="axiom-ref">A1</span> <span class="axiom-ref">A2</span> <span class="axiom-ref">A3</span> <span class="axiom-ref">A5</span> <span class="axiom-ref">A6</span></p>
+
+        <p>The Standard Model of particle physics&mdash;our most precise and comprehensive theory of nature&mdash;is derived by combining all the axioms except the gravitational ones (A4 and A7).</p>
+
+        <div class="derivation-box">
+          <div class="deriv-title">Derivation: The Standard Model Lagrangian</div>
+          <p><strong>Step 1:</strong> Start with the matter fields specified by Axiom 6 (quarks, leptons, Higgs).</p>
+          <p><strong>Step 2:</strong> Require Poincar&eacute; invariance (Axiom 3). This determines the kinetic terms: spin-$\frac{1}{2}$ fields obey the Dirac equation, the spin-0 Higgs obeys the Klein-Gordon equation.</p>
+          <p><strong>Step 3:</strong> Require local gauge invariance under $SU(3) \times SU(2) \times U(1)$ (Axiom 5). This forces the introduction of 12 gauge bosons (8 gluons + $W^+$ + $W^-$ + $Z$ + $\gamma$) and completely determines the form of the interactions. There is no freedom in the structure of the coupling&mdash;gauge symmetry dictates it.</p>
+          <p><strong>Step 4:</strong> The Higgs field acquires a nonzero vacuum expectation value, spontaneously breaking $SU(2) \times U(1) \to U(1)_{\text{EM}}$. This gives mass to the W and Z bosons (but not the photon) and to the quarks and charged leptons through Yukawa couplings.</p>
+          <p><strong>Step 5:</strong> Quantize (Axiom 2). The resulting quantum field theory makes predictions that have been verified to extraordinary precision (the anomalous magnetic moment of the electron agrees with experiment to 12 decimal places).</p>
+          <p>The complete Lagrangian:</p>
+          $$\mathcal{L} = -\tfrac{1}{4}F_{\mu\nu}F^{\mu\nu} + i\bar{\psi}\gamma^\mu D_\mu\psi + y_{ij}\psi_i\psi_j\phi + |D_\mu\phi|^2 - V(\phi) + \text{h.c.}$$
+        </div>
+
+        <p>The Standard Model has 19 free parameters (coupling constants, masses, mixing angles) that must be measured experimentally. The axioms determine the <em>structure</em> of the theory completely but do not fix these numerical values. A deeper theory might derive them.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">The Dependency Map</h2>
+        <!-- ============================================================ -->
+
+        <p>Here is what derives from what:</p>
+
+        <table class="dep-table">
+          <tr>
+            <th>Derived Law</th>
+            <th>Axioms Used</th>
+            <th>Key Idea</th>
+          </tr>
+          <tr>
+            <td>Newton&rsquo;s three laws</td>
+            <td>A1, A3 (Galilean limit)</td>
+            <td>Euler&ndash;Lagrange + Galilean symmetry</td>
+          </tr>
+          <tr>
+            <td>Conservation of energy</td>
+            <td>A1, A3</td>
+            <td>Noether&rsquo;s theorem + time symmetry</td>
+          </tr>
+          <tr>
+            <td>Conservation of momentum</td>
+            <td>A1, A3</td>
+            <td>Noether&rsquo;s theorem + space symmetry</td>
+          </tr>
+          <tr>
+            <td>Conservation of angular momentum</td>
+            <td>A1, A3</td>
+            <td>Noether&rsquo;s theorem + rotational symmetry</td>
+          </tr>
+          <tr>
+            <td>Conservation of electric charge</td>
+            <td>A1, A5 (U(1))</td>
+            <td>Noether&rsquo;s theorem + gauge symmetry</td>
+          </tr>
+          <tr>
+            <td>Special relativity</td>
+            <td>A3</td>
+            <td>Invariance of spacetime interval</td>
+          </tr>
+          <tr>
+            <td>$E = mc^2$</td>
+            <td>A3</td>
+            <td>Relativistic energy-momentum relation</td>
+          </tr>
+          <tr>
+            <td>Maxwell&rsquo;s equations</td>
+            <td>A1, A3, A5 (U(1))</td>
+            <td>Unique gauge-invariant Lagrangian</td>
+          </tr>
+          <tr>
+            <td>Electromagnetic waves at speed $c$</td>
+            <td>A1, A3, A5 (U(1))</td>
+            <td>Wave solutions to Maxwell&rsquo;s equations</td>
+          </tr>
+          <tr>
+            <td>Einstein&rsquo;s field equations</td>
+            <td>A1, A4</td>
+            <td>Simplest generally covariant action</td>
+          </tr>
+          <tr>
+            <td>Newtonian gravity ($F = GMm/r^2$)</td>
+            <td>A1, A4 (weak-field limit)</td>
+            <td>Weak-field, slow-motion limit of GR</td>
+          </tr>
+          <tr>
+            <td>Gravitational waves</td>
+            <td>A1, A4</td>
+            <td>Linearized perturbations of spacetime</td>
+          </tr>
+          <tr>
+            <td>Black holes</td>
+            <td>A1, A4</td>
+            <td>Schwarzschild solution</td>
+          </tr>
+          <tr>
+            <td>Expanding universe</td>
+            <td>A1, A4, A7</td>
+            <td>Friedmann equations</td>
+          </tr>
+          <tr>
+            <td>Schr&ouml;dinger equation</td>
+            <td>A2</td>
+            <td>Unitary time evolution in Hilbert space</td>
+          </tr>
+          <tr>
+            <td>Uncertainty principle</td>
+            <td>A2</td>
+            <td>Non-commuting operators</td>
+          </tr>
+          <tr>
+            <td>Standard Model interactions</td>
+            <td>A1, A2, A3, A5, A6</td>
+            <td>Gauge-invariant QFT</td>
+          </tr>
+          <tr>
+            <td>Spin-statistics theorem</td>
+            <td>A2, A3</td>
+            <td>Lorentz invariance + unitarity</td>
+          </tr>
+          <tr>
+            <td>CPT theorem</td>
+            <td>A2, A3</td>
+            <td>Lorentz invariance + locality + unitarity</td>
+          </tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">What the Axioms Do <em>Not</em> Explain</h2>
+        <!-- ============================================================ -->
+
+        <p>Intellectual honesty demands that we catalog the gaps. These axioms generate an enormous amount of physics, but there are things they cannot derive, things that remain mysterious, and things that may require entirely new axioms.</p>
+
+        <div class="problem-box">
+          <div class="problem-title">The Measurement Problem</div>
+          <p>Axiom 2 describes unitary evolution (the Schr&ouml;dinger equation) and measurement outcomes (the Born rule). But it does not explain how the transition between the two occurs. When does a quantum superposition &ldquo;collapse&rdquo; to a definite outcome? This is the measurement problem, and it remains unsolved. The many-worlds interpretation, decoherence theory, and objective collapse models are all attempts to resolve it, but none is universally accepted. Our axioms describe the mathematics of quantum mechanics correctly but leave its interpretation open.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">Quantum Gravity</div>
+          <p>Axiom 2 (quantum mechanics) and Axiom 4 (general relativity) are both experimentally confirmed to extraordinary precision. But they are not compatible with each other. Applying quantum field theory techniques to general relativity produces infinities that cannot be removed by renormalization. We do not have a consistent quantum theory of gravity. String theory, loop quantum gravity, and other approaches are attempts, but none is complete. Our axioms describe gravity and quantum mechanics separately but not together.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">The 19 Parameters</div>
+          <p>The Standard Model has 19 free parameters: 6 quark masses, 3 lepton masses, 3 mixing angles and 1 CP-violating phase in the CKM matrix, 3 gauge coupling constants, the Higgs mass and vacuum expectation value, and the QCD vacuum angle. These must be measured experimentally. Nothing in our axioms determines <em>why</em> the electron mass is 0.511 MeV or why the fine-structure constant is approximately $1/137$. A deeper theory might derive these from something more fundamental.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">Why Three Generations?</div>
+          <p>Axiom 6 lists three generations of quarks and leptons (up/down, charm/strange, top/bottom; electron, muon, tau). Nothing in the other axioms requires exactly three. Two generations would be self-consistent. Four or more would also work mathematically (though some theoretical arguments suggest the number may be constrained by anomaly cancellation). The number three must be determined empirically.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">Why $SU(3) \times SU(2) \times U(1)$?</div>
+          <p>Axiom 5 specifies the gauge group. But why this particular group? Could the universe have had $SU(5)$ or $SO(10)$ or $E_8$? Grand Unified Theories (GUTs) propose that $SU(3) \times SU(2) \times U(1)$ is the low-energy remnant of a larger, simpler group that was unified at very high energies. If true, Axiom 5 could be replaced by a single, simpler gauge group, reducing the axiom count. But this remains speculative.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">Dark Matter and Dark Energy</div>
+          <p>Approximately 27% of the universe is dark matter (detected gravitationally but not identified in the Standard Model) and 68% is dark energy (driving accelerating expansion, possibly the cosmological constant). Our axioms do not account for dark matter unless we add new particles to Axiom 6. Dark energy may be the cosmological constant (a term already allowed by Axiom 4) or it may be something new.</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">The Arrow of Time</div>
+          <p>All fundamental laws derived from our axioms are time-reversible (or CPT-reversible). Yet the universe has a clear direction of time: entropy increases, eggs break but don&rsquo;t unbreak, we remember the past but not the future. The second law of thermodynamics is not derived from our axioms&mdash;it requires an additional assumption about initial conditions (the Past Hypothesis: the early universe was in a state of extremely low entropy).</p>
+        </div>
+
+        <div class="problem-box">
+          <div class="problem-title">Why These Axioms?</div>
+          <p>The deepest question. Why does the universe obey an action principle at all? Why is spacetime Lorentz-invariant? Why is there a quantum mechanics? These axioms describe what the universe does, but they do not explain <em>why</em> the universe is this way rather than some other way. This may be a question for philosophy rather than physics. Or it may be answerable by a deeper theory we have not yet found.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Comparison to Mathematical Axiomatics</h2>
+        <!-- ============================================================ -->
+
+        <p>How does this compare to the axiomatization of mathematics?</p>
+
+        <p><strong>Similarities:</strong> In both cases, a small number of axioms generates a vast number of consequences through logical derivation. The axioms are chosen for minimality and power. Derived theorems often surprise&mdash;they reveal connections that were not obvious from the axioms alone (just as Noether&rsquo;s theorem reveals the connection between symmetry and conservation).</p>
+
+        <p><strong>Differences:</strong> Mathematical axioms are chosen and can be changed (Euclidean vs. non-Euclidean geometry, ZFC vs. alternative set theories). Physical axioms are discovered&mdash;they must agree with experiment. You cannot choose to live in a universe with different gauge groups. Mathematical axiom systems aim for completeness and consistency (though G&ouml;del showed both cannot be achieved simultaneously). Physical axiom systems aim for empirical adequacy&mdash;they must correctly predict the outcomes of experiments.</p>
+
+        <p><strong>The incompleteness of physics:</strong> Our axiom system is incomplete in a way that mathematics is not (or at least not in the same way). We do not have axioms that unify quantum mechanics and gravity. We do not know why the parameters of the Standard Model have their observed values. We do not understand the measurement problem. A complete axiomatization of physics&mdash;if one is possible&mdash;remains a distant goal.</p>
+
+        <p>But the incompleteness should not obscure what <em>has</em> been achieved. From seven axioms&mdash;a framework principle, a quantum postulate, three symmetry requirements, a particle catalog, and a cosmological assumption&mdash;we can derive essentially all known physics outside of quantum gravity. Newton&rsquo;s laws, Maxwell&rsquo;s equations, conservation of energy, special and general relativity, the Schr&ouml;dinger equation, and the Standard Model are all consequences, not assumptions.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">The Dream of Fewer Axioms</h2>
+        <!-- ============================================================ -->
+
+        <p>Seven axioms is already remarkably few for the amount of physics they generate. But physicists dream of fewer.</p>
+
+        <p><strong>Grand Unification</strong> would replace $SU(3) \times SU(2) \times U(1)$ with a single group (like $SU(5)$ or $SO(10)$), reducing Axiom 5 to a simpler statement. The different forces would be different aspects of a single force, separated only by symmetry breaking at low energies.</p>
+
+        <p><strong>String theory</strong> aims to replace Axioms 5 and 6 entirely. In string theory, the gauge groups and particle content are not inputs but emerge from the geometry of extra dimensions. If string theory is correct, specifying the compactification of extra dimensions would replace two axioms with one geometric statement.</p>
+
+        <p><strong>Quantum gravity</strong> would unify Axioms 2 and 4, giving a single framework that describes both quantum mechanics and gravity. In such a theory, spacetime itself might be an emergent phenomenon rather than a fundamental one, and Axiom 3 might become a derived consequence rather than an axiom.</p>
+
+        <p><strong>The ultimate dream:</strong> A single axiom&mdash;a single mathematical structure&mdash;from which everything follows: spacetime, particles, forces, quantum mechanics, the values of all constants. Whether this is achievable, or whether physics always requires irreducible empirical input, is the deepest open question in the foundations of physics.</p>
+
+        <p>We do not know if we will get there. But we know how far a small number of axioms can take us. And it is very, very far.</p>
+
+        <div class="highlight-box">
+          <p><strong>Summary of the Axioms</strong></p>
+          <p><strong>A1.</strong> The Principle of Least Action &mdash; dynamics follow from $\delta S = 0$</p>
+          <p><strong>A2.</strong> The Quantum Postulate &mdash; states in Hilbert space, path integral, Born rule</p>
+          <p><strong>A3.</strong> Poincar&eacute; Invariance &mdash; spacetime symmetry, $c$ is invariant</p>
+          <p><strong>A4.</strong> The Equivalence Principle &mdash; gravity is curvature, general covariance</p>
+          <p><strong>A5.</strong> Gauge Invariance &mdash; $SU(3) \times SU(2) \times U(1)$</p>
+          <p><strong>A6.</strong> The Particle Content &mdash; three generations of quarks and leptons, one Higgs</p>
+          <p><strong>A7.</strong> The Cosmological Principle &mdash; large-scale homogeneity and isotropy</p>
+          <p style="margin-top: 1rem; font-style: italic;">Seven statements. From these, nearly all of known physics follows.</p>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

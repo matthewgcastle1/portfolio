@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Computer Graphics Work</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+    .code-block .preprocessor { color: #c586c0; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+      .diagram-box { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>How Computer Graphics Work</h1>
+      <p>From framebuffer to browser</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>How Computer Graphics Work: From Framebuffer to Browser</h1>
+        <div class="article-meta">Computer Science &amp; Systems</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Introduction</h2>
+
+        <p>Every pixel on your screen is a number in memory. A 1920&times;1080 display at 32 bits per pixel is 8,294,400 bytes &mdash; about 8 megabytes. Sixty times per second, a piece of hardware reads those bytes and converts them into light. That is all a display does.</p>
+
+        <p>Everything else &mdash; windows, buttons, 3D worlds, web pages, fonts, transparency, animations &mdash; is layers of software between your code and that 8 MB buffer. This article traces the full path, from the electrical signals hitting your monitor to the <code>&lt;div&gt;</code> tags in your browser. At every level, there is a code example you can study, and often run.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;The purpose of abstraction is not to be vague, but to create a new semantic level in which one can be absolutely precise.&rdquo;</p>
+          <div class="attribution">&mdash; Edsger Dijkstra</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. The Hardware: What a Display Actually Is</h2>
+        <!-- ============================================================ -->
+
+        <h3>The Framebuffer Concept</h3>
+
+        <p>A <strong>framebuffer</strong> is a region of memory where each address maps to a pixel on screen. The concept is simple: pixel (0,0) is at byte offset 0, pixel (1,0) is at byte offset 4 (for 32-bit color), and so on across each row. The display hardware reads this memory sequentially and converts each value into a color.</p>
+
+        <p>For a 1920&times;1080 display with 4 bytes per pixel (RGBA8888):</p>
+
+        <div class="code-block"><span class="comment">// Framebuffer size calculation</span>
+width  = <span class="number">1920</span> pixels
+height = <span class="number">1080</span> pixels
+bpp    = <span class="number">4</span> bytes (32 bits: 8 red, 8 green, 8 blue, 8 alpha)
+
+total  = <span class="number">1920</span> &times; <span class="number">1080</span> &times; <span class="number">4</span> = <span class="number">8,294,400</span> bytes &asymp; <span class="number">7.9</span> MB
+
+<span class="comment">// Address of pixel (x, y):</span>
+offset = (y &times; stride) + (x &times; bpp)
+
+<span class="comment">// stride = bytes per row (may include padding for alignment)</span>
+<span class="comment">// stride &ge; width &times; bpp</span></div>
+
+        <h3>Pixel Formats</h3>
+
+        <p>Different systems use different pixel formats, trading color depth for memory:</p>
+
+        <table class="comparison-table">
+          <tr><th>Format</th><th>Bits/Pixel</th><th>Channels</th><th>Use Case</th></tr>
+          <tr><td>RGB565</td><td>16</td><td>5 red, 6 green, 5 blue</td><td>Embedded displays, old mobile</td></tr>
+          <tr><td>RGB888</td><td>24</td><td>8 per channel, no alpha</td><td>Image files (JPEG, BMP)</td></tr>
+          <tr><td>RGBA8888</td><td>32</td><td>8 per channel + 8 alpha</td><td>Modern desktop/mobile displays</td></tr>
+          <tr><td>RGB101010</td><td>30</td><td>10 per channel</td><td>HDR displays, professional video</td></tr>
+          <tr><td>RGBA16F</td><td>64</td><td>16-bit float per channel</td><td>GPU render targets, HDR pipelines</td></tr>
+        </table>
+
+        <p>Pixels are stored in <strong>row-major order</strong>: all pixels of row 0, then all pixels of row 1, and so on. The <strong>stride</strong> (or pitch) is the number of bytes per row. Stride may be larger than <code>width &times; bpp</code> because hardware often requires rows to be aligned to 64-byte or 256-byte boundaries for efficient DMA transfer.</p>
+
+        <h3>GPU Architecture and Scanout</h3>
+
+        <p>Modern GPUs have their own dedicated memory (VRAM) connected to the display controller via a high-bandwidth internal bus. The <strong>display controller</strong> is a dedicated hardware unit that reads from a specific region of VRAM &mdash; the <strong>scanout buffer</strong> &mdash; and converts those pixel values into a timed signal for the monitor.</p>
+
+        <div class="diagram-box">
+<pre>
+  CPU ←──PCIe──→ GPU
+   ↕                ↕
+  RAM             VRAM
+                    ↕
+              Display Controller
+                    ↕
+            DisplayPort / HDMI
+                    ↕
+                 Monitor
+</pre></div>
+
+        <p>The display controller reads the scanout buffer pixel by pixel, row by row, at the display&rsquo;s refresh rate. For a 60 Hz display, it reads the entire buffer 60 times per second. This sequential reading is called <strong>scanning out</strong> &mdash; a term inherited from CRT monitors, where an electron beam physically scanned across the screen.</p>
+
+        <h3>VSync, Tearing, and Double Buffering</h3>
+
+        <p><strong>Tearing</strong> happens when the CPU/GPU writes to the framebuffer while the display controller is reading from it. The top half of the screen shows the old frame and the bottom half shows the new frame, creating a visible horizontal seam.</p>
+
+        <p>The solution is <strong>double buffering</strong>: maintain two buffers. The display controller reads from the <strong>front buffer</strong> while the GPU draws to the <strong>back buffer</strong>. When the frame is complete, the buffers swap. <strong>VSync</strong> synchronizes this swap to the monitor&rsquo;s vertical blanking interval &mdash; the brief pause when the display controller finishes one frame and starts the next &mdash; so the swap happens between frames, never during one.</p>
+
+        <p><strong>Triple buffering</strong> adds a third buffer so the GPU can start the next frame immediately without waiting for VSync, reducing latency while still preventing tearing.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. The Display Stack: From Kernel to Compositor</h2>
+        <!-- ============================================================ -->
+
+        <h3>Kernel Graphics Drivers</h3>
+
+        <p>The kernel manages hardware, including the GPU. Each operating system has its own graphics driver subsystem:</p>
+
+        <table class="comparison-table">
+          <tr><th>OS</th><th>Subsystem</th><th>Role</th></tr>
+          <tr><td>Linux</td><td>DRM/KMS (Direct Rendering Manager / Kernel Mode Setting)</td><td>Mode setting, buffer management, command submission to GPU</td></tr>
+          <tr><td>macOS</td><td>IOKit + GPU driver kexts</td><td>Hardware abstraction, GPU scheduling, memory management</td></tr>
+          <tr><td>Windows</td><td>WDDM (Windows Display Driver Model)</td><td>GPU scheduling, memory management, display output</td></tr>
+        </table>
+
+        <p>On Linux, the DRM subsystem provides a device file (<code>/dev/dri/card0</code>) for GPU access and KMS handles display mode setting (resolution, refresh rate). An older, simpler interface &mdash; the Linux framebuffer device &mdash; gives even more direct access.</p>
+
+        <h3>Linux Framebuffer: /dev/fb0</h3>
+
+        <p>On Linux, <code>/dev/fb0</code> is a character device that represents the framebuffer directly. You can <code>open()</code> it, <code>mmap()</code> it into your process&rsquo;s address space, and write pixels. No GPU driver, no window system, no libraries. This is the closest you can get to raw pixel access on a modern operating system.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #1: Writing Directly to /dev/fb0 (C)</h4>
+          <p>This program opens the Linux framebuffer device, maps it into memory, and draws a red gradient. Run it from a virtual console (Ctrl+Alt+F2), not from within a desktop environment.</p>
+        </div>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;fcntl.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;linux/fb.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;sys/ioctl.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;sys/mman.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;unistd.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdint.h&gt;</span>
+
+<span class="keyword">int</span> <span class="func">main</span>(<span class="keyword">void</span>) {
+    <span class="keyword">int</span> fd = <span class="func">open</span>(<span class="string">"/dev/fb0"</span>, O_RDWR);
+
+    <span class="keyword">struct</span> fb_var_screeninfo vinfo;
+    <span class="func">ioctl</span>(fd, FBIOGET_VSCREENINFO, &amp;vinfo);
+
+    <span class="keyword">int</span> w = vinfo.xres;
+    <span class="keyword">int</span> h = vinfo.yres;
+    <span class="keyword">int</span> bpp = vinfo.bits_per_pixel / <span class="number">8</span>;
+    <span class="type">size_t</span> size = w * h * bpp;
+
+    <span class="type">uint8_t</span> *fb = <span class="func">mmap</span>(<span class="keyword">NULL</span>, size, PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);
+
+    <span class="comment">/* Draw a red gradient */</span>
+    <span class="keyword">for</span> (<span class="keyword">int</span> y = <span class="number">0</span>; y &lt; h; y++) {
+        <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; w; x++) {
+            <span class="keyword">int</span> offset = (y * w + x) * bpp;
+            fb[offset + <span class="number">0</span>] = <span class="number">0</span>;              <span class="comment">/* blue  */</span>
+            fb[offset + <span class="number">1</span>] = <span class="number">0</span>;              <span class="comment">/* green */</span>
+            fb[offset + <span class="number">2</span>] = x * <span class="number">255</span> / w;    <span class="comment">/* red   */</span>
+            fb[offset + <span class="number">3</span>] = <span class="number">0</span>;              <span class="comment">/* alpha */</span>
+        }
+    }
+
+    <span class="func">munmap</span>(fb, size);
+    <span class="func">close</span>(fd);
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</div>
+
+        <div class="code-block"><span class="comment"># Compile and run (from a Linux virtual console, as root or in the video group)</span>
+$ gcc fb_gradient.c -o fb_gradient
+$ sudo ./fb_gradient</div>
+
+        <p>This writes directly to the display hardware. No window system, no compositor, no GPU acceleration. Just bytes in memory becoming pixels on screen. This is as close to the metal as userspace code gets.</p>
+
+        <h3>Display Servers and Compositors</h3>
+
+        <p>Raw framebuffer access is fine for a single fullscreen application. But modern computing requires multiple windows, overlapping content, transparency, and smooth animations. This is the job of the <strong>display server</strong> and <strong>compositor</strong>.</p>
+
+        <table class="comparison-table">
+          <tr><th>System</th><th>OS</th><th>Architecture</th><th>Status</th></tr>
+          <tr><td>X11 (X Window System)</td><td>Linux/BSD</td><td>Client-server over sockets; separate compositor (Compiz, Picom)</td><td>Legacy, being replaced</td></tr>
+          <tr><td>Wayland</td><td>Linux/BSD</td><td>Compositor <em>is</em> the display server; clients render their own buffers</td><td>Current standard</td></tr>
+          <tr><td>WindowServer</td><td>macOS</td><td>System process; all drawing composited; no direct framebuffer access</td><td>Active</td></tr>
+          <tr><td>DWM (Desktop Window Manager)</td><td>Windows</td><td>Composites all windows since Vista; mandatory since Windows 8</td><td>Active</td></tr>
+        </table>
+
+        <p>The compositor takes each application&rsquo;s rendered buffer, applies transformations (position, transparency, blur, shadows), and composites them into a single final image that gets sent to the display controller for scanout.</p>
+
+        <h3>The macOS Question: Can You Write Directly to Pixels?</h3>
+
+        <div class="note-box">
+          <h4>No direct framebuffer access on macOS</h4>
+          <p>macOS has no <code>/dev/fb0</code> equivalent. There is no public API to bypass WindowServer and write directly to the display hardware. <strong>WindowServer is mandatory</strong> &mdash; every pixel on screen goes through it. Even fullscreen games and video players have their output composited by WindowServer.</p>
+          <p>The lowest public graphics API on macOS is <strong>Metal</strong>. Even Core Graphics (Quartz 2D), which feels low-level, ultimately submits its output through WindowServer for compositing. Apple controls the full vertical stack &mdash; hardware, drivers, compositor, frameworks &mdash; and has no reason to expose raw framebuffer access.</p>
+          <p>On Linux, you can write raw bytes to <code>/dev/fb0</code>. On macOS, the closest you can get is creating a Metal texture and drawing it to a CAMetalLayer, which WindowServer then composites to the screen.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. The GPU Rendering Pipeline</h2>
+        <!-- ============================================================ -->
+
+        <h3>Why GPUs Exist</h3>
+
+        <p>A 1080p display has 2,073,600 pixels. At 60 fps, that is 124 million pixels per second. For each pixel, you might need to compute lighting, texture sampling, transparency, and shadows. A CPU processes instructions one at a time (or a few at a time with superscalar execution). A GPU processes <em>thousands</em> simultaneously.</p>
+
+        <p>The key insight: graphics computations are <strong>embarrassingly parallel</strong>. The color of pixel (100, 200) does not depend on the color of pixel (500, 300). Each vertex transformation is independent. Each pixel shading is independent. GPUs exploit this by having thousands of small cores, each running the same program on different data. An NVIDIA RTX 4090 has 16,384 CUDA cores. They are individually slower than a CPU core, but there are thousands of them.</p>
+
+        <h3>The Rendering Pipeline</h3>
+
+        <p>Modern GPU rendering follows a pipeline. Data flows through stages, some programmable (shaders), some fixed-function (rasterization):</p>
+
+        <div class="diagram-box">
+<pre>
+  Vertices (3D coordinates)
+       ↓
+  ┌─────────────────────┐
+  │   Vertex Shader     │  ← Programmable: transform each vertex
+  │   (per-vertex)      │     (model → world → view → clip space)
+  └─────────┬───────────┘
+            ↓
+  ┌─────────────────────┐
+  │ Primitive Assembly   │  ← Fixed: group vertices into triangles
+  └─────────┬───────────┘
+            ↓
+  ┌─────────────────────┐
+  │   Rasterization     │  ← Fixed: determine which pixels each
+  │                     │     triangle covers, interpolate attributes
+  └─────────┬───────────┘
+            ↓
+  ┌─────────────────────┐
+  │  Fragment Shader    │  ← Programmable: compute color for each
+  │  (per-pixel)        │     pixel (lighting, textures, effects)
+  └─────────┬───────────┘
+            ↓
+  ┌─────────────────────┐
+  │ Depth Test &amp; Blend  │  ← Fixed: depth testing, alpha blending
+  └─────────┬───────────┘
+            ↓
+       Framebuffer
+</pre></div>
+
+        <p>The vertex shader runs once per vertex. If you draw a triangle with 3 vertices, the vertex shader runs 3 times. The fragment shader runs once per pixel the triangle covers. A triangle covering 10,000 pixels runs the fragment shader 10,000 times &mdash; all in parallel across the GPU&rsquo;s cores.</p>
+
+        <h3>Shaders</h3>
+
+        <p>Shaders are small programs that run on the GPU. Different APIs use different shading languages:</p>
+
+        <table class="comparison-table">
+          <tr><th>Language</th><th>API</th><th>Compiles To</th></tr>
+          <tr><td>GLSL</td><td>OpenGL, WebGL</td><td>GPU-specific machine code (driver compiles at runtime)</td></tr>
+          <tr><td>HLSL</td><td>DirectX</td><td>DXBC/DXIL bytecode, then GPU machine code</td></tr>
+          <tr><td>MSL (Metal Shading Language)</td><td>Metal</td><td>AIR (Apple IR), then GPU machine code</td></tr>
+          <tr><td>WGSL</td><td>WebGPU</td><td>SPIR-V or platform-native (browser translates)</td></tr>
+          <tr><td>SPIR-V</td><td>Vulkan</td><td>GPU-specific machine code (driver compiles)</td></tr>
+        </table>
+
+        <div class="concept-box">
+          <h4>Code Example #2: Minimal GLSL Vertex + Fragment Shader</h4>
+          <p>A vertex shader that passes through positions and a fragment shader that outputs solid red. This is the simplest possible shader pair.</p>
+        </div>
+
+        <div class="code-block"><span class="comment">// Vertex Shader (GLSL)</span>
+<span class="preprocessor">#version</span> <span class="number">330</span> core
+
+<span class="keyword">layout</span> (location = <span class="number">0</span>) <span class="keyword">in</span> <span class="type">vec3</span> aPos;    <span class="comment">// input vertex position</span>
+
+<span class="keyword">void</span> <span class="func">main</span>() {
+    gl_Position = <span class="type">vec4</span>(aPos, <span class="number">1.0</span>);       <span class="comment">// pass through to clip space</span>
+}</div>
+
+        <div class="code-block"><span class="comment">// Fragment Shader (GLSL)</span>
+<span class="preprocessor">#version</span> <span class="number">330</span> core
+
+<span class="keyword">out</span> <span class="type">vec4</span> FragColor;                      <span class="comment">// output pixel color</span>
+
+<span class="keyword">void</span> <span class="func">main</span>() {
+    FragColor = <span class="type">vec4</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>); <span class="comment">// solid red (RGBA)</span>
+}</div>
+
+        <p>The vertex shader transforms each vertex from model space into clip space (the coordinate system the GPU uses for clipping and rasterization). The fragment shader produces the final color for each pixel. Between them, the rasterizer determines which pixels each triangle covers and interpolates any varying data (colors, texture coordinates) across the surface.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. The Landscape: Graphics APIs by Abstraction Level</h2>
+        <!-- ============================================================ -->
+
+        <p>There are many graphics APIs. They exist at different levels of abstraction, from raw pixel buffers to declarative layout systems. Understanding the landscape means understanding what each level gives you and what it takes away.</p>
+
+        <div class="diagram-box">
+<pre>
+  Level 6  ┌──────────────────────────────┐  matplotlib, D3.js, ggplot2
+           │    Domain-Specific Viz       │  "plot this data"
+  Level 5  ├──────────────────────────────┤  HTML+CSS, SwiftUI, Flutter
+           │    Declarative / Layout      │  "describe desired state"
+  Level 4  ├──────────────────────────────┤  GTK, Qt, Cocoa, Swing
+           │    Widget Toolkits           │  "buttons, text fields, windows"
+  Level 3  ├──────────────────────────────┤  Canvas, Skia, Cairo, SDL2
+           │    2D Graphics Libraries     │  "draw shapes, lines, text"
+  Level 2  ├──────────────────────────────┤  OpenGL, WebGL, DirectX 11
+           │    Managed GPU APIs          │  "draw triangles with shaders"
+  Level 1  ├──────────────────────────────┤  Vulkan, Metal, DirectX 12
+           │    Low-Level GPU APIs        │  "manage GPU memory &amp; commands"
+  Level 0  ├──────────────────────────────┤  /dev/fb0
+           │    Direct Framebuffer        │  "write bytes to pixel memory"
+           └──────────────────────────────┘
+</pre></div>
+
+        <!-- ============================================ -->
+        <h3>Level 0 &mdash; Direct Framebuffer</h3>
+        <!-- ============================================ -->
+
+        <p>We covered this in Section II: open <code>/dev/fb0</code>, mmap it, write pixels. No GPU, no acceleration, no compositing. Available on Linux only. Useful for embedded systems, boot splash screens, and understanding what is really happening at the bottom of the stack.</p>
+
+        <!-- ============================================ -->
+        <h3>Level 1 &mdash; Low-Level GPU APIs (Vulkan, Metal, DirectX 12)</h3>
+        <!-- ============================================ -->
+
+        <p>These APIs give you <strong>explicit control</strong> over the GPU. You manage memory allocation, command buffer recording, synchronization between CPU and GPU, pipeline state objects, descriptor sets, and render passes. The driver does almost nothing for you &mdash; which is the point. You can optimize exactly for your workload.</p>
+
+        <p>The cost is complexity. Drawing a single colored triangle in Vulkan requires approximately 800&ndash;1200 lines of C code. Here is a simplified view of the initialization steps:</p>
+
+        <div class="concept-box">
+          <h4>Code Example #3: Vulkan Initialization Structure (Pseudocode)</h4>
+          <p>The ~15 steps required before you can draw a single triangle in Vulkan. Each step is 20&ndash;80 lines of real code.</p>
+        </div>
+
+        <div class="code-block"><span class="comment">// Vulkan initialization — the price of explicit control</span>
+
+<span class="comment">// 1. Create instance (specify app info, validation layers)</span>
+<span class="func">vkCreateInstance</span>(&amp;createInfo, &amp;instance);
+
+<span class="comment">// 2. Select physical device (enumerate GPUs, check features)</span>
+<span class="func">vkEnumeratePhysicalDevices</span>(instance, &amp;count, devices);
+
+<span class="comment">// 3. Create logical device + queues (graphics, present, compute)</span>
+<span class="func">vkCreateDevice</span>(physicalDevice, &amp;deviceInfo, &amp;device);
+
+<span class="comment">// 4. Create surface (platform-specific: Win32, Xlib, Wayland)</span>
+<span class="func">vkCreateXlibSurfaceKHR</span>(instance, &amp;surfaceInfo, &amp;surface);
+
+<span class="comment">// 5. Create swapchain (double/triple buffering, present mode)</span>
+<span class="func">vkCreateSwapchainKHR</span>(device, &amp;swapInfo, &amp;swapchain);
+
+<span class="comment">// 6. Create image views for each swapchain image</span>
+<span class="func">vkCreateImageView</span>(device, &amp;viewInfo, &amp;imageViews[i]);
+
+<span class="comment">// 7. Create render pass (attachments, subpasses, dependencies)</span>
+<span class="func">vkCreateRenderPass</span>(device, &amp;renderPassInfo, &amp;renderPass);
+
+<span class="comment">// 8. Compile shaders to SPIR-V, create shader modules</span>
+<span class="func">vkCreateShaderModule</span>(device, &amp;shaderInfo, &amp;vertModule);
+<span class="func">vkCreateShaderModule</span>(device, &amp;shaderInfo, &amp;fragModule);
+
+<span class="comment">// 9. Create pipeline layout (push constants, descriptor sets)</span>
+<span class="func">vkCreatePipelineLayout</span>(device, &amp;layoutInfo, &amp;pipelineLayout);
+
+<span class="comment">// 10. Create graphics pipeline (shaders, vertex input, rasterizer,</span>
+<span class="comment">//     multisampling, color blending, viewport, scissor, ...)</span>
+<span class="func">vkCreateGraphicsPipelines</span>(device, cache, <span class="number">1</span>, &amp;pipelineInfo, &amp;pipeline);
+
+<span class="comment">// 11. Create framebuffers (one per swapchain image)</span>
+<span class="func">vkCreateFramebuffer</span>(device, &amp;fbInfo, &amp;framebuffers[i]);
+
+<span class="comment">// 12. Create command pool + command buffers</span>
+<span class="func">vkCreateCommandPool</span>(device, &amp;poolInfo, &amp;commandPool);
+<span class="func">vkAllocateCommandBuffers</span>(device, &amp;allocInfo, commandBuffers);
+
+<span class="comment">// 13. Record command buffers (begin, begin render pass,</span>
+<span class="comment">//     bind pipeline, draw, end render pass, end)</span>
+<span class="func">vkCmdBeginRenderPass</span>(cmd, &amp;rpBegin, VK_SUBPASS_CONTENTS_INLINE);
+<span class="func">vkCmdBindPipeline</span>(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+<span class="func">vkCmdDraw</span>(cmd, <span class="number">3</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);  <span class="comment">/* 3 vertices = one triangle */</span>
+<span class="func">vkCmdEndRenderPass</span>(cmd);
+
+<span class="comment">// 14. Create synchronization primitives (semaphores, fences)</span>
+<span class="func">vkCreateSemaphore</span>(device, &amp;semInfo, &amp;imageAvailable);
+<span class="func">vkCreateSemaphore</span>(device, &amp;semInfo, &amp;renderFinished);
+<span class="func">vkCreateFence</span>(device, &amp;fenceInfo, &amp;inFlight);
+
+<span class="comment">// 15. Render loop: acquire image → submit commands → present</span>
+<span class="func">vkAcquireNextImageKHR</span>(device, swapchain, UINT64_MAX, imageAvailable, ...);
+<span class="func">vkQueueSubmit</span>(graphicsQueue, <span class="number">1</span>, &amp;submitInfo, inFlight);
+<span class="func">vkQueuePresentKHR</span>(presentQueue, &amp;presentInfo);</div>
+
+        <p>This is why Vulkan is not for casual use. It exists for game engines, professional renderers, and performance-critical applications where the overhead of a managed API is unacceptable. Vulkan is cross-platform (Windows, Linux, Android). Metal is Apple-only. DirectX 12 is Windows/Xbox-only.</p>
+
+        <table class="comparison-table">
+          <tr><th>API</th><th>Vendor</th><th>Platforms</th><th>Released</th></tr>
+          <tr><td>Vulkan</td><td>Khronos Group</td><td>Windows, Linux, Android, Switch</td><td>2016</td></tr>
+          <tr><td>Metal</td><td>Apple</td><td>macOS, iOS, visionOS</td><td>2014</td></tr>
+          <tr><td>DirectX 12</td><td>Microsoft</td><td>Windows, Xbox</td><td>2015</td></tr>
+        </table>
+
+        <!-- ============================================ -->
+        <h3>Level 2 &mdash; Managed GPU APIs (OpenGL, WebGL, DirectX 11)</h3>
+        <!-- ============================================ -->
+
+        <p>These APIs manage GPU state for you. The driver handles memory allocation, synchronization, and pipeline state behind the scenes. You get a much simpler programming model at the cost of less control and more driver overhead.</p>
+
+        <p>OpenGL uses a <strong>global state machine</strong>: you set state (bind a texture, set the blend mode, activate a shader), then draw. The driver figures out the rest. A colored triangle takes about 45 lines of C instead of 1000.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #4: OpenGL Triangle with GLFW (C)</h4>
+          <p>A complete program that opens a window and draws a colored triangle using modern OpenGL 3.3 with shaders. Compare the simplicity with the Vulkan pseudocode above.</p>
+        </div>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;GL/glew.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;GLFW/glfw3.h&gt;</span>
+
+<span class="keyword">const</span> <span class="keyword">char</span> *vertSrc =
+    <span class="string">"#version 330 core\n"</span>
+    <span class="string">"layout(location=0) in vec2 pos;\n"</span>
+    <span class="string">"void main() { gl_Position = vec4(pos, 0, 1); }\n"</span>;
+
+<span class="keyword">const</span> <span class="keyword">char</span> *fragSrc =
+    <span class="string">"#version 330 core\n"</span>
+    <span class="string">"out vec4 color;\n"</span>
+    <span class="string">"void main() { color = vec4(0.2, 0.6, 1.0, 1.0); }\n"</span>;
+
+<span class="keyword">int</span> <span class="func">main</span>(<span class="keyword">void</span>) {
+    <span class="func">glfwInit</span>();
+    <span class="func">glfwWindowHint</span>(GLFW_CONTEXT_VERSION_MAJOR, <span class="number">3</span>);
+    <span class="func">glfwWindowHint</span>(GLFW_CONTEXT_VERSION_MINOR, <span class="number">3</span>);
+    GLFWwindow *win = <span class="func">glfwCreateWindow</span>(<span class="number">800</span>, <span class="number">600</span>, <span class="string">"Triangle"</span>, <span class="keyword">NULL</span>, <span class="keyword">NULL</span>);
+    <span class="func">glfwMakeContextCurrent</span>(win);
+    <span class="func">glewInit</span>();
+
+    <span class="comment">/* Compile shaders */</span>
+    GLuint vs = <span class="func">glCreateShader</span>(GL_VERTEX_SHADER);
+    <span class="func">glShaderSource</span>(vs, <span class="number">1</span>, &amp;vertSrc, <span class="keyword">NULL</span>);
+    <span class="func">glCompileShader</span>(vs);
+
+    GLuint fs = <span class="func">glCreateShader</span>(GL_FRAGMENT_SHADER);
+    <span class="func">glShaderSource</span>(fs, <span class="number">1</span>, &amp;fragSrc, <span class="keyword">NULL</span>);
+    <span class="func">glCompileShader</span>(fs);
+
+    GLuint prog = <span class="func">glCreateProgram</span>();
+    <span class="func">glAttachShader</span>(prog, vs);
+    <span class="func">glAttachShader</span>(prog, fs);
+    <span class="func">glLinkProgram</span>(prog);
+
+    <span class="comment">/* Upload triangle vertices */</span>
+    <span class="keyword">float</span> verts[] = { <span class="number">0</span>,<span class="number">0.5</span>,  <span class="number">-0.5</span>,<span class="number">-0.5</span>,  <span class="number">0.5</span>,<span class="number">-0.5</span> };
+    GLuint vao, vbo;
+    <span class="func">glGenVertexArrays</span>(<span class="number">1</span>, &amp;vao);
+    <span class="func">glGenBuffers</span>(<span class="number">1</span>, &amp;vbo);
+    <span class="func">glBindVertexArray</span>(vao);
+    <span class="func">glBindBuffer</span>(GL_ARRAY_BUFFER, vbo);
+    <span class="func">glBufferData</span>(GL_ARRAY_BUFFER, <span class="keyword">sizeof</span>(verts), verts, GL_STATIC_DRAW);
+    <span class="func">glVertexAttribPointer</span>(<span class="number">0</span>, <span class="number">2</span>, GL_FLOAT, GL_FALSE, <span class="number">0</span>, <span class="number">0</span>);
+    <span class="func">glEnableVertexAttribArray</span>(<span class="number">0</span>);
+
+    <span class="comment">/* Render loop */</span>
+    <span class="keyword">while</span> (!<span class="func">glfwWindowShouldClose</span>(win)) {
+        <span class="func">glClear</span>(GL_COLOR_BUFFER_BIT);
+        <span class="func">glUseProgram</span>(prog);
+        <span class="func">glBindVertexArray</span>(vao);
+        <span class="func">glDrawArrays</span>(GL_TRIANGLES, <span class="number">0</span>, <span class="number">3</span>);
+        <span class="func">glfwSwapBuffers</span>(win);
+        <span class="func">glfwPollEvents</span>();
+    }
+
+    <span class="func">glfwTerminate</span>();
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</div>
+
+        <div class="code-block"><span class="comment"># Compile (Linux)</span>
+$ gcc triangle.c -o triangle -lGL -lGLEW -lglfw
+$ ./triangle</div>
+
+        <div class="note-box">
+          <h4>OpenGL&rsquo;s Status</h4>
+          <p>OpenGL has been frozen at version 4.6 since 2017. Khronos considers Vulkan its successor. Apple deprecated OpenGL on macOS in 2018 and recommends Metal. WebGL (OpenGL ES for browsers) remains widely used but WebGPU is its planned successor. Despite all this, OpenGL remains the most widely taught GPU API and the easiest way to get a triangle on screen.</p>
+        </div>
+
+        <!-- ============================================ -->
+        <h3>Level 3 &mdash; 2D Graphics Libraries (Canvas, Skia, Cairo, SDL2)</h3>
+        <!-- ============================================ -->
+
+        <p>These libraries provide <strong>2D drawing primitives</strong>: lines, rectangles, circles, paths, fills, strokes, text rendering, and image blitting. Under the hood, they may use the GPU (Skia uses OpenGL/Vulkan/Metal; Canvas uses Skia through the browser), but you work with a painter&rsquo;s model: draw shape A, then draw shape B on top of it.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #5: HTML5 Canvas 2D Drawing (JavaScript)</h4>
+          <p>The Canvas API in the browser is one of the most accessible 2D graphics APIs. Under the hood, Chrome and Firefox use Skia to render Canvas commands, often GPU-accelerated.</p>
+        </div>
+
+        <div class="code-block"><span class="keyword">const</span> canvas = document.<span class="func">getElementById</span>(<span class="string">'myCanvas'</span>);
+<span class="keyword">const</span> ctx = canvas.<span class="func">getContext</span>(<span class="string">'2d'</span>);
+
+<span class="comment">// Blue rectangle</span>
+ctx.fillStyle = <span class="string">'#3498db'</span>;
+ctx.<span class="func">fillRect</span>(<span class="number">50</span>, <span class="number">50</span>, <span class="number">200</span>, <span class="number">150</span>);
+
+<span class="comment">// Red circle</span>
+ctx.fillStyle = <span class="string">'#e74c3c'</span>;
+ctx.<span class="func">beginPath</span>();
+ctx.<span class="func">arc</span>(<span class="number">300</span>, <span class="number">200</span>, <span class="number">60</span>, <span class="number">0</span>, Math.PI * <span class="number">2</span>);
+ctx.<span class="func">fill</span>();
+
+<span class="comment">// Text</span>
+ctx.fillStyle = <span class="string">'#2c3e50'</span>;
+ctx.font = <span class="string">'24px Georgia'</span>;
+ctx.<span class="func">fillText</span>(<span class="string">'Hello, Canvas!'</span>, <span class="number">50</span>, <span class="number">280</span>);
+
+<span class="comment">// Gradient line</span>
+<span class="keyword">const</span> grad = ctx.<span class="func">createLinearGradient</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">400</span>, <span class="number">0</span>);
+grad.<span class="func">addColorStop</span>(<span class="number">0</span>, <span class="string">'#e74c3c'</span>);
+grad.<span class="func">addColorStop</span>(<span class="number">1</span>, <span class="string">'#3498db'</span>);
+ctx.strokeStyle = grad;
+ctx.lineWidth = <span class="number">4</span>;
+ctx.<span class="func">beginPath</span>();
+ctx.<span class="func">moveTo</span>(<span class="number">50</span>, <span class="number">320</span>);
+ctx.<span class="func">lineTo</span>(<span class="number">350</span>, <span class="number">320</span>);
+ctx.<span class="func">stroke</span>();</div>
+
+        <p>Notice the pattern: set style, then draw. This is <strong>immediate mode</strong> 2D &mdash; there is no retained scene graph. If you want to animate, you clear the canvas and redraw everything each frame.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #6: SDL2 Pixel Buffer Access (C)</h4>
+          <p>SDL2 is the practical, cross-platform way to get a pixel buffer on screen. It works on Windows, macOS, Linux, iOS, Android, and even WebAssembly. Many games and emulators use SDL2 as their window and rendering layer.</p>
+        </div>
+
+        <div class="code-block"><span class="preprocessor">#include</span> <span class="string">&lt;SDL2/SDL.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdint.h&gt;</span>
+
+<span class="preprocessor">#define</span> W <span class="number">640</span>
+<span class="preprocessor">#define</span> H <span class="number">480</span>
+
+<span class="keyword">int</span> <span class="func">main</span>(<span class="keyword">void</span>) {
+    <span class="func">SDL_Init</span>(SDL_INIT_VIDEO);
+    SDL_Window *win = <span class="func">SDL_CreateWindow</span>(<span class="string">"Pixels"</span>,
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H, <span class="number">0</span>);
+    SDL_Renderer *ren = <span class="func">SDL_CreateRenderer</span>(win, -<span class="number">1</span>, <span class="number">0</span>);
+    SDL_Texture *tex = <span class="func">SDL_CreateTexture</span>(ren,
+        SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, W, H);
+
+    <span class="type">uint32_t</span> pixels[W * H];
+    <span class="keyword">int</span> running = <span class="number">1</span>, frame = <span class="number">0</span>;
+
+    <span class="keyword">while</span> (running) {
+        SDL_Event e;
+        <span class="keyword">while</span> (<span class="func">SDL_PollEvent</span>(&amp;e))
+            <span class="keyword">if</span> (e.type == SDL_QUIT) running = <span class="number">0</span>;
+
+        <span class="comment">/* Write directly to the pixel buffer */</span>
+        <span class="keyword">for</span> (<span class="keyword">int</span> y = <span class="number">0</span>; y &lt; H; y++)
+            <span class="keyword">for</span> (<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; W; x++)
+                pixels[y * W + x] = (<span class="number">0xFF</span> &lt;&lt; <span class="number">24</span>)          <span class="comment">/* A */</span>
+                    | (((x + frame) &amp; <span class="number">0xFF</span>) &lt;&lt; <span class="number">16</span>)       <span class="comment">/* R */</span>
+                    | (((y + frame) &amp; <span class="number">0xFF</span>) &lt;&lt; <span class="number">8</span>)        <span class="comment">/* G */</span>
+                    | ((x ^ y) &amp; <span class="number">0xFF</span>);                  <span class="comment">/* B */</span>
+
+        <span class="func">SDL_UpdateTexture</span>(tex, <span class="keyword">NULL</span>, pixels, W * <span class="keyword">sizeof</span>(<span class="type">uint32_t</span>));
+        <span class="func">SDL_RenderCopy</span>(ren, tex, <span class="keyword">NULL</span>, <span class="keyword">NULL</span>);
+        <span class="func">SDL_RenderPresent</span>(ren);
+        frame++;
+    }
+
+    <span class="func">SDL_DestroyTexture</span>(tex);
+    <span class="func">SDL_DestroyRenderer</span>(ren);
+    <span class="func">SDL_DestroyWindow</span>(win);
+    <span class="func">SDL_Quit</span>();
+    <span class="keyword">return</span> <span class="number">0</span>;
+}</div>
+
+        <div class="code-block"><span class="comment"># Compile</span>
+$ gcc sdl_pixels.c -o sdl_pixels $(sdl2-config --cflags --libs)
+$ ./sdl_pixels</div>
+
+        <p>SDL2 gives you a cross-platform pixel buffer that works everywhere. Under the hood, it uses the native graphics API (Metal on macOS, Direct3D on Windows, OpenGL/Vulkan on Linux) to upload your pixel buffer as a texture and display it. This is the practical solution when you want to write individual pixels without dealing with GPU APIs directly.</p>
+
+        <table class="comparison-table">
+          <tr><th>Library</th><th>Language</th><th>GPU Backend</th><th>Used By</th></tr>
+          <tr><td>Skia</td><td>C++</td><td>OpenGL, Vulkan, Metal, Direct3D</td><td>Chrome, Firefox, Flutter, Android</td></tr>
+          <tr><td>Cairo</td><td>C</td><td>OpenGL (limited), mostly CPU</td><td>GTK, GNOME, older Linux apps</td></tr>
+          <tr><td>Core Graphics (Quartz 2D)</td><td>C / Swift</td><td>Metal (through WindowServer)</td><td>macOS, iOS (all native drawing)</td></tr>
+          <tr><td>Direct2D</td><td>C++</td><td>Direct3D</td><td>Windows native apps, WPF</td></tr>
+          <tr><td>HTML5 Canvas</td><td>JavaScript</td><td>Skia (Chrome), Skia (Firefox)</td><td>Web applications, games, data viz</td></tr>
+          <tr><td>SDL2</td><td>C</td><td>OpenGL, Metal, Direct3D, Vulkan</td><td>Games, emulators, multimedia apps</td></tr>
+        </table>
+
+        <!-- ============================================ -->
+        <h3>Level 4 &mdash; Widget Toolkits (GTK, Qt, Cocoa, Swing)</h3>
+        <!-- ============================================ -->
+
+        <p>Widget toolkits give you <strong>pre-built UI components</strong>: buttons, text fields, scroll views, menus, dialogs. You build a tree of widgets, the toolkit handles layout, event dispatch, and rendering. This is <strong>retained mode</strong>: you create objects that persist, and the framework manages their state and appearance.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #7: Java Swing Hello World</h4>
+          <p>Swing is Java&rsquo;s built-in GUI toolkit. It draws its own widgets (not native OS widgets), making it look identical on all platforms &mdash; for better or worse.</p>
+        </div>
+
+        <div class="code-block"><span class="keyword">import</span> javax.swing.*;
+<span class="keyword">import</span> java.awt.*;
+<span class="keyword">import</span> java.awt.event.*;
+
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="type">HelloSwing</span> {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="func">main</span>(String[] args) {
+        JFrame frame = <span class="keyword">new</span> <span class="type">JFrame</span>(<span class="string">"Hello Swing"</span>);
+        frame.<span class="func">setDefaultCloseOperation</span>(JFrame.EXIT_ON_CLOSE);
+        frame.<span class="func">setSize</span>(<span class="number">400</span>, <span class="number">200</span>);
+
+        JPanel panel = <span class="keyword">new</span> <span class="type">JPanel</span>(<span class="keyword">new</span> <span class="type">FlowLayout</span>());
+        JLabel label = <span class="keyword">new</span> <span class="type">JLabel</span>(<span class="string">"Click the button"</span>);
+        JButton button = <span class="keyword">new</span> <span class="type">JButton</span>(<span class="string">"Click Me"</span>);
+
+        <span class="keyword">int</span>[] count = {<span class="number">0</span>};
+        button.<span class="func">addActionListener</span>(e -&gt; {
+            count[<span class="number">0</span>]++;
+            label.<span class="func">setText</span>(<span class="string">"Clicked "</span> + count[<span class="number">0</span>] + <span class="string">" times"</span>);
+        });
+
+        panel.<span class="func">add</span>(label);
+        panel.<span class="func">add</span>(button);
+        frame.<span class="func">add</span>(panel);
+        frame.<span class="func">setVisible</span>(<span class="keyword">true</span>);
+    }
+}</div>
+
+        <div class="concept-box">
+          <h4>Code Example #8: Python tkinter Hello World</h4>
+          <p>tkinter wraps Tcl/Tk, the oldest cross-platform GUI toolkit still in wide use. It ships with Python &mdash; no installation needed.</p>
+        </div>
+
+        <div class="code-block"><span class="keyword">import</span> tkinter <span class="keyword">as</span> tk
+
+root = tk.<span class="func">Tk</span>()
+root.<span class="func">title</span>(<span class="string">"Hello tkinter"</span>)
+root.<span class="func">geometry</span>(<span class="string">"400x200"</span>)
+
+count = <span class="number">0</span>
+
+<span class="keyword">def</span> <span class="func">on_click</span>():
+    <span class="keyword">global</span> count
+    count += <span class="number">1</span>
+    label.<span class="func">config</span>(text=<span class="string">f"Clicked </span>{count}<span class="string"> times"</span>)
+
+label = tk.<span class="func">Label</span>(root, text=<span class="string">"Click the button"</span>, font=(<span class="string">"Georgia"</span>, <span class="number">14</span>))
+label.<span class="func">pack</span>(pady=<span class="number">20</span>)
+
+button = tk.<span class="func">Button</span>(root, text=<span class="string">"Click Me"</span>, command=on_click)
+button.<span class="func">pack</span>()
+
+root.<span class="func">mainloop</span>()</div>
+
+        <table class="comparison-table">
+          <tr><th>Toolkit</th><th>Language</th><th>Rendering</th><th>Native Look?</th><th>Platform</th></tr>
+          <tr><td>Swing</td><td>Java</td><td>Custom (Java2D)</td><td>Emulated</td><td>Cross-platform</td></tr>
+          <tr><td>Qt</td><td>C++ / Python (PyQt)</td><td>Custom (QPainter / RHI)</td><td>Emulated (high quality)</td><td>Cross-platform</td></tr>
+          <tr><td>GTK</td><td>C / Python (PyGObject)</td><td>Cairo / GSK</td><td>Native on GNOME</td><td>Primarily Linux</td></tr>
+          <tr><td>Cocoa (AppKit/UIKit)</td><td>Swift / Obj-C</td><td>Core Graphics / Metal</td><td>Yes (native)</td><td>macOS / iOS only</td></tr>
+          <tr><td>WinForms / WPF</td><td>C#</td><td>GDI+ / Direct2D</td><td>Yes (native)</td><td>Windows only</td></tr>
+          <tr><td>tkinter</td><td>Python</td><td>Tk (X11/Win32/Cocoa)</td><td>Partially</td><td>Cross-platform</td></tr>
+        </table>
+
+        <!-- ============================================ -->
+        <h3>Level 5 &mdash; Declarative / Layout Systems (HTML+CSS, SwiftUI, Flutter)</h3>
+        <!-- ============================================ -->
+
+        <p>Declarative systems let you <strong>describe the desired state</strong> of your UI, and the framework figures out how to render it. You do not issue draw commands. You do not manage widget objects directly. You declare what the UI should look like, and the framework handles layout, rendering, and updates when state changes.</p>
+
+        <p>HTML+CSS is the most successful declarative UI system ever built. You describe the structure (HTML) and styling (CSS), and the browser&rsquo;s layout engine computes positions, the paint engine renders pixels, and the compositor assembles layers for the GPU. No code example needed here &mdash; this article is itself an HTML+CSS document.</p>
+
+        <p>SwiftUI and Flutter follow the same philosophy: declare what you want, the framework diffs old state vs. new state, and efficiently updates only what changed. React brought this pattern to the web with its virtual DOM.</p>
+
+        <!-- ============================================ -->
+        <h3>Level 6 &mdash; Domain-Specific Visualization (matplotlib, D3.js, ggplot2)</h3>
+        <!-- ============================================ -->
+
+        <p>At the highest level, you do not think about pixels, shapes, or even layouts. You think about <strong>data</strong>. You hand an array of numbers to a library and get a chart. The library handles axes, labels, colors, legends, tick marks, and layout &mdash; all the visual design decisions that would take hundreds of lines at a lower level.</p>
+
+        <div class="concept-box">
+          <h4>Code Example #9: matplotlib Scatter Plot (Python)</h4>
+          <p>matplotlib is built on top of multiple backends: it can render to a GUI window (using tkinter, Qt, or GTK), to a PNG file (using AGG, a CPU-based rasterizer), or to an SVG. You call <code>plt.scatter()</code> and it handles everything.</p>
+        </div>
+
+        <div class="code-block"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Generate data</span>
+np.random.<span class="func">seed</span>(<span class="number">42</span>)
+x = np.random.<span class="func">randn</span>(<span class="number">200</span>)
+y = <span class="number">0.7</span> * x + np.random.<span class="func">randn</span>(<span class="number">200</span>) * <span class="number">0.5</span>
+colors = np.<span class="func">sqrt</span>(x**<span class="number">2</span> + y**<span class="number">2</span>)
+
+<span class="comment"># Three lines of code to create a publication-quality scatter plot</span>
+plt.<span class="func">figure</span>(figsize=(<span class="number">8</span>, <span class="number">6</span>))
+plt.<span class="func">scatter</span>(x, y, c=colors, cmap=<span class="string">'viridis'</span>, alpha=<span class="number">0.7</span>, edgecolors=<span class="string">'black'</span>, linewidth=<span class="number">0.5</span>)
+plt.<span class="func">colorbar</span>(label=<span class="string">'Distance from origin'</span>)
+plt.<span class="func">xlabel</span>(<span class="string">'X'</span>)
+plt.<span class="func">ylabel</span>(<span class="string">'Y'</span>)
+plt.<span class="func">title</span>(<span class="string">'Correlated Data with Distance Coloring'</span>)
+plt.<span class="func">tight_layout</span>()
+plt.<span class="func">savefig</span>(<span class="string">'scatter.png'</span>, dpi=<span class="number">150</span>)
+plt.<span class="func">show</span>()</div>
+
+        <p>Those 15 lines of Python produce a publication-quality scatter plot with color mapping, axes, labels, and a colorbar. To do this with raw OpenGL, you would need to implement text rendering (which alone is hundreds of lines), axis drawing, tick computation, color interpolation, and anti-aliased point rendering. That is the value of abstraction.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. The Three Paradigms</h2>
+        <!-- ============================================================ -->
+
+        <p>Across all these levels, there are three fundamental approaches to building graphical interfaces. Understanding them is more important than knowing any specific API, because every API you encounter will fit one of these paradigms.</p>
+
+        <h3>Immediate Mode</h3>
+
+        <p>In immediate mode, you <strong>redraw everything every frame</strong>. There is no persistent scene graph, no retained objects. Each frame, your code issues draw commands from scratch. The API is stateless between frames (or nearly so).</p>
+
+        <div class="concept-box">
+          <h4>Code Example #10: Immediate-Mode Render Loop (Pseudocode)</h4>
+        </div>
+
+        <div class="code-block"><span class="keyword">while</span> (running) {
+    <span class="func">process_input</span>();
+    <span class="func">update_state</span>();
+
+    <span class="comment">/* Redraw everything from scratch */</span>
+    <span class="func">clear_screen</span>();
+    <span class="func">draw_background</span>();
+    <span class="keyword">for</span> (entity <span class="keyword">in</span> entities) {
+        <span class="func">draw_sprite</span>(entity.x, entity.y, entity.texture);
+    }
+    <span class="func">draw_ui</span>(score, health);
+    <span class="func">swap_buffers</span>();
+}</div>
+
+        <p>Examples: OpenGL, HTML5 Canvas, SDL2 rendering, Dear ImGui, video games. The advantage is simplicity &mdash; no state synchronization between your data and the UI. The cost is that you must redraw everything, though GPU acceleration makes this fast for most workloads.</p>
+
+        <h3>Retained Mode</h3>
+
+        <p>In retained mode, you <strong>build a tree of persistent objects</strong> that the framework manages. You create a button once, and the framework draws it, handles events, and redraws it when needed. You modify the tree to update the UI.</p>
+
+        <p>Examples: the browser DOM, Java Swing, Qt, GTK, Cocoa. The advantage is that the framework can optimize redraws (only repaint what changed). The cost is state synchronization &mdash; your data model and the UI tree can get out of sync, leading to stale state bugs.</p>
+
+        <h3>Declarative</h3>
+
+        <p>Declarative systems are a refinement of retained mode. You <strong>describe the desired state</strong> as a function of your data, and the framework diffs the old and new descriptions, computing the minimal set of changes. This solves the state synchronization problem of traditional retained mode.</p>
+
+        <p>Examples: React (virtual DOM diffing), SwiftUI, Flutter, Jetpack Compose. You write <code>UI = f(state)</code> and the framework handles the rest.</p>
+
+        <table class="comparison-table">
+          <tr><th>Paradigm</th><th>Mental Model</th><th>State Management</th><th>Examples</th><th>Best For</th></tr>
+          <tr><td>Immediate</td><td>Draw everything every frame</td><td>You own all state; UI is stateless</td><td>OpenGL, Canvas, Dear ImGui, games</td><td>Games, real-time viz, custom rendering</td></tr>
+          <tr><td>Retained</td><td>Build an object tree; mutate it</td><td>Framework owns UI state; you sync</td><td>DOM, Swing, Qt, GTK, Cocoa</td><td>Desktop apps, forms, CRUD</td></tr>
+          <tr><td>Declarative</td><td>UI = f(state); framework diffs</td><td>You own state; framework diffs UI</td><td>React, SwiftUI, Flutter, Compose</td><td>Complex UIs with frequent state changes</td></tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Tying It All Together</h2>
+        <!-- ============================================================ -->
+
+        <p>Now we can trace the full path from code to pixels for two common scenarios.</p>
+
+        <h3>Trace: How a Web Page Reaches Your Screen</h3>
+
+        <div class="diagram-box">
+<pre>
+  HTML + CSS + JavaScript
+       ↓
+  Browser parses HTML → builds DOM tree
+       ↓
+  Browser parses CSS → builds CSSOM
+       ↓
+  DOM + CSSOM → Render tree (only visible elements)
+       ↓
+  Layout engine computes positions and sizes
+       ↓
+  Paint: generate display list of draw commands
+       ↓
+  Rasterization: Skia converts draw commands to pixels
+       ↓
+  Compositing: GPU composites layers (transforms, opacity)
+       ↓
+  OS compositor (WindowServer / DWM / Wayland)
+       ↓
+  Display controller reads final framebuffer
+       ↓
+  DisplayPort/HDMI signal → Monitor → Photons → Your eyes
+</pre></div>
+
+        <p>The browser is a retained-mode system (the DOM is a persistent tree) running on top of an immediate-mode 2D graphics library (Skia redraws affected regions), which uses a managed GPU API (OpenGL/Vulkan/Metal), which talks to the GPU through kernel drivers (DRM/WDDM/IOKit), which writes to a framebuffer that the display controller scans out.</p>
+
+        <h3>Trace: How a Game Frame Reaches Your Screen</h3>
+
+        <div class="diagram-box">
+<pre>
+  Game loop: process input → update physics → AI → game state
+       ↓
+  Scene graph traversal → generate draw calls
+       ↓
+  For each object: bind textures, set uniforms, draw triangles
+       ↓
+  GPU vertex shaders transform vertices to screen space
+       ↓
+  Rasterizer determines which pixels each triangle covers
+       ↓
+  GPU fragment shaders compute per-pixel color
+       ↓
+  Depth test, alpha blending → back buffer
+       ↓
+  VSync: swap back buffer → front buffer
+       ↓
+  OS compositor (may be bypassed in exclusive fullscreen)
+       ↓
+  Display controller scans out → Monitor
+</pre></div>
+
+        <p>Games are immediate mode &mdash; the entire scene is redrawn every frame. The game engine generates GPU commands (Vulkan/Metal/DirectX 12), the GPU executes them in parallel across thousands of cores, the result goes to the back buffer, and VSync swaps it to the front for scanout.</p>
+
+        <h3>The Common Thread</h3>
+
+        <p>Every graphical application, from a matplotlib chart to a AAA game to this web page, ends the same way: a region of memory is filled with pixel color values, a display controller reads that memory at the refresh rate, and a cable carries the signal to a panel that emits light. The question is never <em>whether</em> pixels end up in a framebuffer &mdash; they always do. The question is how many layers of abstraction sit between your code and those pixels, and what each layer buys you.</p>
+
+        <p>A framebuffer write on Linux is zero layers: your code writes the bytes directly. SDL2 is one layer: it handles the window and the pixel format. OpenGL is two layers: you describe geometry and shaders, the GPU fills the pixels. The browser is six or seven layers deep: HTML, CSS, DOM, layout, paint, Skia, the GPU, the compositor, and the display controller.</p>
+
+        <p>More layers means more convenience, more portability, and more protection from hardware details. Fewer layers means more control, more performance, and a better understanding of what is actually happening. The right level depends on what you are building. But now you know what every level is doing, and what it is hiding.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

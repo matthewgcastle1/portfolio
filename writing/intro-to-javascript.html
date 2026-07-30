@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to JavaScript</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .code-block {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: #6a9955; }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .type { color: #4ec9b0; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
+    .code-block .builtin { color: #c586c0; }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .output-block {
+      background-color: #1a1a2e;
+      color: #a0d0a0;
+      padding: 1rem 1.5rem;
+      margin: -0.5rem 0 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border-radius: 0 0 3px 3px;
+      border-top: 2px solid #4a4a4a;
+      white-space: pre;
+    }
+
+    @media (max-width: 768px) {
+      .code-block { font-size: 0.78rem; padding: 1rem; }
+      .output-block { font-size: 0.75rem; }
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Introduction to JavaScript</h1>
+      <p>The language that ate the world in ten days</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Introduction to JavaScript: The Language of the Web</h1>
+        <div class="article-meta">Computer Science</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Why JavaScript</h2>
+
+        <p>Brendan Eich wrote JavaScript in ten days in May 1995. Netscape needed a scripting language for their browser. It had to look like Java (marketing), act like Scheme (Eich&rsquo;s preference), and be simple enough for non-programmers. The result was a language with first-class functions from Scheme, prototypal inheritance from Self, syntax from Java, and a collection of design mistakes that would haunt the web for decades.</p>
+
+        <p>None of that mattered. JavaScript became the only language that runs natively in every web browser on every device on Earth. There was no alternative and no competition. If you wanted to make a web page interactive, you used JavaScript. When Node.js arrived in 2009, JavaScript escaped the browser and colonized the server. Today, JavaScript is the most-used language on GitHub, the foundation of every web application, and the runtime behind billions of daily interactions.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;Any application that can be written in JavaScript, will eventually be written in JavaScript.&rdquo;</p>
+          <div class="attribution">&mdash; Atwood&rsquo;s Law</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">I. Hello, World</h2>
+        <!-- ============================================================ -->
+
+        <p>In the browser (open your browser&rsquo;s developer console with F12):</p>
+
+        <div class="code-block"><span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"Hello, World"</span>);</div>
+
+        <p>In Node.js (save as <code>hello.js</code>):</p>
+
+        <div class="code-block"><span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"Hello, World"</span>);</div>
+
+        <div class="code-block">$ node hello.js
+Hello, World</div>
+
+        <p>Same code runs in both environments. The browser provides the DOM (document manipulation). Node.js provides the filesystem, network, and OS access. The core language is identical.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">II. Variables and Types</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Three ways to declare variables</span>
+<span class="keyword">const</span> pi = <span class="number">3.14159</span>;     <span class="comment">// constant — cannot be reassigned</span>
+<span class="keyword">let</span> count = <span class="number">0</span>;           <span class="comment">// block-scoped, reassignable</span>
+<span class="keyword">var</span> old = <span class="string">"avoid this"</span>;  <span class="comment">// function-scoped, hoisted — legacy</span>
+
+<span class="comment">// Always use const by default. Use let when you need to reassign.</span>
+<span class="comment">// Never use var.</span></div>
+
+        <h3>Primitive Types</h3>
+
+        <div class="code-block"><span class="keyword">const</span> str = <span class="string">"hello"</span>;          <span class="comment">// string</span>
+<span class="keyword">const</span> num = <span class="number">42</span>;                <span class="comment">// number (64-bit float, like C's double)</span>
+<span class="keyword">const</span> big = <span class="number">9007199254740993</span>n; <span class="comment">// bigint (arbitrary precision)</span>
+<span class="keyword">const</span> yes = <span class="keyword">true</span>;              <span class="comment">// boolean</span>
+<span class="keyword">const</span> empty = <span class="keyword">null</span>;            <span class="comment">// intentional absence of value</span>
+<span class="keyword">const</span> missing = <span class="keyword">undefined</span>;     <span class="comment">// declared but not assigned</span>
+<span class="keyword">const</span> sym = <span class="builtin">Symbol</span>(<span class="string">"id"</span>);     <span class="comment">// unique identifier</span>
+
+<span class="comment">// typeof (mostly makes sense)</span>
+<span class="keyword">typeof</span> <span class="string">"hello"</span>     <span class="comment">// "string"</span>
+<span class="keyword">typeof</span> <span class="number">42</span>          <span class="comment">// "number"</span>
+<span class="keyword">typeof</span> <span class="keyword">true</span>        <span class="comment">// "boolean"</span>
+<span class="keyword">typeof</span> <span class="keyword">undefined</span>   <span class="comment">// "undefined"</span>
+<span class="keyword">typeof</span> <span class="keyword">null</span>        <span class="comment">// "object" — a famous bug from 1995, never fixed</span>
+<span class="keyword">typeof</span> {}          <span class="comment">// "object"</span>
+<span class="keyword">typeof</span> []          <span class="comment">// "object" — arrays are objects</span></div>
+
+        <p>JavaScript has one number type: 64-bit IEEE 754 floating point. There are no integers. <code>1</code> and <code>1.0</code> are the same value. This means you lose integer precision above $2^{53}$ (about 9 quadrillion). For larger integers, use <code>BigInt</code>.</p>
+
+        <h3>Equality</h3>
+
+        <div class="code-block"><span class="comment">// == (loose equality) — performs type coercion. AVOID.</span>
+<span class="number">0</span> == <span class="string">""</span>           <span class="comment">// true (wat)</span>
+<span class="number">0</span> == <span class="keyword">false</span>        <span class="comment">// true</span>
+<span class="string">""</span> == <span class="keyword">false</span>       <span class="comment">// true</span>
+<span class="keyword">null</span> == <span class="keyword">undefined</span> <span class="comment">// true</span>
+
+<span class="comment">// === (strict equality) — no coercion. ALWAYS USE THIS.</span>
+<span class="number">0</span> === <span class="string">""</span>          <span class="comment">// false</span>
+<span class="number">0</span> === <span class="keyword">false</span>       <span class="comment">// false</span>
+<span class="keyword">null</span> === <span class="keyword">undefined</span> <span class="comment">// false</span></div>
+
+        <p>Use <code>===</code> always. Pretend <code>==</code> does not exist. This single rule eliminates an entire category of JavaScript bugs.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">III. Strings and Template Literals</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Template literals (backticks) — JavaScript's f-strings</span>
+<span class="keyword">const</span> name = <span class="string">"World"</span>;
+<span class="keyword">const</span> greeting = <span class="string">`Hello, ${name}!`</span>;
+<span class="keyword">const</span> math = <span class="string">`2 + 2 = ${<span class="number">2</span> + <span class="number">2</span>}`</span>;
+
+<span class="comment">// Multi-line strings (backticks preserve newlines)</span>
+<span class="keyword">const</span> html = <span class="string">`
+  &lt;div class="card"&gt;
+    &lt;h2&gt;${title}&lt;/h2&gt;
+    &lt;p&gt;${description}&lt;/p&gt;
+  &lt;/div&gt;
+`</span>;
+
+<span class="comment">// Common string methods</span>
+<span class="string">"Hello"</span>.<span class="func">toLowerCase</span>()          <span class="comment">// "hello"</span>
+<span class="string">"Hello"</span>.<span class="func">includes</span>(<span class="string">"ell"</span>)       <span class="comment">// true</span>
+<span class="string">"Hello"</span>.<span class="func">startsWith</span>(<span class="string">"He"</span>)      <span class="comment">// true</span>
+<span class="string">"Hello"</span>.<span class="func">slice</span>(<span class="number">1</span>, <span class="number">3</span>)           <span class="comment">// "el"</span>
+<span class="string">"a,b,c"</span>.<span class="func">split</span>(<span class="string">","</span>)             <span class="comment">// ["a", "b", "c"]</span>
+[<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>].<span class="func">join</span>(<span class="string">", "</span>)   <span class="comment">// "a, b, c"</span>
+<span class="string">"  hello  "</span>.<span class="func">trim</span>()             <span class="comment">// "hello"</span>
+<span class="string">"ha"</span>.<span class="func">repeat</span>(<span class="number">3</span>)                <span class="comment">// "hahaha"</span>
+<span class="string">"42"</span>.<span class="func">padStart</span>(<span class="number">5</span>, <span class="string">"0"</span>)         <span class="comment">// "00042"</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IV. Objects</h2>
+        <!-- ============================================================ -->
+
+        <p>Objects are JavaScript&rsquo;s fundamental compound type. They are key-value maps where keys are strings (or Symbols) and values are anything.</p>
+
+        <div class="code-block"><span class="comment">// Object literal</span>
+<span class="keyword">const</span> user = {
+  name: <span class="string">"Alice"</span>,
+  age: <span class="number">30</span>,
+  email: <span class="string">"alice@example.com"</span>,
+  greet() {
+    <span class="keyword">return</span> <span class="string">`Hi, I'm ${<span class="keyword">this</span>.name}`</span>;
+  }
+};
+
+<span class="comment">// Access</span>
+user.name              <span class="comment">// "Alice" (dot notation)</span>
+user[<span class="string">"name"</span>]           <span class="comment">// "Alice" (bracket notation — dynamic keys)</span>
+
+<span class="comment">// Destructuring (one of JS's best features)</span>
+<span class="keyword">const</span> { name, age } = user;  <span class="comment">// name = "Alice", age = 30</span>
+
+<span class="comment">// Spread operator</span>
+<span class="keyword">const</span> updated = { ...user, age: <span class="number">31</span> };  <span class="comment">// shallow copy with age changed</span>
+
+<span class="comment">// Computed property names</span>
+<span class="keyword">const</span> key = <span class="string">"score"</span>;
+<span class="keyword">const</span> obj = { [key]: <span class="number">100</span> };  <span class="comment">// { score: 100 }</span>
+
+<span class="comment">// Shorthand (variable name matches key name)</span>
+<span class="keyword">const</span> x = <span class="number">10</span>, y = <span class="number">20</span>;
+<span class="keyword">const</span> point = { x, y };    <span class="comment">// { x: 10, y: 20 }</span>
+
+<span class="comment">// Useful Object methods</span>
+<span class="builtin">Object</span>.<span class="func">keys</span>(user)       <span class="comment">// ["name", "age", "email", "greet"]</span>
+<span class="builtin">Object</span>.<span class="func">values</span>(user)     <span class="comment">// ["Alice", 30, "alice@example.com", ƒ]</span>
+<span class="builtin">Object</span>.<span class="func">entries</span>(user)    <span class="comment">// [["name","Alice"], ["age",30], ...]</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">V. Arrays</h2>
+        <!-- ============================================================ -->
+
+        <p>Arrays in JavaScript are objects with numeric keys and a length property. Their method toolkit is extraordinary.</p>
+
+        <div class="code-block"><span class="keyword">const</span> nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+
+<span class="comment">// Transform: map (returns new array)</span>
+<span class="keyword">const</span> doubled = nums.<span class="func">map</span>(n =&gt; n * <span class="number">2</span>);       <span class="comment">// [2, 4, 6, 8, 10]</span>
+
+<span class="comment">// Filter: keep elements matching a condition</span>
+<span class="keyword">const</span> evens = nums.<span class="func">filter</span>(n =&gt; n % <span class="number">2</span> === <span class="number">0</span>); <span class="comment">// [2, 4]</span>
+
+<span class="comment">// Reduce: fold into a single value</span>
+<span class="keyword">const</span> sum = nums.<span class="func">reduce</span>((acc, n) =&gt; acc + n, <span class="number">0</span>); <span class="comment">// 15</span>
+
+<span class="comment">// Find: first element matching a condition</span>
+<span class="keyword">const</span> found = nums.<span class="func">find</span>(n =&gt; n &gt; <span class="number">3</span>);       <span class="comment">// 4</span>
+
+<span class="comment">// Test conditions</span>
+nums.<span class="func">some</span>(n =&gt; n &gt; <span class="number">4</span>)     <span class="comment">// true (at least one)</span>
+nums.<span class="func">every</span>(n =&gt; n &gt; <span class="number">0</span>)    <span class="comment">// true (all of them)</span>
+nums.<span class="func">includes</span>(<span class="number">3</span>)          <span class="comment">// true</span>
+
+<span class="comment">// Flatten</span>
+[[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]].<span class="func">flat</span>()             <span class="comment">// [1, 2, 3, 4]</span>
+[[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]].<span class="func">flatMap</span>(a =&gt; a)    <span class="comment">// [1, 2, 3, 4]</span>
+
+<span class="comment">// Destructuring</span>
+<span class="keyword">const</span> [first, second, ...rest] = nums;
+<span class="comment">// first = 1, second = 2, rest = [3, 4, 5]</span>
+
+<span class="comment">// Spread</span>
+<span class="keyword">const</span> combined = [...nums, <span class="number">6</span>, <span class="number">7</span>];  <span class="comment">// [1, 2, 3, 4, 5, 6, 7]</span>
+
+<span class="comment">// Chaining: the real power of array methods</span>
+<span class="keyword">const</span> result = users
+  .<span class="func">filter</span>(u =&gt; u.age &gt;= <span class="number">18</span>)
+  .<span class="func">map</span>(u =&gt; u.name)
+  .<span class="func">sort</span>()
+  .<span class="func">join</span>(<span class="string">", "</span>);</div>
+
+        <p>Learn <code>map</code>, <code>filter</code>, and <code>reduce</code>. These three methods replace most <code>for</code> loops and produce cleaner, more declarative code. Chain them together and you can express complex data transformations in a single readable expression.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VI. Functions</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Function declaration (hoisted)</span>
+<span class="keyword">function</span> <span class="func">add</span>(a, b) {
+  <span class="keyword">return</span> a + b;
+}
+
+<span class="comment">// Function expression (not hoisted)</span>
+<span class="keyword">const</span> <span class="func">multiply</span> = <span class="keyword">function</span>(a, b) {
+  <span class="keyword">return</span> a * b;
+};
+
+<span class="comment">// Arrow function (the modern way)</span>
+<span class="keyword">const</span> <span class="func">square</span> = (x) =&gt; x * x;
+<span class="keyword">const</span> <span class="func">greet</span> = (name) =&gt; <span class="string">`Hello, ${name}`</span>;
+<span class="keyword">const</span> <span class="func">add2</span> = (a, b) =&gt; a + b;
+
+<span class="comment">// Default parameters</span>
+<span class="keyword">function</span> <span class="func">greet</span>(name = <span class="string">"World"</span>) {
+  <span class="keyword">return</span> <span class="string">`Hello, ${name}`</span>;
+}
+
+<span class="comment">// Rest parameters</span>
+<span class="keyword">function</span> <span class="func">sum</span>(...nums) {
+  <span class="keyword">return</span> nums.<span class="func">reduce</span>((a, b) =&gt; a + b, <span class="number">0</span>);
+}
+<span class="func">sum</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)  <span class="comment">// 10</span></div>
+
+        <h3>Closures</h3>
+
+        <p>A closure is a function that remembers the variables from the scope in which it was created, even after that scope has closed. This is JavaScript&rsquo;s most powerful feature.</p>
+
+        <div class="code-block"><span class="keyword">function</span> <span class="func">createCounter</span>(initial = <span class="number">0</span>) {
+  <span class="keyword">let</span> count = initial;  <span class="comment">// private variable — no one outside can touch it</span>
+  <span class="keyword">return</span> {
+    <span class="func">increment</span>() { count++; },
+    <span class="func">decrement</span>() { count--; },
+    <span class="func">getCount</span>()  { <span class="keyword">return</span> count; }
+  };
+}
+
+<span class="keyword">const</span> counter = <span class="func">createCounter</span>(<span class="number">10</span>);
+counter.<span class="func">increment</span>();
+counter.<span class="func">increment</span>();
+counter.<span class="func">getCount</span>();  <span class="comment">// 12</span>
+<span class="comment">// count is truly private — there is no way to access it directly</span></div>
+
+        <p>Closures are how JavaScript achieves encapsulation without classes. The inner functions (<code>increment</code>, <code>decrement</code>, <code>getCount</code>) &ldquo;close over&rdquo; the <code>count</code> variable. They retain access to it even after <code>createCounter</code> has returned. React hooks, Redux reducers, Express middleware, and most JavaScript patterns are built on closures.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VII. Control Flow</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// if / else</span>
+<span class="keyword">if</span> (x &gt; <span class="number">0</span>) {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"positive"</span>);
+} <span class="keyword">else</span> <span class="keyword">if</span> (x === <span class="number">0</span>) {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"zero"</span>);
+} <span class="keyword">else</span> {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"negative"</span>);
+}
+
+<span class="comment">// Ternary operator</span>
+<span class="keyword">const</span> label = age &gt;= <span class="number">18</span> ? <span class="string">"adult"</span> : <span class="string">"minor"</span>;
+
+<span class="comment">// for...of (iterate over values — use this for arrays)</span>
+<span class="keyword">for</span> (<span class="keyword">const</span> item <span class="keyword">of</span> [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]) {
+  <span class="builtin">console</span>.<span class="func">log</span>(item);
+}
+
+<span class="comment">// for...in (iterate over keys — use for objects, not arrays)</span>
+<span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> user) {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`${key}: ${user[key]}`</span>);
+}
+
+<span class="comment">// Classic for loop</span>
+<span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) {
+  <span class="builtin">console</span>.<span class="func">log</span>(i);
+}
+
+<span class="comment">// Optional chaining (?.) — stops at null/undefined instead of crashing</span>
+<span class="keyword">const</span> city = user?.address?.city;  <span class="comment">// undefined if any link is null/undefined</span>
+
+<span class="comment">// Nullish coalescing (??) — default only for null/undefined (not "" or 0)</span>
+<span class="keyword">const</span> port = config.port ?? <span class="number">3000</span>;</div>
+
+        <p>Optional chaining (<code>?.</code>) and nullish coalescing (<code>??</code>) were added in ES2020 and immediately became essential. <code>?.</code> prevents the &ldquo;Cannot read property of undefined&rdquo; error that plagues JavaScript code. <code>??</code> is a better <code>||</code> for defaults because it only triggers on <code>null</code>/<code>undefined</code>, not on <code>0</code>, <code>""</code>, or <code>false</code>.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">VIII. Prototypes and <code>this</code></h2>
+        <!-- ============================================================ -->
+
+        <p>Every JavaScript object has a hidden link to another object called its <strong>prototype</strong>. When you access a property that does not exist on the object, JavaScript looks up the prototype chain until it finds it or reaches <code>null</code>.</p>
+
+        <div class="code-block"><span class="keyword">const</span> animal = {
+  <span class="func">speak</span>() {
+    <span class="keyword">return</span> <span class="string">`${<span class="keyword">this</span>.name} makes a sound`</span>;
+  }
+};
+
+<span class="keyword">const</span> dog = <span class="builtin">Object</span>.<span class="func">create</span>(animal);
+dog.name = <span class="string">"Rex"</span>;
+dog.<span class="func">speak</span>()    <span class="comment">// "Rex makes a sound" — found speak() on the prototype</span>
+
+<span class="comment">// dog does not have its own speak(). JavaScript looked up the</span>
+<span class="comment">// prototype chain and found it on animal.</span></div>
+
+        <h3>What <code>this</code> Actually Means</h3>
+
+        <div class="code-block"><span class="keyword">const</span> obj = {
+  name: <span class="string">"Alice"</span>,
+  <span class="comment">// Regular method: `this` is the object the method is called on</span>
+  <span class="func">greet</span>() {
+    <span class="keyword">return</span> <span class="string">`Hi, I'm ${<span class="keyword">this</span>.name}`</span>;
+  },
+  <span class="comment">// Arrow function: `this` is inherited from the enclosing scope</span>
+  <span class="func">greetLater</span>() {
+    <span class="builtin">setTimeout</span>(() =&gt; {
+      <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`Hi, I'm ${<span class="keyword">this</span>.name}`</span>);  <span class="comment">// works! arrow inherits this</span>
+    }, <span class="number">1000</span>);
+  }
+};
+
+obj.<span class="func">greet</span>();  <span class="comment">// "Hi, I'm Alice" — this = obj</span>
+
+<span class="keyword">const</span> fn = obj.greet;
+<span class="func">fn</span>();        <span class="comment">// "Hi, I'm undefined" — this = global object (or undefined in strict mode)</span></div>
+
+        <table class="comparison-table">
+          <tr><th>Context</th><th>What <code>this</code> Is</th></tr>
+          <tr><td>Method call: <code>obj.method()</code></td><td><code>obj</code></td></tr>
+          <tr><td>Function call: <code>fn()</code></td><td><code>globalThis</code> (or <code>undefined</code> in strict mode)</td></tr>
+          <tr><td>Arrow function</td><td>Inherited from the enclosing lexical scope</td></tr>
+          <tr><td>Constructor: <code>new Foo()</code></td><td>The newly created object</td></tr>
+          <tr><td><code>fn.call(ctx)</code> / <code>fn.bind(ctx)</code></td><td><code>ctx</code> (explicitly set)</td></tr>
+        </table>
+
+        <p>The rule is simple once you learn it: <code>this</code> is determined by <em>how a function is called</em>, not where it is defined. Arrow functions are the exception: they capture <code>this</code> from where they are defined. When in doubt, use arrow functions.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">IX. Classes</h2>
+        <!-- ============================================================ -->
+
+        <p>ES6 classes are syntactic sugar over prototypes. They do not introduce a new object model; they make the existing one easier to use.</p>
+
+        <div class="code-block"><span class="keyword">class</span> <span class="type">Point</span> {
+  <span class="comment">// Private field (ES2022)</span>
+  #label;
+
+  <span class="func">constructor</span>(x, y, label = <span class="string">"point"</span>) {
+    <span class="keyword">this</span>.x = x;
+    <span class="keyword">this</span>.y = y;
+    <span class="keyword">this</span>.#label = label;
+  }
+
+  <span class="func">distanceTo</span>(other) {
+    <span class="keyword">const</span> dx = <span class="keyword">this</span>.x - other.x;
+    <span class="keyword">const</span> dy = <span class="keyword">this</span>.y - other.y;
+    <span class="keyword">return</span> <span class="builtin">Math</span>.<span class="func">sqrt</span>(dx * dx + dy * dy);
+  }
+
+  <span class="func">toString</span>() {
+    <span class="keyword">return</span> <span class="string">`(${<span class="keyword">this</span>.x}, ${<span class="keyword">this</span>.y})`</span>;
+  }
+
+  <span class="keyword">get</span> <span class="func">magnitude</span>() {
+    <span class="keyword">return</span> <span class="builtin">Math</span>.<span class="func">sqrt</span>(<span class="keyword">this</span>.x ** <span class="number">2</span> + <span class="keyword">this</span>.y ** <span class="number">2</span>);
+  }
+
+  <span class="keyword">static</span> <span class="func">origin</span>() {
+    <span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Point</span>(<span class="number">0</span>, <span class="number">0</span>);
+  }
+}
+
+<span class="keyword">const</span> p = <span class="keyword">new</span> <span class="type">Point</span>(<span class="number">3</span>, <span class="number">4</span>);
+p.magnitude          <span class="comment">// 5 (getter looks like a property)</span>
+<span class="type">Point</span>.<span class="func">origin</span>()       <span class="comment">// Point { x: 0, y: 0 }</span></div>
+
+        <h3>Inheritance</h3>
+
+        <div class="code-block"><span class="keyword">class</span> <span class="type">Shape</span> {
+  <span class="func">constructor</span>(name) {
+    <span class="keyword">this</span>.name = name;
+  }
+  <span class="func">area</span>() {
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="builtin">Error</span>(<span class="string">"Not implemented"</span>);
+  }
+}
+
+<span class="keyword">class</span> <span class="type">Circle</span> <span class="keyword">extends</span> <span class="type">Shape</span> {
+  <span class="func">constructor</span>(radius) {
+    <span class="keyword">super</span>(<span class="string">"circle"</span>);
+    <span class="keyword">this</span>.radius = radius;
+  }
+  <span class="func">area</span>() {
+    <span class="keyword">return</span> <span class="builtin">Math</span>.PI * <span class="keyword">this</span>.radius ** <span class="number">2</span>;
+  }
+}</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">X. Promises and Async/Await</h2>
+        <!-- ============================================================ -->
+
+        <p>JavaScript is single-threaded. It handles concurrency through an event loop and asynchronous callbacks. Promises and async/await make asynchronous code readable.</p>
+
+        <h3>Promises</h3>
+
+        <div class="code-block"><span class="comment">// A Promise represents a value that may not be available yet</span>
+<span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="builtin">Promise</span>((resolve, reject) =&gt; {
+  <span class="builtin">setTimeout</span>(() =&gt; <span class="func">resolve</span>(<span class="string">"done!"</span>), <span class="number">1000</span>);
+});
+
+promise
+  .<span class="func">then</span>(result =&gt; <span class="builtin">console</span>.<span class="func">log</span>(result))     <span class="comment">// "done!" after 1 second</span>
+  .<span class="func">catch</span>(err =&gt; <span class="builtin">console</span>.<span class="func">log</span>(err))          <span class="comment">// handles errors</span>
+  .<span class="func">finally</span>(() =&gt; <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"cleanup"</span>));  <span class="comment">// always runs</span>
+
+<span class="comment">// Promise.all: run multiple promises in parallel, wait for all</span>
+<span class="keyword">const</span> [a, b, c] = <span class="keyword">await</span> <span class="builtin">Promise</span>.<span class="func">all</span>([
+  <span class="builtin">fetch</span>(<span class="string">"/api/users"</span>),
+  <span class="builtin">fetch</span>(<span class="string">"/api/posts"</span>),
+  <span class="builtin">fetch</span>(<span class="string">"/api/comments"</span>),
+]);
+
+<span class="comment">// Promise.race: first one to settle wins</span>
+<span class="keyword">const</span> fastest = <span class="keyword">await</span> <span class="builtin">Promise</span>.<span class="func">race</span>([
+  <span class="builtin">fetch</span>(<span class="string">"/api/primary"</span>),
+  <span class="builtin">fetch</span>(<span class="string">"/api/fallback"</span>),
+]);</div>
+
+        <h3>Async/Await</h3>
+
+        <div class="code-block"><span class="comment">// async functions return Promises automatically</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="func">fetchUser</span>(id) {
+  <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="builtin">fetch</span>(<span class="string">`/api/users/${id}`</span>);
+  <span class="keyword">if</span> (!response.ok) {
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="builtin">Error</span>(<span class="string">`HTTP ${response.status}`</span>);
+  }
+  <span class="keyword">return</span> <span class="keyword">await</span> response.<span class="func">json</span>();
+}
+
+<span class="comment">// Error handling with try/catch</span>
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="func">main</span>() {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> user = <span class="keyword">await</span> <span class="func">fetchUser</span>(<span class="number">1</span>);
+    <span class="builtin">console</span>.<span class="func">log</span>(user.name);
+  } <span class="keyword">catch</span> (err) {
+    <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`Failed: ${err.message}`</span>);
+  }
+}</div>
+
+        <p><code>async/await</code> is the best syntax for asynchronous programming in any mainstream language. What was nested callbacks (&ldquo;callback hell&rdquo;) in 2012 is clean, linear, sequential-looking code today. Under the hood it is still Promises and the event loop. The syntax just makes it readable.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XI. The Event Loop</h2>
+        <!-- ============================================================ -->
+
+        <p>JavaScript runs on a single thread. There are no mutexes, no deadlocks, no race conditions on shared memory. Instead, JavaScript uses an event loop: a queue of tasks that are executed one at a time.</p>
+
+        <div class="code-block"><span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"1"</span>);
+
+<span class="builtin">setTimeout</span>(() =&gt; <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"2"</span>), <span class="number">0</span>);  <span class="comment">// 0ms delay — but still queued</span>
+
+<span class="builtin">Promise</span>.<span class="func">resolve</span>().<span class="func">then</span>(() =&gt; <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"3"</span>));
+
+<span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"4"</span>);</div>
+
+        <div class="output-block">1
+4
+3
+2</div>
+
+        <p>The output order is: 1, 4, 3, 2. Why?</p>
+
+        <ol>
+          <li><code>"1"</code> runs immediately (synchronous)</li>
+          <li><code>setTimeout</code> schedules <code>"2"</code> in the <strong>task queue</strong> (macrotask)</li>
+          <li><code>Promise.then</code> schedules <code>"3"</code> in the <strong>microtask queue</strong></li>
+          <li><code>"4"</code> runs immediately (synchronous)</li>
+          <li>The call stack is empty. Microtasks run first: <code>"3"</code></li>
+          <li>Then the next macrotask: <code>"2"</code></li>
+        </ol>
+
+        <p>The mental model: synchronous code runs first, microtasks (Promises) run next, macrotasks (setTimeout, I/O callbacks) run last. This is why a <code>setTimeout(fn, 0)</code> does not run immediately &mdash; it runs after all synchronous code and all microtasks have finished.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XII. Modules</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// --- math.js ---</span>
+<span class="keyword">export</span> <span class="keyword">function</span> <span class="func">add</span>(a, b) { <span class="keyword">return</span> a + b; }
+<span class="keyword">export</span> <span class="keyword">function</span> <span class="func">multiply</span>(a, b) { <span class="keyword">return</span> a * b; }
+<span class="keyword">export</span> <span class="keyword">const</span> PI = <span class="number">3.14159</span>;
+
+<span class="comment">// Default export (one per module)</span>
+<span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="type">Calculator</span> { <span class="comment">/* ... */</span> }
+
+<span class="comment">// --- main.js ---</span>
+<span class="keyword">import</span> <span class="type">Calculator</span> <span class="keyword">from</span> <span class="string">"./math.js"</span>;           <span class="comment">// default import</span>
+<span class="keyword">import</span> { add, multiply, PI } <span class="keyword">from</span> <span class="string">"./math.js"</span>; <span class="comment">// named imports</span>
+<span class="keyword">import</span> * <span class="keyword">as</span> math <span class="keyword">from</span> <span class="string">"./math.js"</span>;             <span class="comment">// namespace import</span>
+
+<span class="comment">// Dynamic import (code splitting)</span>
+<span class="keyword">const</span> module = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="string">"./heavy-module.js"</span>);</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIII. Error Handling</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="keyword">try</span> {
+  <span class="keyword">const</span> data = <span class="builtin">JSON</span>.<span class="func">parse</span>(rawInput);
+  <span class="func">processData</span>(data);
+} <span class="keyword">catch</span> (err) {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`Error: ${err.message}`</span>);
+} <span class="keyword">finally</span> {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"always runs"</span>);
+}
+
+<span class="comment">// Custom error classes</span>
+<span class="keyword">class</span> <span class="type">NotFoundError</span> <span class="keyword">extends</span> <span class="builtin">Error</span> {
+  <span class="func">constructor</span>(resource, id) {
+    <span class="keyword">super</span>(<span class="string">`${resource} #${id} not found`</span>);
+    <span class="keyword">this</span>.name = <span class="string">"NotFoundError"</span>;
+    <span class="keyword">this</span>.resource = resource;
+    <span class="keyword">this</span>.id = id;
+  }
+}
+
+<span class="comment">// Always throw Error objects, never strings</span>
+<span class="keyword">throw</span> <span class="keyword">new</span> <span class="builtin">Error</span>(<span class="string">"Something failed"</span>);   <span class="comment">// good (has stack trace)</span>
+<span class="keyword">throw</span> <span class="string">"Something failed"</span>;              <span class="comment">// bad (no stack trace)</span></div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XIV. The DOM</h2>
+        <!-- ============================================================ -->
+
+        <p>The DOM is the browser&rsquo;s API for interacting with HTML. Even if you use React or Vue, they call these APIs under the hood.</p>
+
+        <div class="code-block"><span class="comment">// Select elements</span>
+<span class="keyword">const</span> el = <span class="builtin">document</span>.<span class="func">querySelector</span>(<span class="string">".my-class"</span>);
+<span class="keyword">const</span> all = <span class="builtin">document</span>.<span class="func">querySelectorAll</span>(<span class="string">"ul &gt; li"</span>);
+
+<span class="comment">// Create and modify</span>
+<span class="keyword">const</span> div = <span class="builtin">document</span>.<span class="func">createElement</span>(<span class="string">"div"</span>);
+div.textContent = <span class="string">"Hello"</span>;
+div.className = <span class="string">"greeting"</span>;
+<span class="builtin">document</span>.body.<span class="func">appendChild</span>(div);
+
+<span class="comment">// Event handling</span>
+<span class="keyword">const</span> button = <span class="builtin">document</span>.<span class="func">querySelector</span>(<span class="string">"#btn"</span>);
+button.<span class="func">addEventListener</span>(<span class="string">"click"</span>, (event) =&gt; {
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"clicked!"</span>);
+});
+
+<span class="comment">// Event delegation: one listener on the parent, not one per child</span>
+<span class="keyword">const</span> list = <span class="builtin">document</span>.<span class="func">querySelector</span>(<span class="string">"#list"</span>);
+list.<span class="func">addEventListener</span>(<span class="string">"click"</span>, (e) =&gt; {
+  <span class="keyword">if</span> (e.target.tagName === <span class="string">"LI"</span>) {
+    e.target.classList.<span class="func">toggle</span>(<span class="string">"selected"</span>);
+  }
+});</div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XV. The Ecosystem</h2>
+        <!-- ============================================================ -->
+
+        <div class="code-block"><span class="comment">// Initialize a project</span>
+$ npm init -y
+
+<span class="comment">// Install dependencies</span>
+$ npm install express           <span class="comment"># production dependency</span>
+$ npm install --save-dev jest   <span class="comment"># dev dependency</span></div>
+
+        <p>npm has over two million packages. The <code>node_modules</code> directory is infamous for its size. This is a real problem, though tools like <code>pnpm</code> mitigate it with hard links and deduplication.</p>
+
+        <h3>TypeScript</h3>
+
+        <p>TypeScript is JavaScript with static types. It compiles to plain JavaScript. It has become the default for serious projects.</p>
+
+        <div class="code-block"><span class="keyword">function</span> <span class="func">add</span>(a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> {
+  <span class="keyword">return</span> a + b;
+}
+
+<span class="keyword">interface</span> <span class="type">User</span> {
+  name: <span class="type">string</span>;
+  age: <span class="type">number</span>;
+  email?: <span class="type">string</span>;  <span class="comment">// optional</span>
+}
+
+<span class="keyword">function</span> <span class="func">greet</span>(user: <span class="type">User</span>): <span class="type">string</span> {
+  <span class="keyword">return</span> <span class="string">`Hello, ${user.name}`</span>;
+}</div>
+
+        <p>TypeScript catches bugs at compile time that JavaScript catches at runtime (or never). Every major framework now recommends TypeScript. If you are writing JavaScript professionally, you should be writing TypeScript.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">XVI. Putting It Together</h2>
+        <!-- ============================================================ -->
+
+        <p>A complete Node.js program demonstrating async/await, closures, array methods, destructuring, and error handling: a concurrent URL fetcher with rate limiting.</p>
+
+        <div class="code-block"><span class="comment">// fetcher.js — run with: node fetcher.js</span>
+
+<span class="keyword">function</span> <span class="func">createFetcher</span>(maxConcurrent = <span class="number">3</span>) {
+  <span class="keyword">let</span> active = <span class="number">0</span>;
+  <span class="keyword">const</span> queue = [];
+
+  <span class="keyword">async</span> <span class="keyword">function</span> <span class="func">execute</span>(url) {
+    <span class="keyword">while</span> (active &gt;= maxConcurrent) {
+      <span class="keyword">await</span> <span class="keyword">new</span> <span class="builtin">Promise</span>(r =&gt; queue.<span class="func">push</span>(r));
+    }
+    active++;
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> start = <span class="builtin">Date</span>.<span class="func">now</span>();
+      <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="builtin">fetch</span>(url);
+      <span class="keyword">const</span> text = <span class="keyword">await</span> res.<span class="func">text</span>();
+      <span class="keyword">return</span> { url, status: res.status, size: text.length,
+               elapsed: <span class="builtin">Date</span>.<span class="func">now</span>() - start, ok: res.ok };
+    } <span class="keyword">catch</span> (err) {
+      <span class="keyword">return</span> { url, status: <span class="number">0</span>, size: <span class="number">0</span>, elapsed: <span class="number">0</span>, ok: <span class="keyword">false</span>,
+               error: err.message };
+    } <span class="keyword">finally</span> {
+      active--;
+      <span class="keyword">if</span> (queue.length) queue.<span class="func">shift</span>()();
+    }
+  }
+
+  <span class="keyword">return</span> { execute };
+}
+
+<span class="keyword">async</span> <span class="keyword">function</span> <span class="func">main</span>() {
+  <span class="keyword">const</span> urls = [
+    <span class="string">"https://jsonplaceholder.typicode.com/posts/1"</span>,
+    <span class="string">"https://jsonplaceholder.typicode.com/posts/2"</span>,
+    <span class="string">"https://jsonplaceholder.typicode.com/users/1"</span>,
+    <span class="string">"https://this-will-fail.invalid/nope"</span>,
+  ];
+
+  <span class="keyword">const</span> fetcher = <span class="func">createFetcher</span>(<span class="number">3</span>);
+  <span class="keyword">const</span> results = <span class="keyword">await</span> <span class="builtin">Promise</span>.<span class="func">all</span>(urls.<span class="func">map</span>(u =&gt; fetcher.<span class="func">execute</span>(u)));
+
+  <span class="comment">// Partition with reduce</span>
+  <span class="keyword">const</span> { ok, failed } = results.<span class="func">reduce</span>(
+    (acc, r) =&gt; { (r.ok ? acc.ok : acc.failed).<span class="func">push</span>(r); <span class="keyword">return</span> acc; },
+    { ok: [], failed: [] }
+  );
+
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"=== Successes ==="</span>);
+  ok.<span class="func">forEach</span>(({ url, status, size, elapsed }) =&gt;
+    <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`  ${status} ${url} (${size}B, ${elapsed}ms)`</span>)
+  );
+
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">"=== Failures ==="</span>);
+  failed.<span class="func">forEach</span>(({ url, error }) =&gt;
+    <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`  FAIL ${url}: ${error ?? <span class="string">"HTTP error"</span>}`</span>)
+  );
+
+  <span class="keyword">const</span> avgTime = ok.<span class="func">reduce</span>((s, r) =&gt; s + r.elapsed, <span class="number">0</span>) / ok.length;
+  <span class="builtin">console</span>.<span class="func">log</span>(<span class="string">`\nSucceeded: ${ok.length}/${results.length}, avg ${avgTime.toFixed(0)}ms`</span>);
+}
+
+<span class="func">main</span>().<span class="func">catch</span>(err =&gt; { <span class="builtin">console</span>.error(err); process.<span class="func">exit</span>(<span class="number">1</span>); });</div>
+
+        <div class="concept-box">
+          <h4>JavaScript&rsquo;s Quirks</h4>
+          <table class="comparison-table">
+            <tr><th>Expression</th><th>Result</th><th>Why</th></tr>
+            <tr><td><code>[] + []</code></td><td><code>""</code></td><td>Both arrays coerce to empty strings, then concatenate</td></tr>
+            <tr><td><code>[] + {}</code></td><td><code>"[object Object]"</code></td><td>Array → "", Object → "[object Object]", then string concatenation</td></tr>
+            <tr><td><code>NaN !== NaN</code></td><td><code>true</code></td><td>IEEE 754 spec. Use <code>Number.isNaN()</code></td></tr>
+            <tr><td><code>0.1 + 0.2 !== 0.3</code></td><td><code>true</code></td><td>IEEE 754 floats. Result is 0.30000000000000004. Affects every language with floats.</td></tr>
+            <tr><td><code>typeof null</code></td><td><code>"object"</code></td><td>A bug from 1995. Never fixed for backwards compatibility.</td></tr>
+          </table>
+          <p>These quirks are real, documented, and make for entertaining conference talks. They rarely matter in practice. Use <code>===</code>, avoid implicit coercion, use <code>Number.isNaN()</code>, and you will never hit them in production.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Summary</h2>
+        <!-- ============================================================ -->
+
+        <p>JavaScript is not a perfect language. It was designed in ten days and carries the scars. But it has genuine strengths:</p>
+
+        <ul>
+          <li><strong>Ubiquity.</strong> It runs in every browser, on every server with Node.js, on mobile (React Native), on the desktop (Electron). No other language has this reach.</li>
+          <li><strong>First-class functions and closures.</strong> Taken from Scheme, these are the foundation of everything good in JavaScript: callbacks, higher-order functions, module patterns, React components.</li>
+          <li><strong>The event loop.</strong> A simple concurrency model. No threads, no mutexes, no deadlocks. Just callbacks and a queue.</li>
+          <li><strong>Async/await.</strong> The cleanest syntax for asynchronous programming in any mainstream language.</li>
+          <li><strong>The ecosystem.</strong> npm has more packages than any other registry. Whatever you need, someone has built a library for it.</li>
+          <li><strong>TypeScript.</strong> The safety net JavaScript always needed. Static types without sacrificing flexibility.</li>
+        </ul>
+
+        <p>JavaScript conquered the world not because it was the best language, but because it was <em>there</em> &mdash; in every browser, with no installation required. And then, year by year, it got better: <code>let</code>/<code>const</code>, arrow functions, destructuring, modules, async/await, optional chaining, private class fields. The JavaScript of today is dramatically better than the JavaScript of 2005.</p>
+
+        <p>If you understand closures, the prototype chain, the event loop, and Promises, you understand JavaScript. Everything else &mdash; React, Node, TypeScript, every framework of the year &mdash; is built on those foundations.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

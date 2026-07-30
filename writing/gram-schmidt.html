@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Gram-Schmidt Process: Orthogonality from Scratch</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .highlight-box p {
+      text-align: center;
+    }
+
+    .example-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .example-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .diagram-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      border-radius: 3px;
+    }
+
+    .visualization {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .visualization svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .vis-caption {
+      font-size: 0.9rem;
+      color: #5a5a5a;
+      font-style: italic;
+      margin-top: 0.8rem;
+    }
+
+    .step-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .step-box .step-label {
+      font-weight: 700;
+      color: #1a3a3a;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .proof-box {
+      background-color: #faf8f3;
+      border: 1px solid #d4cfc4;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .proof-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+    }
+
+    .proof-box .qed {
+      text-align: right;
+      font-size: 1.1rem;
+    }
+
+    .algorithm-box {
+      background-color: #f5f1e8;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .algorithm-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .algorithm-box ol {
+      margin: 0;
+      padding-left: 1.5rem;
+    }
+
+    .algorithm-box li {
+      margin-bottom: 0.6rem;
+      line-height: 1.8;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Gram&ndash;Schmidt Process</h1>
+      <p>Orthogonality from scratch</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Gram&ndash;Schmidt Process: Orthogonality from Scratch</h1>
+        <div class="article-meta">Linear Algebra &amp; Geometry</div>
+      </div>
+
+      <div class="article-body">
+
+        <p>Given any basis for a subspace, Gram&ndash;Schmidt produces an orthonormal basis spanning exactly the same subspace. The algorithm is constructive, finite, and geometrically transparent: at each step, you subtract off the components that lie in directions you&rsquo;ve already handled, and normalize what remains. The residual points in a genuinely new direction&mdash;perpendicular to everything before it.</p>
+
+        <p>This article develops the process from the ground up: the geometry of projection, the algorithm itself with full proofs, worked examples in $\mathbb{R}^2$ and $\mathbb{R}^3$ with visual diagrams, the connection to QR factorization, the numerical instability of the classical algorithm and its fix, and applications across mathematics, physics, and computation.</p>
+
+        <!-- ============================================ -->
+        <h2>1. Why Orthogonality Matters</h2>
+        <!-- ============================================ -->
+
+        <p>An orthonormal basis $\{e_1, \ldots, e_n\}$ satisfies $\langle e_i, e_j \rangle = \delta_{ij}$&mdash;each vector has unit length, and distinct vectors are perpendicular. This is a strong condition, and it buys you enormous computational and theoretical leverage.</p>
+
+        <p><strong>Coordinates are free.</strong> If $\{e_1, \ldots, e_n\}$ is orthonormal, then the coordinates of any vector $v$ are simply inner products:</p>
+
+        $$v = \sum_{i=1}^{n} \langle v, e_i \rangle \, e_i$$
+
+        <p>No matrix inversion. No solving systems of equations. You just project.</p>
+
+        <p><strong>Lengths decompose cleanly.</strong> By the Pythagorean theorem in $n$ dimensions:</p>
+
+        $$\|v\|^2 = \sum_{i=1}^{n} |\langle v, e_i \rangle|^2$$
+
+        <p>This is Parseval&rsquo;s identity, and it says that the total &ldquo;energy&rdquo; in a vector equals the sum of squared energies in each orthogonal component. No cross terms. No interference.</p>
+
+        <p><strong>Matrices become simple.</strong> The matrix representing a linear transformation with respect to an orthonormal basis has the property that its inverse equals its transpose: $Q^{-1} = Q^T$ (or $Q^* = Q^{-1}$ in the complex case). These orthogonal (or unitary) matrices preserve lengths and angles&mdash;they are the rigid motions of linear algebra.</p>
+
+        <div class="concept-box">
+          <h4>The core promise</h4>
+          <p>Orthogonal bases turn hard problems (solving systems, minimizing errors, decomposing signals) into easy ones (taking inner products). Gram&ndash;Schmidt is the machine that manufactures these bases from arbitrary inputs.</p>
+        </div>
+
+
+        <!-- ============================================ -->
+        <h2>2. Orthogonal Projection: The Geometric Engine</h2>
+        <!-- ============================================ -->
+
+        <p>The entire Gram&ndash;Schmidt process rests on one operation: <strong>orthogonal projection</strong>. Before we state the algorithm, we need to understand this operation geometrically and algebraically.</p>
+
+        <h3>Projection onto a single vector</h3>
+
+        <p>Given a nonzero vector $u$ and any vector $v$, the <em>orthogonal projection of $v$ onto $u$</em> is the vector in the direction of $u$ that is closest to $v$:</p>
+
+        <div class="math-box">
+          <span class="label">Orthogonal Projection onto a Vector:</span><br><br>
+          $$\operatorname{proj}_u v = \frac{\langle v, u \rangle}{\langle u, u \rangle} \, u$$
+        </div>
+
+        <p>The geometric interpretation: drop a perpendicular from the tip of $v$ down to the line spanned by $u$. The foot of that perpendicular is $\operatorname{proj}_u v$. The vector from the projection to $v$&mdash;namely $v - \operatorname{proj}_u v$&mdash;is orthogonal to $u$.</p>
+
+        <div class="visualization">
+          <svg viewBox="0 0 500 300" width="500" height="300">
+            <!-- Grid background -->
+            <defs>
+              <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+              </marker>
+              <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+              </marker>
+              <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+              </marker>
+              <marker id="arrowhead-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#8b7355"/>
+              </marker>
+            </defs>
+
+            <!-- Origin -->
+            <circle cx="80" cy="220" r="3" fill="#2c2c2c"/>
+
+            <!-- Vector u (along a direction) -->
+            <line x1="80" y1="220" x2="420" y2="120" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowhead-blue)"/>
+            <text x="430" y="118" fill="#2563eb" font-size="16" font-weight="600" font-family="Georgia">u</text>
+
+            <!-- Vector v -->
+            <line x1="80" y1="220" x2="280" y2="50" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowhead-red)"/>
+            <text x="285" y="45" fill="#dc2626" font-size="16" font-weight="600" font-family="Georgia">v</text>
+
+            <!-- Projection of v onto u -->
+            <line x1="80" y1="220" x2="263" y2="166" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrowhead-green)"/>
+            <text x="155" y="210" fill="#16a34a" font-size="14" font-weight="600" font-family="Georgia">proj&#x1D66;v</text>
+
+            <!-- Dashed perpendicular from v to projection -->
+            <line x1="280" y1="50" x2="263" y2="166" stroke="#888" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+            <!-- Right angle marker -->
+            <polyline points="275,160 269,153 262,159" fill="none" stroke="#888" stroke-width="1.2"/>
+
+            <!-- Residual label -->
+            <text x="290" y="115" fill="#888" font-size="13" font-style="italic" font-family="Georgia">v &minus; proj&#x1D66;v</text>
+
+            <!-- Origin label -->
+            <text x="60" y="240" fill="#2c2c2c" font-size="13" font-family="Georgia">O</text>
+          </svg>
+          <div class="vis-caption">Figure 1. Orthogonal projection of $v$ onto $u$. The projection $\operatorname{proj}_u v$ (green) lies along $u$, and the residual $v - \operatorname{proj}_u v$ (dashed) is perpendicular to $u$.</div>
+        </div>
+
+        <p>The key algebraic fact: the residual is orthogonal to $u$.</p>
+
+        <div class="proof-box">
+          <h4>Verification</h4>
+          <p>Compute:</p>
+          $$\left\langle v - \frac{\langle v, u \rangle}{\langle u, u \rangle} u, \; u \right\rangle = \langle v, u \rangle - \frac{\langle v, u \rangle}{\langle u, u \rangle} \langle u, u \rangle = \langle v, u \rangle - \langle v, u \rangle = 0 \quad \checkmark$$
+          <p class="qed">$\blacksquare$</p>
+        </div>
+
+        <h3>Projection onto a subspace</h3>
+
+        <p>If $\{u_1, \ldots, u_k\}$ is an <em>orthogonal</em> set (pairwise perpendicular, but not necessarily unit length), then the projection of $v$ onto $W = \operatorname{span}\{u_1, \ldots, u_k\}$ decomposes into independent projections onto each direction:</p>
+
+        <div class="math-box">
+          <span class="label">Projection onto an Orthogonal Subspace:</span><br><br>
+          $$\operatorname{proj}_W v = \sum_{i=1}^{k} \frac{\langle v, u_i \rangle}{\langle u_i, u_i \rangle} \, u_i$$
+        </div>
+
+        <p>This is the key simplification that orthogonality provides. For a <em>non-orthogonal</em> basis, projecting onto a subspace requires solving a system of equations (the normal equations). For an orthogonal basis, you just sum the individual projections&mdash;they don&rsquo;t interfere with each other because the cross terms vanish.</p>
+
+
+        <!-- ============================================ -->
+        <h2>3. The Gram&ndash;Schmidt Algorithm</h2>
+        <!-- ============================================ -->
+
+        <p>Now we have the tool. Here is the machine that uses it.</p>
+
+        <div class="math-box">
+          <span class="label">Gram&ndash;Schmidt Orthogonalization:</span><br><br>
+          <p><strong>Input:</strong> A linearly independent set $\{v_1, v_2, \ldots, v_n\}$ in an inner product space.</p>
+          <p><strong>Output:</strong> An orthogonal set $\{u_1, u_2, \ldots, u_n\}$ such that $\operatorname{span}\{u_1, \ldots, u_k\} = \operatorname{span}\{v_1, \ldots, v_k\}$ for each $k$.</p>
+        </div>
+
+        <div class="algorithm-box">
+          <h4>Classical Gram&ndash;Schmidt (CGS)</h4>
+          <ol>
+            <li><strong>Set</strong> $u_1 = v_1$</li>
+            <li><strong>For</strong> $k = 2, 3, \ldots, n$:<br>
+              $$u_k = v_k - \sum_{j=1}^{k-1} \frac{\langle v_k, u_j \rangle}{\langle u_j, u_j \rangle} \, u_j$$
+            </li>
+            <li><strong>To normalize:</strong> set $e_k = u_k / \|u_k\|$ for each $k$.</li>
+          </ol>
+        </div>
+
+        <p>The idea at each step is the same: take the next input vector $v_k$, subtract off its projections onto all previously computed orthogonal directions, and keep the residual. The residual is perpendicular to everything before it by construction&mdash;we subtracted away every component that wasn&rsquo;t.</p>
+
+        <div class="concept-box">
+          <h4>The geometric intuition</h4>
+          <p>Think of building a coordinate system one axis at a time. The first axis is easy&mdash;just take $v_1$. For the second axis, you need a direction perpendicular to the first. Take $v_2$ and remove its shadow on $u_1$; what remains points in a genuinely new direction. For the third axis, take $v_3$ and remove its shadows on both $u_1$ and $u_2$; the residual is perpendicular to the entire plane spanned by the first two. And so on.</p>
+        </div>
+
+
+        <!-- ============================================ -->
+        <h2>4. The Span Preservation Property</h2>
+        <!-- ============================================ -->
+
+        <p>A subtle but crucial property: at every stage $k$, the span of the first $k$ orthogonal vectors equals the span of the first $k$ input vectors. This is not obvious, and it matters.</p>
+
+        <div class="proof-box">
+          <h4>Theorem (Span Preservation)</h4>
+          <p>For each $k = 1, \ldots, n$: $\;\operatorname{span}\{u_1, \ldots, u_k\} = \operatorname{span}\{v_1, \ldots, v_k\}$.</p>
+          <br>
+          <p><strong>Proof</strong> by induction on $k$.</p>
+          <p><em>Base case</em> ($k = 1$): $u_1 = v_1$, so the spans are equal.</p>
+          <p><em>Inductive step</em>: Assume $\operatorname{span}\{u_1, \ldots, u_{k-1}\} = \operatorname{span}\{v_1, \ldots, v_{k-1}\}$. By the formula:</p>
+          $$u_k = v_k - \sum_{j=1}^{k-1} \frac{\langle v_k, u_j \rangle}{\langle u_j, u_j \rangle} u_j$$
+          <p>Since $u_1, \ldots, u_{k-1} \in \operatorname{span}\{v_1, \ldots, v_{k-1}\}$, the sum is in $\operatorname{span}\{v_1, \ldots, v_{k-1}\}$. So $u_k = v_k - (\text{something in } \operatorname{span}\{v_1, \ldots, v_{k-1}\})$, which means $u_k \in \operatorname{span}\{v_1, \ldots, v_k\}$.</p>
+          <p>Conversely, rearranging: $v_k = u_k + \sum_{j=1}^{k-1} c_j u_j$, so $v_k \in \operatorname{span}\{u_1, \ldots, u_k\}$. Combined with the inductive hypothesis, both spans are equal.</p>
+          <p>Moreover, $u_k \neq 0$ because $v_k \notin \operatorname{span}\{v_1, \ldots, v_{k-1}\}$ (the $v_i$ are linearly independent).</p>
+          <p class="qed">$\blacksquare$</p>
+        </div>
+
+        <p>This property is what makes Gram&ndash;Schmidt useful beyond abstract orthogonalization. It means the process doesn&rsquo;t &ldquo;drift&rdquo; into a different subspace. The orthonormal basis spans <em>exactly</em> the same space as the original basis. This is essential for the QR factorization, for least-squares problems, and for any application where you need an orthonormal basis for a <em>specific</em> subspace.</p>
+
+
+        <!-- ============================================ -->
+        <h2>5. Worked Example: $\mathbb{R}^2$</h2>
+        <!-- ============================================ -->
+
+        <p>Let $v_1 = \begin{pmatrix} 3 \\ 1 \end{pmatrix}$ and $v_2 = \begin{pmatrix} 2 \\ 4 \end{pmatrix}$. These are linearly independent (neither is a scalar multiple of the other), but they are not orthogonal: $\langle v_1, v_2 \rangle = 6 + 4 = 10 \neq 0$.</p>
+
+        <div class="example-box">
+          <h4>Step 1: Set $u_1 = v_1$</h4>
+          $$u_1 = \begin{pmatrix} 3 \\ 1 \end{pmatrix}$$
+        </div>
+
+        <div class="example-box">
+          <h4>Step 2: Compute $u_2$</h4>
+          <p>Subtract the projection of $v_2$ onto $u_1$:</p>
+          $$\operatorname{proj}_{u_1} v_2 = \frac{\langle v_2, u_1 \rangle}{\langle u_1, u_1 \rangle} u_1 = \frac{10}{10} \begin{pmatrix} 3 \\ 1 \end{pmatrix} = \begin{pmatrix} 3 \\ 1 \end{pmatrix}$$
+          $$u_2 = v_2 - \operatorname{proj}_{u_1} v_2 = \begin{pmatrix} 2 \\ 4 \end{pmatrix} - \begin{pmatrix} 3 \\ 1 \end{pmatrix} = \begin{pmatrix} -1 \\ 3 \end{pmatrix}$$
+        </div>
+
+        <p><strong>Verification:</strong> $\langle u_1, u_2 \rangle = (3)(-1) + (1)(3) = -3 + 3 = 0$. $\checkmark$</p>
+
+        <div class="example-box">
+          <h4>Step 3: Normalize</h4>
+          $$e_1 = \frac{u_1}{\|u_1\|} = \frac{1}{\sqrt{10}} \begin{pmatrix} 3 \\ 1 \end{pmatrix}, \qquad e_2 = \frac{u_2}{\|u_2\|} = \frac{1}{\sqrt{10}} \begin{pmatrix} -1 \\ 3 \end{pmatrix}$$
+        </div>
+
+        <div class="visualization">
+          <svg viewBox="0 0 520 420" width="520" height="420">
+            <defs>
+              <marker id="arr-blue2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+              </marker>
+              <marker id="arr-red2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+              </marker>
+              <marker id="arr-green2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+              </marker>
+              <marker id="arr-purple2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea"/>
+              </marker>
+            </defs>
+
+            <!-- Grid -->
+            <g stroke="#e0d9ce" stroke-width="0.5">
+              <line x1="60" y1="20" x2="60" y2="380"/><line x1="120" y1="20" x2="120" y2="380"/>
+              <line x1="180" y1="20" x2="180" y2="380"/><line x1="240" y1="20" x2="240" y2="380"/>
+              <line x1="300" y1="20" x2="300" y2="380"/><line x1="360" y1="20" x2="360" y2="380"/>
+              <line x1="420" y1="20" x2="420" y2="380"/><line x1="480" y1="20" x2="480" y2="380"/>
+              <line x1="20" y1="60" x2="500" y2="60"/><line x1="20" y1="120" x2="500" y2="120"/>
+              <line x1="20" y1="180" x2="500" y2="180"/><line x1="20" y1="240" x2="500" y2="240"/>
+              <line x1="20" y1="300" x2="500" y2="300"/><line x1="20" y1="360" x2="500" y2="360"/>
+            </g>
+
+            <!-- Axes -->
+            <line x1="60" y1="380" x2="500" y2="380" stroke="#aaa" stroke-width="1"/>
+            <line x1="60" y1="20" x2="60" y2="380" stroke="#aaa" stroke-width="1"/>
+
+            <!-- Origin at (60, 320) so each unit = 60px, y inverted -->
+            <!-- v1 = (3,1) -> (60+180, 320-60) = (240, 260) -->
+            <!-- v2 = (2,4) -> (60+120, 320-240) = (180, 80) -->
+            <!-- u1 = (3,1) -> (240, 260) -->
+            <!-- u2 = (-1,3) -> (60-60, 320-180) = (0, 140) — clip to (30, 140) -->
+            <!-- proj = (3,1) -> (240, 260) -->
+
+            <!-- v1 (= u1) -->
+            <line x1="60" y1="320" x2="237" y2="262" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arr-blue2)"/>
+            <text x="248" y="268" fill="#2563eb" font-size="15" font-weight="600" font-family="Georgia">v₁ = u₁ = (3, 1)</text>
+
+            <!-- v2 -->
+            <line x1="60" y1="320" x2="178" y2="82" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arr-red2)"/>
+            <text x="185" y="77" fill="#dc2626" font-size="15" font-weight="600" font-family="Georgia">v₂ = (2, 4)</text>
+
+            <!-- Projection of v2 onto u1: proj = (3, 1) = same as u1 -->
+            <line x1="60" y1="320" x2="237" y2="262" stroke="#16a34a" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arr-green2)"/>
+            <text x="170" y="310" fill="#16a34a" font-size="13" font-family="Georgia">proj = (3, 1)</text>
+
+            <!-- Dashed line from v2 tip to projection tip -->
+            <line x1="180" y1="80" x2="240" y2="260" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+
+            <!-- u2 = (-1, 3): from origin (60,320) to (60-60, 320-180) = (0, 140) -->
+            <line x1="60" y1="320" x2="3" y2="142" stroke="#9333ea" stroke-width="2.5" marker-end="url(#arr-purple2)"/>
+            <text x="5" y="130" fill="#9333ea" font-size="15" font-weight="600" font-family="Georgia">u₂ = (−1, 3)</text>
+
+            <!-- Right angle at origin between u1 and u2 -->
+            <path d="M 72 316 L 76 308 L 68 304" fill="none" stroke="#888" stroke-width="1.2"/>
+
+            <!-- Origin dot -->
+            <circle cx="60" cy="320" r="3" fill="#2c2c2c"/>
+            <text x="42" y="340" fill="#2c2c2c" font-size="13" font-family="Georgia">O</text>
+          </svg>
+          <div class="vis-caption">Figure 2. Gram&ndash;Schmidt in $\mathbb{R}^2$. The original basis $\{v_1, v_2\}$ is transformed into the orthogonal basis $\{u_1, u_2\}$. The vector $u_2$ (purple) is obtained by subtracting the projection of $v_2$ onto $u_1$ from $v_2$.</div>
+        </div>
+
+
+        <!-- ============================================ -->
+        <h2>6. Worked Example: $\mathbb{R}^3$</h2>
+        <!-- ============================================ -->
+
+        <p>Let $v_1 = \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix}$, $v_2 = \begin{pmatrix} 1 \\ 0 \\ 1 \end{pmatrix}$, $v_3 = \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix}$. These span all of $\mathbb{R}^3$ but are not orthogonal.</p>
+
+        <div class="step-box">
+          <span class="step-label">Step 1: $u_1 = v_1$</span>
+          $$u_1 = \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix}, \qquad \|u_1\|^2 = 2$$
+        </div>
+
+        <div class="step-box">
+          <span class="step-label">Step 2: Orthogonalize $v_2$ against $u_1$</span>
+          $$\langle v_2, u_1 \rangle = 1 \cdot 1 + 0 \cdot 1 + 1 \cdot 0 = 1$$
+          $$u_2 = v_2 - \frac{\langle v_2, u_1 \rangle}{\|u_1\|^2} u_1 = \begin{pmatrix} 1 \\ 0 \\ 1 \end{pmatrix} - \frac{1}{2} \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix} = \begin{pmatrix} 1/2 \\ -1/2 \\ 1 \end{pmatrix}$$
+          <p>Check: $\langle u_1, u_2 \rangle = \frac{1}{2} - \frac{1}{2} + 0 = 0$. $\checkmark$</p>
+          <p>$\|u_2\|^2 = \frac{1}{4} + \frac{1}{4} + 1 = \frac{3}{2}$</p>
+        </div>
+
+        <div class="step-box">
+          <span class="step-label">Step 3: Orthogonalize $v_3$ against $u_1$ and $u_2$</span>
+          $$\langle v_3, u_1 \rangle = 0 + 1 + 0 = 1$$
+          $$\langle v_3, u_2 \rangle = 0 \cdot \tfrac{1}{2} + 1 \cdot (-\tfrac{1}{2}) + 1 \cdot 1 = \frac{1}{2}$$
+          $$u_3 = v_3 - \frac{1}{2} u_1 - \frac{1/2}{3/2} u_2 = \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix} - \frac{1}{2} \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix} - \frac{1}{3} \begin{pmatrix} 1/2 \\ -1/2 \\ 1 \end{pmatrix}$$
+          $$= \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix} - \begin{pmatrix} 1/2 \\ 1/2 \\ 0 \end{pmatrix} - \begin{pmatrix} 1/6 \\ -1/6 \\ 1/3 \end{pmatrix} = \begin{pmatrix} -2/3 \\ 2/3 \\ 2/3 \end{pmatrix}$$
+        </div>
+
+        <p><strong>Verification:</strong></p>
+        <ul>
+          <li>$\langle u_1, u_3 \rangle = -\frac{2}{3} + \frac{2}{3} + 0 = 0$ $\checkmark$</li>
+          <li>$\langle u_2, u_3 \rangle = \frac{1}{2}(-\frac{2}{3}) + (-\frac{1}{2})(\frac{2}{3}) + 1 \cdot \frac{2}{3} = -\frac{1}{3} - \frac{1}{3} + \frac{2}{3} = 0$ $\checkmark$</li>
+        </ul>
+
+        <div class="example-box">
+          <h4>The orthonormal basis</h4>
+          <p>Normalizing:</p>
+          $$e_1 = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 1 \\ 0 \end{pmatrix}, \quad e_2 = \sqrt{\frac{2}{3}} \begin{pmatrix} 1/2 \\ -1/2 \\ 1 \end{pmatrix}, \quad e_3 = \frac{1}{\sqrt{4/3}} \begin{pmatrix} -2/3 \\ 2/3 \\ 2/3 \end{pmatrix} = \frac{1}{\sqrt{3}} \begin{pmatrix} -1 \\ 1 \\ 1 \end{pmatrix}$$
+        </div>
+
+        <div class="visualization">
+          <svg viewBox="0 0 520 400" width="520" height="400">
+            <defs>
+              <marker id="arr-b3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+              </marker>
+              <marker id="arr-r3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+              </marker>
+              <marker id="arr-p3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea"/>
+              </marker>
+            </defs>
+
+            <!-- Pseudo-3D axes from origin -->
+            <g stroke="#ccc" stroke-width="1">
+              <!-- x-axis (right) -->
+              <line x1="200" y1="280" x2="460" y2="280"/>
+              <!-- y-axis (up) -->
+              <line x1="200" y1="280" x2="200" y2="40"/>
+              <!-- z-axis (diagonal, into screen) -->
+              <line x1="200" y1="280" x2="60" y2="380"/>
+            </g>
+            <text x="465" y="285" font-size="13" fill="#aaa" font-family="Georgia">x</text>
+            <text x="203" y="35" font-size="13" fill="#aaa" font-family="Georgia">y</text>
+            <text x="42" y="388" font-size="13" fill="#aaa" font-family="Georgia">z</text>
+
+            <!-- Origin -->
+            <circle cx="200" cy="280" r="3" fill="#2c2c2c"/>
+
+            <!-- u1 = (1,1,0): x right, y up, no z -->
+            <!-- Scale: 100px per unit. x: +100, y: -100 -->
+            <line x1="200" y1="280" x2="298" y2="178" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arr-b3)"/>
+            <text x="308" y="175" fill="#2563eb" font-size="14" font-weight="600" font-family="Georgia">u₁</text>
+
+            <!-- u2 = (1/2, -1/2, 1): x +50, y +50, z into screen (-45, +35) -->
+            <line x1="200" y1="280" x2="203" y2="363" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arr-r3)"/>
+            <text x="210" y="372" fill="#dc2626" font-size="14" font-weight="600" font-family="Georgia">u₂</text>
+
+            <!-- u3 = (-2/3, 2/3, 2/3): x -67, y -67, z into screen (-30, +23) -->
+            <line x1="200" y1="280" x2="105" y2="228" stroke="#9333ea" stroke-width="2.5" marker-end="url(#arr-p3)"/>
+            <text x="80" y="220" fill="#9333ea" font-size="14" font-weight="600" font-family="Georgia">u₃</text>
+
+            <!-- Right angle markers (small squares) -->
+            <!-- u1-u2 -->
+            <rect x="198" y="278" width="8" height="8" fill="none" stroke="#888" stroke-width="1" transform="rotate(-45 202 282)"/>
+
+            <!-- Labels -->
+            <text x="240" y="30" fill="#1a3a3a" font-size="15" font-weight="600" font-family="Georgia">Orthogonal basis in R³</text>
+            <text x="310" y="195" fill="#2563eb" font-size="12" font-family="Georgia">(1, 1, 0)</text>
+            <text x="210" y="390" fill="#dc2626" font-size="12" font-family="Georgia">(½, −½, 1)</text>
+            <text x="50" y="245" fill="#9333ea" font-size="12" font-family="Georgia">(−⅔, ⅔, ⅔)</text>
+          </svg>
+          <div class="vis-caption">Figure 3. The three mutually orthogonal vectors $\{u_1, u_2, u_3\}$ produced by Gram&ndash;Schmidt, visualized in a pseudo-3D coordinate system. Each pair is perpendicular.</div>
+        </div>
+
+
+        <!-- ============================================ -->
+        <h2 class="section-divider">7. The QR Factorization</h2>
+        <!-- ============================================ -->
+
+        <p>Gram&ndash;Schmidt does more than produce an orthonormal basis. It implicitly computes a matrix factorization that is one of the most important in numerical linear algebra.</p>
+
+        <p>Let $A = [v_1 \mid v_2 \mid \cdots \mid v_n]$ be the matrix whose columns are the input vectors, and let $Q = [e_1 \mid e_2 \mid \cdots \mid e_n]$ be the matrix whose columns are the orthonormal vectors. Then:</p>
+
+        <div class="math-box">
+          <span class="label">QR Factorization:</span><br><br>
+          $$A = QR$$
+          <p>where $Q$ is orthogonal ($Q^TQ = I$) and $R$ is upper triangular with positive diagonal entries:</p>
+          $$R = \begin{pmatrix} \langle v_1, e_1 \rangle & \langle v_2, e_1 \rangle & \cdots & \langle v_n, e_1 \rangle \\ 0 & \langle v_2, e_2 \rangle & \cdots & \langle v_n, e_2 \rangle \\ \vdots & & \ddots & \vdots \\ 0 & 0 & \cdots & \langle v_n, e_n \rangle \end{pmatrix}$$
+        </div>
+
+        <p>Why is $R$ upper triangular? Because Gram&ndash;Schmidt preserves spans. The vector $e_k$ is orthogonal to $v_1, \ldots, v_{k-1}$&rsquo;s span, so $\langle v_j, e_k \rangle = 0$ whenever $j < k$. The entries <em>below</em> the diagonal are all zero.</p>
+
+        <p>Why are the diagonal entries positive? Because $r_{kk} = \langle v_k, e_k \rangle = \|u_k\|$, the norm of the orthogonal vector before normalization, which is positive for linearly independent inputs.</p>
+
+        <div class="example-box">
+          <h4>QR of the $\mathbb{R}^3$ example</h4>
+          <p>From our earlier computation:</p>
+          $$\underbrace{\begin{pmatrix} 1 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 1 \end{pmatrix}}_A = \underbrace{\begin{pmatrix} 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 0 & 2/\sqrt{6} & 1/\sqrt{3} \end{pmatrix}}_Q \underbrace{\begin{pmatrix} \sqrt{2} & 1/\sqrt{2} & 1/\sqrt{2} \\ 0 & \sqrt{3/2} & 1/\sqrt{6} \\ 0 & 0 & 2/\sqrt{3} \end{pmatrix}}_R$$
+        </div>
+
+        <p>The QR factorization is used everywhere: solving least-squares problems, computing eigenvalues (the QR algorithm), solving linear systems more stably than LU decomposition, and as a building block for SVD computation.</p>
+
+
+        <!-- ============================================ -->
+        <h2 class="section-divider">8. Numerical Stability: Classical vs. Modified Gram&ndash;Schmidt</h2>
+        <!-- ============================================ -->
+
+        <p>The classical algorithm (CGS) described above is mathematically correct but numerically dangerous. In floating-point arithmetic, the computed vectors $u_k$ gradually lose orthogonality due to rounding errors. For ill-conditioned matrices, the loss can be catastrophic.</p>
+
+        <p>The problem is that CGS computes all projections using the original $v_k$. If the early projections introduce rounding errors into partial results, those errors compound. The fix is simple: project sequentially.</p>
+
+        <div class="algorithm-box">
+          <h4>Modified Gram&ndash;Schmidt (MGS)</h4>
+          <ol>
+            <li><strong>Set</strong> $u_1 = v_1$, $\;e_1 = u_1 / \|u_1\|$</li>
+            <li><strong>For</strong> $k = 2, 3, \ldots, n$:
+              <ul style="list-style-type: none; padding-left: 1rem;">
+                <li>Set $u_k^{(0)} = v_k$</li>
+                <li><strong>For</strong> $j = 1, 2, \ldots, k-1$:</li>
+                <li style="padding-left: 1.5rem;">$u_k^{(j)} = u_k^{(j-1)} - \langle u_k^{(j-1)}, e_j \rangle \, e_j$</li>
+                <li>Set $u_k = u_k^{(k-1)}$, $\;e_k = u_k / \|u_k\|$</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
+        <p>The difference: instead of computing all projections from the original $v_k$, MGS subtracts one projection at a time, updating the intermediate vector after each subtraction. Mathematically, CGS and MGS produce identical results. Numerically, MGS is dramatically more stable.</p>
+
+        <div class="concept-box">
+          <h4>The difference, intuitively</h4>
+          <p><strong>Classical GS:</strong> &ldquo;Compute all the shadows at once and subtract them all from the original vector.&rdquo;</p>
+          <p><strong>Modified GS:</strong> &ldquo;Subtract the first shadow. Then, from what remains, subtract the second shadow. Then from <em>that</em>, subtract the third. And so on.&rdquo;</p>
+          <p>Modified GS is more accurate because each subsequent projection operates on a vector that has already been cleaned of its earlier components. Rounding errors in the first projection don&rsquo;t contaminate the second projection&rsquo;s input.</p>
+        </div>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Property</th>
+            <th>Classical GS</th>
+            <th>Modified GS</th>
+            <th>Householder QR</th>
+          </tr>
+          <tr>
+            <td>FLOPS for $m \times n$ matrix</td>
+            <td>$2mn^2$</td>
+            <td>$2mn^2$</td>
+            <td>$2mn^2 - \frac{2}{3}n^3$</td>
+          </tr>
+          <tr>
+            <td>Orthogonality of computed $Q$</td>
+            <td>$\|Q^TQ - I\| \sim \kappa(A) \cdot \epsilon$</td>
+            <td>$\|Q^TQ - I\| \sim \kappa(A) \cdot \epsilon$</td>
+            <td>$\|Q^TQ - I\| \sim \epsilon$</td>
+          </tr>
+          <tr>
+            <td>Residual $\|A - QR\|$</td>
+            <td>$\sim \epsilon \|A\|$</td>
+            <td>$\sim \epsilon \|A\|$</td>
+            <td>$\sim \epsilon \|A\|$</td>
+          </tr>
+          <tr>
+            <td>Produces $Q$ explicitly?</td>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td>Only as a product of reflectors</td>
+          </tr>
+        </table>
+
+        <p>Here $\kappa(A)$ is the condition number and $\epsilon$ is machine epsilon ($\approx 10^{-16}$ in double precision). For well-conditioned matrices ($\kappa \approx 1$), CGS and MGS are equally fine. For ill-conditioned matrices ($\kappa \gg 1$), CGS can produce vectors that are far from orthogonal, while MGS degrades more gracefully. For the best numerical orthogonality, Householder reflections are preferred, but MGS is often sufficient and has the advantage of producing the columns of $Q$ one at a time.</p>
+
+
+        <!-- ============================================ -->
+        <h2 class="section-divider">9. Gram&ndash;Schmidt in General Inner Product Spaces</h2>
+        <!-- ============================================ -->
+
+        <p>Nothing in the algorithm requires $\mathbb{R}^n$. The Gram&ndash;Schmidt process works in <em>any</em> inner product space: $\mathbb{C}^n$ with the Hermitian inner product, function spaces with $\langle f, g \rangle = \int_a^b f(x) \overline{g(x)} \, dx$, or any space where you have a notion of length and angle.</p>
+
+        <div class="example-box">
+          <h4>Example: Orthogonal polynomials</h4>
+          <p>Start with the monomials $\{1, x, x^2, x^3, \ldots\}$ in the space of polynomials on $[-1, 1]$ with the inner product:</p>
+          $$\langle f, g \rangle = \int_{-1}^{1} f(x) g(x) \, dx$$
+          <p>Applying Gram&ndash;Schmidt produces the <strong>Legendre polynomials</strong>:</p>
+          $$P_0(x) = 1, \quad P_1(x) = x, \quad P_2(x) = \tfrac{1}{2}(3x^2 - 1), \quad P_3(x) = \tfrac{1}{2}(5x^3 - 3x), \;\ldots$$
+          <p>These are orthogonal: $\int_{-1}^{1} P_m(x) P_n(x) \, dx = 0$ for $m \neq n$.</p>
+        </div>
+
+        <p>Different inner products on the same underlying space of polynomials produce different orthogonal families:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Inner product</th>
+            <th>Resulting orthogonal polynomials</th>
+          </tr>
+          <tr>
+            <td>$\int_{-1}^{1} f \, g \, dx$</td>
+            <td>Legendre polynomials</td>
+          </tr>
+          <tr>
+            <td>$\int_{-1}^{1} \frac{f \, g}{\sqrt{1 - x^2}} \, dx$</td>
+            <td>Chebyshev polynomials</td>
+          </tr>
+          <tr>
+            <td>$\int_{0}^{\infty} f \, g \, e^{-x} \, dx$</td>
+            <td>Laguerre polynomials</td>
+          </tr>
+          <tr>
+            <td>$\int_{-\infty}^{\infty} f \, g \, e^{-x^2} \, dx$</td>
+            <td>Hermite polynomials</td>
+          </tr>
+        </table>
+
+        <p>All of these are Gram&ndash;Schmidt applied to $\{1, x, x^2, \ldots\}$ with different weight functions. The same algorithm, different geometries, different results.</p>
+
+
+        <!-- ============================================ -->
+        <h2 class="section-divider">10. Applications</h2>
+        <!-- ============================================ -->
+
+        <h3>Least-squares approximation</h3>
+
+        <p>Given an overdetermined system $Ax = b$ (more equations than unknowns), the least-squares solution minimizes $\|Ax - b\|^2$. Via the QR factorization $A = QR$:</p>
+
+        $$Ax = b \;\implies\; QRx = b \;\implies\; Rx = Q^T b$$
+
+        <p>Since $R$ is upper triangular, this is trivially solved by back-substitution. No need to form $A^T A$ (which squares the condition number) or invert anything. This is why QR-based least squares is the standard in practice.</p>
+
+        <h3>Signal processing and Fourier analysis</h3>
+
+        <p>The Fourier series is an orthogonal expansion. The functions $\{1, \cos x, \sin x, \cos 2x, \sin 2x, \ldots\}$ are orthogonal on $[-\pi, \pi]$ with respect to $\langle f, g \rangle = \int_{-\pi}^{\pi} f(x)g(x) \, dx$. The Fourier coefficients are just inner products&mdash;projections onto orthogonal directions&mdash;exactly because the basis is orthogonal. This is Gram&ndash;Schmidt&rsquo;s payoff: once you have an orthogonal basis, decomposition is projection.</p>
+
+        <h3>Quantum mechanics</h3>
+
+        <p>In quantum mechanics, states live in a Hilbert space (a complete inner product space). Observable quantities correspond to self-adjoint operators, and their eigenstates form an orthonormal basis for the space. Gram&ndash;Schmidt is used to orthonormalize degenerate eigenstates (eigenstates with the same eigenvalue that are not automatically orthogonal). The Born rule&mdash;the probability of measuring a state $|\psi\rangle$ in eigenstate $|e_k\rangle$ is $|\langle e_k | \psi \rangle|^2$&mdash;works precisely because the eigenstates are orthonormal.</p>
+
+        <h3>Krylov methods and iterative solvers</h3>
+
+        <p>The Arnoldi iteration (for non-symmetric matrices) and the Lanczos algorithm (for symmetric matrices) are variants of Gram&ndash;Schmidt applied to Krylov subspaces $\{b, Ab, A^2b, \ldots\}$. These generate orthonormal bases for the subspaces in which iterative methods like GMRES and conjugate gradients search for approximate solutions to $Ax = b$. Without Gram&ndash;Schmidt (or Householder) orthogonalization, these methods would not be numerically stable.</p>
+
+        <h3>Data science and statistics</h3>
+
+        <p>In regression, orthogonalizing the predictor variables via Gram&ndash;Schmidt reveals the <em>sequential</em> contribution of each variable. The residual at step $k$ shows what the $k$-th predictor adds that the previous $k-1$ predictors cannot explain. This is the geometric foundation of variable importance and sequential ANOVA.</p>
+
+
+        <!-- ============================================ -->
+        <h2 class="section-divider">11. The View from Above</h2>
+        <!-- ============================================ -->
+
+        <p>Gram&ndash;Schmidt is a theorem about decomposition. It says that any finite-dimensional inner product space has an orthonormal basis, and provides an explicit construction. More precisely:</p>
+
+        <div class="highlight-box">
+          <p><strong>Every finite-dimensional inner product space has an orthonormal basis.</strong></p>
+          <p><strong>Every linearly independent set can be orthogonalized while preserving its span.</strong></p>
+          <p><strong>Every matrix with linearly independent columns has a unique QR factorization with $R$ having positive diagonal.</strong></p>
+          <p style="margin-top: 1rem; font-size: 0.95rem;">These are three phrasings of the same theorem, and Gram&ndash;Schmidt is the constructive proof of all three.</p>
+        </div>
+
+        <p>The process is named after J&oslash;rgen Pedersen Gram (1879) and Erhard Schmidt (1907), though the essential idea appeared earlier in the work of Laplace and Cauchy. Schmidt&rsquo;s contribution was to formalize it for infinite-dimensional function spaces, where the convergence questions are more delicate.</p>
+
+        <p>At its heart, the algorithm is almost embarrassingly simple: subtract shadows, keep what&rsquo;s left. But this simple operation&mdash;applied iteratively&mdash;manufactures orthogonality from arbitrary inputs. It turns messy coordinates into clean ones, complicated projections into trivial ones, and unstable computations into stable ones. It is the bridge between the bases you are given and the bases you want.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

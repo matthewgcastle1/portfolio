@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Arithmetic of Silicon: CPUs, GPUs, NPUs, ASICs, and the Race for FLOPS</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table th {
+      background-color: #8b7355;
+      color: white;
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .comparison-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #e0d9ce;
+      color: #5a5a5a;
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: #f9f6f0;
+    }
+
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #2c2c2c;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-size: 0.95rem;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .arch-card {
+      background: white;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .arch-name {
+      font-size: 1.3rem;
+      color: #1a3a3a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .arch-summary {
+      color: #5a5a5a;
+      font-style: italic;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid #8b7355;
+      padding-left: 1rem;
+    }
+
+    .scale-box {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      padding: 1.5rem;
+      border-radius: 4px;
+      margin: 1.5rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      line-height: 1.8;
+    }
+
+    .scale-box .label {
+      color: #8b7355;
+      font-weight: bold;
+    }
+
+    .scale-box .num {
+      color: #f78c6c;
+    }
+
+    .scale-box .unit {
+      color: #82aaff;
+    }
+
+    .scale-box .comment {
+      color: #676e95;
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-table {
+        font-size: 0.78rem;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.4rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Arithmetic of Silicon</h1>
+      <p>CPUs, GPUs, NPUs, ASICs, and the race for FLOPS</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Arithmetic of Silicon: CPUs, GPUs, NPUs, ASICs, and the Race for FLOPS</h1>
+        <div class="article-meta">Computer Architecture & Hardware</div>
+      </div>
+
+      <div class="article-body">
+
+        <h2>Introduction</h2>
+
+        <p>In 1946, ENIAC performed about 500 floating-point operations per second. It weighed 27 tons, consumed 150 kilowatts of power, and filled a room. In 2024, an NVIDIA B200 GPU performs 9 quadrillion floating-point operations per second at reduced precision&mdash;18 trillion times faster&mdash;in a chip you can hold in one hand. That increase is not a metaphor. It is a measured, physical fact about what silicon can do.</p>
+
+        <p>This article surveys the major types of computing hardware, how each is architected, what each is good at, and how their raw arithmetic throughput&mdash;measured in FLOPS (floating-point operations per second)&mdash;has evolved over decades. The goal is to give you a sense of scale: what a CPU actually does that a GPU cannot, why a GPU achieves $50\times$ the FLOPS of a CPU at the same price, why purpose-built chips demolish both for narrow workloads, and how humanity went from 500 FLOPS to $10^{18}$ FLOPS in 78 years.</p>
+
+        <div class="math-box">
+          <strong>What is a FLOP?</strong><br>
+          A FLOP is one floating-point operation: an addition, multiplication, or fused multiply-add (FMA) on a number represented in IEEE 754 format. FLOPS (with the S) is the rate: operations per second. The precision matters enormously. A 64-bit (FP64, "double precision") operation carries about 15 significant decimal digits. A 32-bit (FP32, "single precision") operation carries about 7. A 16-bit (FP16, "half precision") operation carries about 3. Lower precision means smaller, faster arithmetic units, so the same chip can do more FP16 operations per second than FP64. Modern AI accelerators push this further with 8-bit (FP8) and even 4-bit (FP4) formats, trading precision for raw throughput.
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 1: The CPU&mdash;General-Purpose Computation</h2>
+        <!-- ============================================================ -->
+
+        <div class="arch-card">
+          <div class="arch-name">Central Processing Unit (CPU)</div>
+          <div class="arch-summary">The universal machine. Optimized for doing one thing at a time, very fast, with complex control flow. The only processor that can run an operating system, handle interrupts, manage memory, and execute arbitrary branching logic.</div>
+
+          <h3>Architecture</h3>
+
+          <p>A CPU is a <em>latency-optimized</em> processor. It is designed to execute a single thread of instructions as fast as possible. To achieve this, modern CPUs dedicate enormous amounts of transistor budget to machinery that has nothing to do with arithmetic: branch predictors, out-of-order execution engines, register renaming, speculative execution, multi-level cache hierarchies (L1/L2/L3), and memory prefetchers. On a modern Intel or AMD CPU, the actual arithmetic units&mdash;the ALUs and FPUs&mdash;occupy perhaps 5&ndash;10% of the die area. The rest is control logic and cache.</p>
+
+          <p>This makes the CPU extraordinarily flexible. It can evaluate an <code>if/else</code> branch with near-zero penalty (thanks to branch prediction). It can chase pointers through a linked list. It can handle interrupts, context-switch between threads, run an operating system kernel, parse a file, manage a network stack, and execute arbitrary code with complex data dependencies between operations. No other processor type can do this.</p>
+
+          <p>The cost of this generality is that the CPU has relatively few arithmetic units. A high-end desktop CPU in 2024 has 8&ndash;24 cores, each capable of executing perhaps 32&ndash;64 FP32 operations per cycle (via SIMD/AVX instructions). That gives it a few teraflops at peak&mdash;impressive by historical standards, but a fraction of what a GPU achieves.</p>
+
+          <h3>The SIMD Revolution</h3>
+
+          <p>CPUs have steadily widened their arithmetic throughput through SIMD (Single Instruction, Multiple Data) extensions. Instead of operating on one number at a time, SIMD instructions operate on a <em>vector</em> of numbers in a single cycle:</p>
+
+          <ul>
+            <li><strong>SSE (1999):</strong> 128-bit registers. 4 FP32 or 2 FP64 operations per instruction.</li>
+            <li><strong>AVX (2011):</strong> 256-bit registers. 8 FP32 or 4 FP64 operations per instruction.</li>
+            <li><strong>AVX-512 (2016):</strong> 512-bit registers. 16 FP32 or 8 FP64 operations per instruction.</li>
+          </ul>
+
+          <p>With fused multiply-add (FMA), each SIMD instruction counts as two operations (a multiply and an add), doubling the effective throughput. A single AVX-512 FMA instruction on FP32 data performs 32 floating-point operations in one cycle. But you need data that is <em>independent and contiguous</em> to fill these wide registers. Code with branches, pointer chasing, or irregular memory access patterns cannot use SIMD effectively. This is the fundamental constraint: the CPU is fast at everything, but only achieves peak FLOPS on embarrassingly parallel, regular data.</p>
+
+          <h3>Historical FLOPS: CPU</h3>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Processor</th>
+              <th>Year</th>
+              <th>Peak FLOPS</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>Intel 8087 coprocessor</td>
+              <td>1980</td>
+              <td>50 KFLOPS</td>
+              <td>First x86 FPU. 5&ndash;10 MHz. Separate chip.</td>
+            </tr>
+            <tr>
+              <td>Intel 486DX-33</td>
+              <td>1989</td>
+              <td>~7 MFLOPS</td>
+              <td>First integrated FPU on x86. 33 MHz.</td>
+            </tr>
+            <tr>
+              <td>Intel Pentium 66</td>
+              <td>1993</td>
+              <td>~30 MFLOPS</td>
+              <td>Superscalar: 2 FP ops/cycle. 66 MHz.</td>
+            </tr>
+            <tr>
+              <td>Pentium III 1.0 GHz</td>
+              <td>1999</td>
+              <td>~4 GFLOPS (FP32)</td>
+              <td>SSE: 4-wide FP32 SIMD.</td>
+            </tr>
+            <tr>
+              <td>Core 2 Duo E6700</td>
+              <td>2006</td>
+              <td>~43 GFLOPS (FP32)</td>
+              <td>2 cores, 128-bit SSE, FMA.</td>
+            </tr>
+            <tr>
+              <td>AMD Ryzen 9 7950X</td>
+              <td>2022</td>
+              <td>~2.9 TFLOPS (FP32)</td>
+              <td>16 cores, AVX-512, 5.7 GHz boost.</td>
+            </tr>
+            <tr>
+              <td>Intel Core i9-14900K</td>
+              <td>2023</td>
+              <td>~2.6 TFLOPS (FP32)</td>
+              <td>24 cores (8P+16E), AVX2. No AVX-512.</td>
+            </tr>
+            <tr>
+              <td>Apple M4 Max (CPU only)</td>
+              <td>2024</td>
+              <td>~1.5 TFLOPS (FP32)</td>
+              <td>16 cores, ARM NEON. No AVX.</td>
+            </tr>
+          </table>
+
+          <p>From 50 thousand to 2.9 trillion in 42 years: a factor of 58 million. But notice the trajectory flattening. The jump from the 8087 to the Pentium III (1980&ndash;1999) was $80{,}000\times$. The jump from the Pentium III to the Ryzen 9 7950X (1999&ndash;2022) was about $725\times$. Clock speeds plateaued around 2005 (the "power wall"); further gains came from more cores and wider SIMD, which only help if the workload is parallel.</p>
+
+          <h3>What CPUs Are Best At</h3>
+
+          <p>Operating systems. Compilers. Databases. Web servers. Game logic. Any code with complex branching, irregular memory access, or serial dependencies between operations. The CPU is the only processor that can run <em>arbitrary programs</em>. Everything else on this list is a specialist.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 2: The GPU&mdash;Throughput-Optimized Parallel Arithmetic</h2>
+        <!-- ============================================================ -->
+
+        <div class="arch-card">
+          <div class="arch-name">Graphics Processing Unit (GPU)</div>
+          <div class="arch-summary">Thousands of simple cores executing the same instruction on different data. Designed for massively parallel workloads where every element is independent. Achieves $10$&ndash;$50\times$ the FLOPS of a CPU&mdash;but only on the right kind of problem.</div>
+
+          <h3>Architecture</h3>
+
+          <p>A GPU is a <em>throughput-optimized</em> processor. Where a CPU dedicates transistors to making one thread fast, a GPU dedicates transistors to running <em>thousands of threads simultaneously</em>. An NVIDIA H100 has 16,896 CUDA cores, compared to 24 cores on a top-end Intel CPU. Each GPU core is far simpler than a CPU core: no branch predictor, no out-of-order execution, minimal cache. But there are thousands of them, and they all execute the same instruction at the same time on different pieces of data (SIMT: Single Instruction, Multiple Threads).</p>
+
+          <p>This architecture emerged from the demands of real-time graphics. Rendering a frame requires performing the same computation (lighting, shading, texture sampling) on millions of pixels independently. There are no dependencies between pixels: the color of pixel (300, 400) does not depend on the color of pixel (301, 400). This is <em>embarrassingly parallel</em>, and the GPU is built for exactly this pattern.</p>
+
+          <h3>The Constraint: No Dependencies</h3>
+
+          <p>The GPU achieves its enormous FLOPS counts precisely because it assumes operations are independent. If your computation requires the result of step N before it can begin step N+1, the GPU cannot help you. Thousands of cores will sit idle waiting for a single dependency to resolve. Consider these two examples:</p>
+
+          <ul>
+            <li><strong>Matrix multiplication</strong> (GPU-friendly): Every element of the output matrix can be computed independently. Feed the GPU two $4096\times4096$ matrices and it will compute all 16 million dot products in parallel. The H100 sustains close to its peak tensor FLOPS on this workload.</li>
+            <li><strong>Fibonacci sequence</strong> (GPU-hostile): $F(n) = F(n-1) + F(n-2)$. Each term depends on the previous two. This is inherently serial. A GPU computes this <em>slower</em> than a CPU because of the overhead of launching a kernel for a single addition.</li>
+          </ul>
+
+          <p>Real workloads fall on a spectrum between these extremes. Neural network training is dominated by matrix multiplications (GPU-friendly). Game physics involves both parallel particle systems (GPU-friendly) and sequential constraint solving (GPU-hostile). Sorting algorithms are partially parallelizable but require synchronization. The art of GPU programming is restructuring algorithms to minimize dependencies and maximize parallel occupancy.</p>
+
+          <h3>Tensor Cores and the Precision Hierarchy</h3>
+
+          <p>Starting with NVIDIA&rsquo;s Volta architecture in 2017, GPUs added <em>tensor cores</em>: specialized matrix-multiply units that operate on small matrices (e.g., $4\times4$) in a single cycle. Tensor cores exploit the fact that deep learning tolerates reduced precision. The result is a dramatic hierarchy of throughput by precision:</p>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Precision</th>
+              <th>H100 (SXM) Dense</th>
+              <th>H100 with Sparsity</th>
+              <th>B200 (HGX) Dense</th>
+            </tr>
+            <tr>
+              <td>FP64</td>
+              <td>34 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>37 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>FP64 Tensor</td>
+              <td>67 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>37 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>FP32</td>
+              <td>67 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>75 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>TF32 Tensor</td>
+              <td>989 TFLOPS</td>
+              <td>1,979 TFLOPS</td>
+              <td>2,250 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>FP16/BF16 Tensor</td>
+              <td>1,979 TFLOPS</td>
+              <td>3,958 TFLOPS</td>
+              <td>4,500 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>FP8 Tensor</td>
+              <td>3,958 TFLOPS</td>
+              <td>7,916 TFLOPS</td>
+              <td>9,000 TFLOPS</td>
+            </tr>
+            <tr>
+              <td>FP4 Tensor</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td>18,000 TFLOPS</td>
+            </tr>
+          </table>
+
+          <p>Look at that table carefully. The B200&rsquo;s FP4 tensor throughput (18,000 TFLOPS) is <em>$486\times$</em> its FP64 throughput (37 TFLOPS). This is not a software trick. At lower precision, the arithmetic units are physically smaller, so more fit on the die, and each completes faster. The chip is literally doing $486\times$ more operations per second&mdash;but each operation carries only 4 bits of precision instead of 64. For scientific simulation (climate models, fluid dynamics, molecular dynamics), you need FP64. For training large language models, FP16 or BF16 is standard. For inference, FP8 or even FP4 is increasingly sufficient.</p>
+
+          <p>The "with sparsity" column refers to NVIDIA&rsquo;s 2:4 structured sparsity feature (Ampere and later): if exactly 2 of every 4 values in a matrix are zero, the hardware skips those multiplications, effectively doubling throughput. This is a hardware-level exploitation of the fact that neural network weights are often sparse.</p>
+
+          <h3>Historical FLOPS: GPU</h3>
+
+          <table class="comparison-table">
+            <tr>
+              <th>GPU</th>
+              <th>Year</th>
+              <th>FP32 FLOPS</th>
+              <th>Top AI FLOPS</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>GeForce 256</td>
+              <td>1999</td>
+              <td>~1&ndash;2 GFLOPS</td>
+              <td>&mdash;</td>
+              <td>Fixed-function T&amp;L. Not programmable.</td>
+            </tr>
+            <tr>
+              <td>GeForce 6800 Ultra</td>
+              <td>2004</td>
+              <td>~54 GFLOPS</td>
+              <td>&mdash;</td>
+              <td>First fully programmable FP32 shaders.</td>
+            </tr>
+            <tr>
+              <td>Tesla C870 (G80)</td>
+              <td>2007</td>
+              <td>518 GFLOPS</td>
+              <td>&mdash;</td>
+              <td>First CUDA GPU. 128 cores.</td>
+            </tr>
+            <tr>
+              <td>Tesla M2090 (Fermi)</td>
+              <td>2011</td>
+              <td>1.33 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>512 CUDA cores. FP64 at 1:2 ratio.</td>
+            </tr>
+            <tr>
+              <td>Tesla K80 (Kepler)</td>
+              <td>2014</td>
+              <td>8.74 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>Dual-GPU. 4,992 CUDA cores total.</td>
+            </tr>
+            <tr>
+              <td>Tesla P100 (Pascal)</td>
+              <td>2016</td>
+              <td>10.6 TFLOPS</td>
+              <td>21.2 TFLOPS (FP16)</td>
+              <td>First HBM2 memory. NVLink.</td>
+            </tr>
+            <tr>
+              <td>Tesla V100 (Volta)</td>
+              <td>2017</td>
+              <td>15.7 TFLOPS</td>
+              <td>125 TFLOPS (FP16 Tensor)</td>
+              <td>First tensor cores. 640 tensor cores.</td>
+            </tr>
+            <tr>
+              <td>A100 (Ampere)</td>
+              <td>2020</td>
+              <td>19.5 TFLOPS</td>
+              <td>624 TFLOPS (FP16 Tensor+Sparse)</td>
+              <td>TF32 format. Structured sparsity.</td>
+            </tr>
+            <tr>
+              <td>H100 (Hopper)</td>
+              <td>2022</td>
+              <td>67 TFLOPS</td>
+              <td>3,958 TFLOPS (FP8 Tensor+Sparse)</td>
+              <td>Transformer Engine. FP8 support.</td>
+            </tr>
+            <tr>
+              <td>B200 (Blackwell)</td>
+              <td>2024</td>
+              <td>75 TFLOPS</td>
+              <td>18,000 TFLOPS (FP4 Tensor)</td>
+              <td>208B transistors. 192 GB HBM3e.</td>
+            </tr>
+          </table>
+
+          <p>From the GeForce 256 to the B200 in 25 years: FP32 went from ~2 GFLOPS to 75 TFLOPS ($37{,}500\times$). But the real story is the AI-specific formats. The V100 in 2017 introduced tensor cores at 125 TFLOPS FP16. Seven years later, the B200 reaches 18,000 TFLOPS at FP4&mdash;a $144\times$ increase in AI throughput in seven years, on top of the preceding two decades of GPU evolution.</p>
+
+          <h3>What GPUs Cannot Do</h3>
+
+          <p>A GPU cannot efficiently run an operating system. It cannot handle unpredictable branches. It cannot chase pointers through a graph. It cannot serve a web request. It cannot do anything that requires one operation to complete before the next can begin. The thousands of cores are powerful only when they all do the same thing at the same time. When threads within a <em>warp</em> (a group of 32 threads on NVIDIA hardware) take different branches, the GPU serializes both paths&mdash;a penalty called <em>warp divergence</em>. The GPU also has limited cache and relies on massive parallelism to hide memory latency (by switching to another warp while one waits for data). If your workload has irregular memory access patterns, the GPU stalls.</p>
+
+          <p>The GPU is a specialist that happens to be useful for an enormous category of problems: anything that looks like "apply the same function to millions of independent data points." Graphics, matrix algebra, neural networks, physics simulations, signal processing, cryptography, and Monte Carlo methods all fit this description. But the CPU remains indispensable for everything else.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 3: The NPU/TPU&mdash;Neural Network Accelerators</h2>
+        <!-- ============================================================ -->
+
+        <div class="arch-card">
+          <div class="arch-name">Neural Processing Unit (NPU) / Tensor Processing Unit (TPU)</div>
+          <div class="arch-summary">Purpose-built matrix-multiply engines. Even less general than a GPU, but even faster at the specific computation that neural networks require: multiplying large matrices of low-precision numbers.</div>
+
+          <h3>Architecture</h3>
+
+          <p>Neural networks, at the level of hardware, are almost entirely matrix multiplications. A transformer layer is a sequence of matrix multiplies (queries $\times$ keys, attention $\times$ values, feed-forward projections) with nonlinear activations (softmax, GELU) between them. The activations are elementwise and cheap. The matrix multiplies dominate runtime. An NPU or TPU is built around a <em>systolic array</em>: a grid of multiply-accumulate (MAC) units that data flows through in a wave, performing matrix multiplication with maximum arithmetic density and minimal data movement.</p>
+
+          <p>Google&rsquo;s TPU v1 (2016) had a $256\times256$ systolic array of 8-bit integer MACs&mdash;65,536 multipliers operating in lockstep. It could not train models (no backpropagation support); it was inference-only. But it could evaluate neural networks at 92 trillion 8-bit operations per second. Each subsequent generation added training capability, higher precision (BF16), more memory, and faster interconnects.</p>
+
+          <p>The key difference from a GPU: an NPU/TPU has <em>no general-purpose cores</em>. There is no CUDA-equivalent programming model where you write arbitrary kernels. The chip executes a fixed computational graph (a neural network) that has been compiled into a sequence of matrix operations. This rigidity is the source of its efficiency. By not supporting arbitrary computation, the chip dedicates nearly all its transistors and power to matrix arithmetic.</p>
+
+          <h3>Google TPU Evolution</h3>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Generation</th>
+              <th>Year</th>
+              <th>Peak Compute</th>
+              <th>Precision</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>TPU v1</td>
+              <td>2016</td>
+              <td>92 TOPS</td>
+              <td>INT8</td>
+              <td>Inference only. $256\times256$ systolic array. 28nm.</td>
+            </tr>
+            <tr>
+              <td>TPU v2</td>
+              <td>2017</td>
+              <td>45 TFLOPS</td>
+              <td>BF16</td>
+              <td>First training-capable TPU.</td>
+            </tr>
+            <tr>
+              <td>TPU v3</td>
+              <td>2018</td>
+              <td>420 TFLOPS</td>
+              <td>BF16</td>
+              <td>Liquid cooling. $2\times$ FP throughput of v2.</td>
+            </tr>
+            <tr>
+              <td>TPU v4</td>
+              <td>2021</td>
+              <td>275 TFLOPS</td>
+              <td>BF16</td>
+              <td>7nm. Optical interconnects. 4,096-chip pods.</td>
+            </tr>
+            <tr>
+              <td>TPU v5e</td>
+              <td>2023</td>
+              <td>197 TFLOPS</td>
+              <td>BF16</td>
+              <td>Cost-optimized for inference.</td>
+            </tr>
+            <tr>
+              <td>TPU v5p</td>
+              <td>2023</td>
+              <td>459 TFLOPS</td>
+              <td>BF16</td>
+              <td>Training-optimized. 8,960-chip pods.</td>
+            </tr>
+            <tr>
+              <td>TPU v6e (Trillium)</td>
+              <td>2024</td>
+              <td>918 TFLOPS</td>
+              <td>BF16</td>
+              <td>$2\times$ v5e throughput.</td>
+            </tr>
+            <tr>
+              <td>TPU v7 (Ironwood)</td>
+              <td>2025</td>
+              <td>4,614 TFLOPS</td>
+              <td>FP8</td>
+              <td>4.6 PFLOPS per chip. First native FP8 TPU.</td>
+            </tr>
+          </table>
+
+          <p>Note the jump from v6e (918 TFLOPS BF16) to v7 (4,614 TFLOPS FP8). Part of this is architectural improvement; part is the shift from BF16 to FP8. The trend is clear: each generation pushes precision lower and throughput higher, because neural network workloads tolerate it.</p>
+
+          <h3>On-Device NPUs</h3>
+
+          <p>The same principle&mdash;dedicated matrix-multiply silicon&mdash;has migrated into phones and laptops. Apple&rsquo;s Neural Engine, Qualcomm&rsquo;s Hexagon NPU, and Intel&rsquo;s NPU are all small systolic arrays integrated into the SoC (system on chip). They handle on-device AI tasks: face recognition, voice processing, image enhancement, and local LLM inference. Their throughput is measured in TOPS (tera-operations per second, usually INT8):</p>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Chip</th>
+              <th>Year</th>
+              <th>NPU Performance</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>Apple A11 Bionic</td>
+              <td>2017</td>
+              <td>0.6 TOPS</td>
+              <td>First Apple Neural Engine. 2 cores.</td>
+            </tr>
+            <tr>
+              <td>Apple A12 Bionic</td>
+              <td>2018</td>
+              <td>5 TOPS</td>
+              <td>8 Neural Engine cores.</td>
+            </tr>
+            <tr>
+              <td>Apple A17 Pro</td>
+              <td>2023</td>
+              <td>35 TOPS</td>
+              <td>16 cores. iPhone 15 Pro.</td>
+            </tr>
+            <tr>
+              <td>Apple M4</td>
+              <td>2024</td>
+              <td>38 TOPS</td>
+              <td>16 cores. iPad Pro / MacBook.</td>
+            </tr>
+            <tr>
+              <td>Qualcomm Snapdragon X Elite</td>
+              <td>2024</td>
+              <td>45 TOPS</td>
+              <td>Hexagon NPU. INT8.</td>
+            </tr>
+            <tr>
+              <td>Intel Lunar Lake NPU</td>
+              <td>2024</td>
+              <td>48 TOPS</td>
+              <td>$4\times$ Meteor Lake&rsquo;s 11 TOPS.</td>
+            </tr>
+            <tr>
+              <td>Qualcomm Snapdragon X2 Elite</td>
+              <td>2025</td>
+              <td>80 TOPS</td>
+              <td>Adds FP8 and BF16 support.</td>
+            </tr>
+          </table>
+
+          <p>These numbers are modest compared to data-center accelerators, but they enable real-time AI inference without a network round-trip. An 80 TOPS NPU can run a small language model (7&ndash;13 billion parameters, quantized to 4-bit) at conversational speed entirely on-device.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 4: ASICs&mdash;Fixed-Function Silicon</h2>
+        <!-- ============================================================ -->
+
+        <div class="arch-card">
+          <div class="arch-name">Application-Specific Integrated Circuit (ASIC)</div>
+          <div class="arch-summary">A chip designed to do exactly one thing. No programmability, no flexibility, no wasted transistors. The most efficient possible implementation of a fixed algorithm in silicon.</div>
+
+          <h3>Architecture</h3>
+
+          <p>An ASIC is the logical endpoint of specialization. Where a CPU is fully general, a GPU is parallel-general, and an NPU is matrix-specialized, an ASIC is <em>algorithm-specific</em>. The entire chip is a hardwired implementation of one computation. There is no instruction decoder, no register file, no program counter. Data flows through fixed logic gates that implement the target algorithm directly.</p>
+
+          <p>The most visible example is Bitcoin mining. The SHA-256 hash function is a fixed sequence of bitwise operations. An ASIC miner implements this sequence as a physical circuit. The Antminer S21 XP Hydro (2024) computes 473 trillion SHA-256 hashes per second. Each hash involves roughly 12,000 32-bit integer operations, so this is equivalent to approximately $5.7 \times 10^{18}$ integer operations per second&mdash;a number that exceeds the FP64 throughput of the world&rsquo;s fastest supercomputer, for a single rack-mounted device. But it can do <em>nothing else</em>. It cannot add two numbers. It cannot run a program. It computes SHA-256, and that is all.</p>
+
+          <h3>AI-Specific ASICs: Wafer-Scale</h3>
+
+          <p>The most ambitious ASIC for AI is the Cerebras Wafer-Scale Engine (WSE). Instead of cutting a silicon wafer into hundreds of individual chips, Cerebras uses the <em>entire wafer</em> as a single processor:</p>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Chip</th>
+              <th>Year</th>
+              <th>Cores</th>
+              <th>Transistors</th>
+              <th>On-Chip SRAM</th>
+              <th>AI Compute</th>
+            </tr>
+            <tr>
+              <td>WSE-1</td>
+              <td>2019</td>
+              <td>400,000</td>
+              <td>1.2 trillion</td>
+              <td>18 GB</td>
+              <td>&mdash;</td>
+            </tr>
+            <tr>
+              <td>WSE-2</td>
+              <td>2021</td>
+              <td>850,000</td>
+              <td>2.6 trillion</td>
+              <td>40 GB</td>
+              <td>7.5 PFLOPS (FP16)</td>
+            </tr>
+            <tr>
+              <td>WSE-3</td>
+              <td>2024</td>
+              <td>900,000</td>
+              <td>4 trillion</td>
+              <td>44 GB</td>
+              <td>125 PFLOPS (FP16)</td>
+            </tr>
+          </table>
+
+          <p>125 petaflops on a single wafer. That is roughly equivalent to 62 NVIDIA H100 GPUs&mdash;but in a single device with 44 GB of on-chip SRAM (no off-chip memory bandwidth bottleneck). The WSE-3 uses TSMC 5nm and draws about 15 kW. Its advantage is that the entire model can reside in on-chip memory, eliminating the memory-bandwidth bottleneck that limits GPU training.</p>
+
+          <p>Graphcore&rsquo;s Intelligence Processing Unit (IPU) takes a different approach: 1,472 independent processor tiles, each with 6 hardware threads, and 900 MB of in-processor SRAM. The Bow IPU (2022) achieves 350 TFLOPS at FP16 per chip.</p>
+
+          <h3>The ASIC Tradeoff</h3>
+
+          <p>The advantage of an ASIC is raw efficiency: more operations per watt and per dollar than any general-purpose processor. The disadvantage is that if the algorithm changes, the chip is worthless. Bitcoin miners become paperweights if the network switches hash functions. AI ASICs become obsolete if neural network architectures shift in ways the hardware cannot accommodate. This is why GPUs, despite being less efficient per-operation, dominate AI training: they can run <em>any</em> computation, so they are not stranded by algorithmic change.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 5: FPGAs&mdash;Reconfigurable Hardware</h2>
+        <!-- ============================================================ -->
+
+        <div class="arch-card">
+          <div class="arch-name">Field-Programmable Gate Array (FPGA)</div>
+          <div class="arch-summary">A chip whose logic can be rewired after manufacturing. Slower than an ASIC, faster than a CPU, and reprogrammable. The compromise between generality and specialization.</div>
+
+          <h3>Architecture</h3>
+
+          <p>An FPGA is a grid of configurable logic blocks connected by a programmable interconnect. You describe your desired circuit in a hardware description language (Verilog or VHDL), and a synthesis tool maps it onto the FPGA&rsquo;s physical resources. The result is custom hardware&mdash;but hardware that can be erased and reconfigured in milliseconds.</p>
+
+          <p>FPGAs occupy a middle ground. They are $3$&ndash;$10\times$ slower than an equivalent ASIC (because the programmable routing adds delay and area overhead) but $10$&ndash;$100\times$ more power-efficient than a CPU for the same algorithm. They excel in applications that need hardware-speed processing but where the algorithm may change: telecommunications, financial trading (low-latency order execution), video encoding, and prototyping ASICs before committing to fabrication.</p>
+
+          <p>Modern FPGAs have integrated hardened blocks for common operations. AMD/Xilinx Versal devices include dedicated AI Engine tiles (systolic arrays for matrix math) alongside the traditional FPGA fabric:</p>
+
+          <table class="comparison-table">
+            <tr>
+              <th>FPGA</th>
+              <th>FP32</th>
+              <th>INT8</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>Xilinx Versal AI Core</td>
+              <td>up to 8 TFLOPS</td>
+              <td>up to 133 TOPS</td>
+              <td>128&ndash;400 AI Engine tiles + FPGA fabric.</td>
+            </tr>
+            <tr>
+              <td>Xilinx Versal Premium</td>
+              <td>up to 23 TFLOPS</td>
+              <td>up to 99 TOPS</td>
+              <td>High-end networking/compute.</td>
+            </tr>
+            <tr>
+              <td>Intel Stratix 10 GX</td>
+              <td>up to 10 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>14nm. DSP-heavy variant.</td>
+            </tr>
+            <tr>
+              <td>Intel Agilex (top-end)</td>
+              <td>up to 12 TFLOPS</td>
+              <td>&mdash;</td>
+              <td>10nm. 40% improvement over Stratix 10.</td>
+            </tr>
+          </table>
+
+          <p>These numbers are modest compared to GPUs or NPUs, but FPGAs achieve them at much lower latency (microseconds, not milliseconds) and with deterministic timing. In high-frequency trading, an FPGA can execute a trading strategy in 1&ndash;3 microseconds, while a CPU takes 10&ndash;50 microseconds. That difference is worth billions of dollars per year to quantitative trading firms.</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 6: The View from Above&mdash;Supercomputers and the Scale of FLOPS</h2>
+        <!-- ============================================================ -->
+
+        <p>Individual chips are impressive, but the real scale of computation emerges when you wire thousands of them together. The history of supercomputing is the history of FLOPS at civilization scale.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>System</th>
+            <th>Year</th>
+            <th>Performance</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>ENIAC</td>
+            <td>1946</td>
+            <td>~500 FLOPS</td>
+            <td>27 tons. 150 kW. 17,468 vacuum tubes.</td>
+          </tr>
+          <tr>
+            <td>CDC 6600</td>
+            <td>1964</td>
+            <td>~3 MFLOPS</td>
+            <td>First machine called a "supercomputer." Seymour Cray.</td>
+          </tr>
+          <tr>
+            <td>Cray-1</td>
+            <td>1976</td>
+            <td>160 MFLOPS</td>
+            <td>Vector processor. 80 MHz. 115 kW. The icon.</td>
+          </tr>
+          <tr>
+            <td>Deep Blue</td>
+            <td>1997</td>
+            <td>11.38 GFLOPS</td>
+            <td>Beat Kasparov. 480 custom chess chips.</td>
+          </tr>
+          <tr>
+            <td>ASCI Red</td>
+            <td>1997</td>
+            <td>1.338 TFLOPS</td>
+            <td>First teraflop system. Intel Pentium Pro. Sandia.</td>
+          </tr>
+          <tr>
+            <td>Earth Simulator</td>
+            <td>2002</td>
+            <td>35.86 TFLOPS</td>
+            <td>NEC vector processors. #1 for 2.5 years.</td>
+          </tr>
+          <tr>
+            <td>IBM Roadrunner</td>
+            <td>2008</td>
+            <td>1.026 PFLOPS</td>
+            <td>First petaflop. Hybrid Cell/Opteron. Los Alamos.</td>
+          </tr>
+          <tr>
+            <td>Fugaku</td>
+            <td>2020</td>
+            <td>442 PFLOPS</td>
+            <td>ARM A64FX. RIKEN, Japan.</td>
+          </tr>
+          <tr>
+            <td>Frontier</td>
+            <td>2022</td>
+            <td>1.102 EFLOPS</td>
+            <td>First exaflop. AMD EPYC + MI250X. Oak Ridge. 21 MW.</td>
+          </tr>
+          <tr>
+            <td>El Capitan</td>
+            <td>2024</td>
+            <td>1.742 EFLOPS</td>
+            <td>AMD EPYC + MI300A. Lawrence Livermore. Current #1.</td>
+          </tr>
+        </table>
+
+        <p>From ENIAC to El Capitan: a factor of $3.5 \times 10^{15}$. Three and a half quadrillion times faster in 78 years. Put differently, El Capitan performs more floating-point operations <em>in one second</em> than ENIAC could have performed if it had been running continuously since the Big Bang ($13.8$ billion years $\times$ 31.5 million seconds/year $\times$ 500 FLOPS $\approx 2.2 \times 10^{17}$ operations).</p>
+
+        <div class="scale-box">
+          <span class="label">SCALE OF FLOPS</span><br><br>
+          <span class="num">500</span>           <span class="unit">FLOPS</span>     <span class="comment">ENIAC (1946). One room. 27 tons.</span><br>
+          <span class="num">50,000</span>        <span class="unit">FLOPS</span>     <span class="comment">Intel 8087 coprocessor (1980). One chip.</span><br>
+          <span class="num">7,000,000</span>     <span class="unit">FLOPS</span>     <span class="comment">Intel 486DX (1989). Your first "fast" PC.</span><br>
+          <span class="num">160,000,000</span>   <span class="unit">FLOPS</span>     <span class="comment">Cray-1 (1976). Cost $8M. Liquid-cooled.</span><br>
+          <span class="num">4,000,000,000</span> <span class="unit">FLOPS</span>     <span class="comment">Pentium III (1999). One desktop CPU.</span><br>
+          <span class="num">1,000,000,000,000</span>   <span class="unit">FLOPS</span>  <span class="comment">1 TFLOPS. ASCI Red (1997). First teraflop system.</span><br>
+          <span class="num">2,900,000,000,000</span>   <span class="unit">FLOPS</span>  <span class="comment">AMD Ryzen 9 7950X (2022). One desktop CPU.</span><br>
+          <span class="num">75,000,000,000,000</span>  <span class="unit">FLOPS</span>  <span class="comment">NVIDIA B200 FP32 (2024). One GPU.</span><br>
+          <span class="num">18,000,000,000,000,000</span> <span class="unit">FLOPS</span> <span class="comment">NVIDIA B200 FP4 Tensor (2024). Same GPU.</span><br>
+          <span class="num">1,000,000,000,000,000</span> <span class="unit">FLOPS</span> <span class="comment">1 PFLOPS. IBM Roadrunner (2008). First petaflop.</span><br>
+          <span class="num">125,000,000,000,000,000</span> <span class="unit">FLOPS</span> <span class="comment">Cerebras WSE-3 FP16 (2024). One wafer.</span><br>
+          <span class="num">1,000,000,000,000,000,000</span> <span class="unit">FLOPS</span> <span class="comment">1 EFLOPS. Frontier (2022). First exaflop. 21 MW.</span><br>
+          <span class="num">1,742,000,000,000,000,000</span> <span class="unit">FLOPS</span> <span class="comment">El Capitan (2024). Current #1. FP64.</span><br>
+        </div>
+
+        <p>A desktop CPU in 2022 exceeds the first teraflop supercomputer from 1997. A single NVIDIA B200 GPU in 2024 exceeds the performance of the entire IBM Roadrunner from 2008&mdash;the machine that broke the petaflop barrier&mdash;at FP32. At FP4 tensor precision, the B200 exceeds 18 petaflops, roughly matching what the world&rsquo;s most powerful supercomputer achieved in 2020. One chip.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 7: The Tradeoff Space</h2>
+        <!-- ============================================================ -->
+
+        <p>Every processor type occupies a position on a tradeoff curve between generality and efficiency:</p>
+
+        <div class="math-box">
+          <strong>The Fundamental Tradeoff:</strong><br>
+          $$\text{Generality} \times \text{Efficiency} \approx \text{Constant}$$<br><br>
+          A CPU can run <em>any</em> program but achieves modest FLOPS per watt.<br>
+          A GPU can run any <em>parallel</em> program and achieves high FLOPS per watt.<br>
+          An NPU can run <em>matrix multiplications</em> and achieves very high FLOPS per watt.<br>
+          An ASIC can run <em>one algorithm</em> and achieves maximum FLOPS per watt.<br><br>
+          Each step toward specialization sacrifices flexibility for efficiency. The question is always: is your workload stable enough to justify the loss of generality?
+        </div>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Processor</th>
+            <th>Generality</th>
+            <th>Peak FLOPS (2024, FP32)</th>
+            <th>Best At</th>
+            <th>Cannot Do</th>
+          </tr>
+          <tr>
+            <td>CPU</td>
+            <td>Universal</td>
+            <td>~3 TFLOPS</td>
+            <td>Serial code, branching, OS, I/O</td>
+            <td>Nothing (it can do everything, slowly)</td>
+          </tr>
+          <tr>
+            <td>GPU</td>
+            <td>Parallel-general</td>
+            <td>~75 TFLOPS</td>
+            <td>Matrix math, rendering, parallel compute</td>
+            <td>Serial dependencies, branches, OS</td>
+          </tr>
+          <tr>
+            <td>NPU/TPU</td>
+            <td>Matrix-specific</td>
+            <td>~200&ndash;900 TFLOPS (BF16)</td>
+            <td>Neural network training &amp; inference</td>
+            <td>General compute, irregular access</td>
+          </tr>
+          <tr>
+            <td>FPGA</td>
+            <td>Reconfigurable</td>
+            <td>~8&ndash;23 TFLOPS</td>
+            <td>Low-latency, custom pipelines</td>
+            <td>High-throughput bulk compute</td>
+          </tr>
+          <tr>
+            <td>ASIC</td>
+            <td>Fixed</td>
+            <td>N/A (algorithm-specific)</td>
+            <td>One algorithm, maximum efficiency</td>
+            <td>Anything other than its target algorithm</td>
+          </tr>
+        </table>
+
+        <h3>Why the GPU Won AI</h3>
+
+        <p>Deep learning&rsquo;s core operation is matrix multiplication. GPUs have thousands of cores that perform matrix multiplication in parallel. That alignment is why NVIDIA&rsquo;s market capitalization went from &#36;150 billion in early 2023 to over &#36;3 trillion by late 2024. But GPUs did not win because they are the <em>fastest</em> possible hardware for matrix multiply. TPUs and Cerebras chips achieve higher arithmetic density. GPUs won because they are <em>general enough</em> to survive algorithmic change. When the field moved from convolutional networks to transformers to mixture-of-experts to state-space models, GPUs ran all of them. A chip hardwired for convolutions would have been stranded.</p>
+
+        <p>This is the deepest lesson of the FLOPS race: raw throughput matters, but so does the ability to redirect that throughput when the target moves. The CPU survived 50 years because it can do anything. The GPU is thriving because it can do almost anything parallel. The NPU and ASIC will dominate their niches&mdash;until the niche shifts.</p>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 8: Where It&rsquo;s Going</h2>
+        <!-- ============================================================ -->
+
+        <p>Three trends define the next decade of compute:</p>
+
+        <p><strong>1. Precision keeps falling.</strong> FP64 $\rightarrow$ FP32 $\rightarrow$ FP16 $\rightarrow$ FP8 $\rightarrow$ FP4. Each halving of precision roughly doubles throughput. The B200 at FP4 achieves 18 petaflops&mdash;$18\times$ its FP32 throughput. Research into 1-bit and 2-bit neural networks is active. If neural network inference can be done at 2-bit precision with acceptable quality, current hardware throughput will effectively multiply by another factor of $2$&ndash;$4\times$ with no new silicon.</p>
+
+        <p><strong>2. Memory bandwidth is the real bottleneck.</strong> For large language models, the limiting factor is often not FLOPS but <em>memory bandwidth</em>: how fast weights can be read from memory and fed to the arithmetic units. The B200 has 8 TB/s of HBM3e bandwidth, but its arithmetic units can consume data far faster than that. This "memory wall" is why Cerebras&rsquo;s approach (44 GB of on-chip SRAM) and Apple&rsquo;s unified memory architecture (no CPU-GPU data copies) are architecturally significant despite lower peak FLOPS.</p>
+
+        <p><strong>3. The system, not the chip, is the unit of performance.</strong> Training GPT-4-scale models requires tens of thousands of GPUs communicating over high-speed interconnects (NVLink, InfiniBand, optical fabrics). The challenge is not building a fast chip&mdash;NVIDIA, Google, and Cerebras have all done that. The challenge is building a system where 30,000 chips can coordinate a single matrix multiplication across a room-sized cluster without idle time. Supercomputer FLOPS are measured in sustained performance for exactly this reason: peak chip FLOPS mean nothing if the interconnect cannot keep them fed.</p>
+
+        <div class="note-box">
+          <strong>Perspective.</strong> The iPhone in your pocket has a CPU, a GPU, and an NPU. Together, they deliver roughly 40 TFLOPS of AI compute (at INT8). In 1997, this would have made it the fastest computer on Earth, surpassing ASCI Red by $30\times$. In 2008, it would have matched a significant fraction of the world&rsquo;s first petaflop supercomputer. You carry a former supercomputer in your pocket, and you use it to check the weather. The arithmetic of silicon has made previously unimaginable computation so cheap that it has become invisible. That trajectory is not slowing down.
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">Part 9: FLOPS per Dollar&mdash;The Economics of Computation</h2>
+        <!-- ============================================================ -->
+
+        <p>Raw FLOPS are an engineering metric. The metric that actually governs what gets built is <em>FLOPS per dollar</em>. How much arithmetic can you buy? How has that price changed? And what does it cost, in real money, to train a frontier AI model?</p>
+
+        <h3>The 80-Year Price Collapse</h3>
+
+        <p>The cost of a floating-point operation has fallen by a factor of roughly 10 trillion since electronic computing began. This is the most dramatic price collapse for any commodity in human history.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Year</th>
+            <th>Hardware</th>
+            <th>Cost per GFLOPS</th>
+            <th>Context</th>
+          </tr>
+          <tr>
+            <td>1961</td>
+            <td>IBM 7030 Stretch</td>
+            <td>~$18.7 billion</td>
+            <td>Mainframe era. One of the fastest machines on Earth.</td>
+          </tr>
+          <tr>
+            <td>1984</td>
+            <td>Cray X-MP/48</td>
+            <td>~$18.7 million</td>
+            <td>$1{,}000\times$ cheaper than 1961. Still a room-sized machine.</td>
+          </tr>
+          <tr>
+            <td>1997</td>
+            <td>Pentium Pro cluster</td>
+            <td>~$30,000</td>
+            <td>Commodity hardware. The cluster era begins.</td>
+          </tr>
+          <tr>
+            <td>2000</td>
+            <td>Commodity cluster</td>
+            <td>~$640</td>
+            <td>Moore&rsquo;s Law in full force.</td>
+          </tr>
+          <tr>
+            <td>2003</td>
+            <td>Commodity cluster</td>
+            <td>~$82</td>
+            <td>A GFLOPS now costs less than a textbook.</td>
+          </tr>
+          <tr>
+            <td>2011</td>
+            <td>GPU compute</td>
+            <td>~$1.80</td>
+            <td>GPU general-purpose computing arrives.</td>
+          </tr>
+          <tr>
+            <td>2013</td>
+            <td>Consumer GPU</td>
+            <td>~&#36;0.12&ndash;&#36;0.22</td>
+            <td>Sub-dollar. A GFLOPS costs less than a candy bar.</td>
+          </tr>
+          <tr>
+            <td>2017</td>
+            <td>AMD RX Vega 64</td>
+            <td>~$0.03</td>
+            <td>Three cents per GFLOPS. FP32.</td>
+          </tr>
+        </table>
+
+        <p>From &#36;18.7 billion per GFLOPS in 1961 to &#36;0.03 in 2017: a factor of 620 billion. And that is only FP32 on consumer hardware. At tensor-core AI precisions, the effective cost is even lower.</p>
+
+        <p>The long-run trend, documented by the economist William Nordhaus and by Epoch AI, shows FLOPS per dollar doubling roughly every 2&ndash;3 years since the 1990s. During the GPU era specifically (2006&ndash;2021), Epoch AI measured a doubling time of about 2.5 years for GPU FLOPS per dollar. This is faster than Moore&rsquo;s Law (which describes transistor density, not price-performance, and has a doubling time of ~2 years). The additional gain comes from architectural improvements: wider SIMD, tensor cores, lower precision formats, and better memory systems.</p>
+
+        <h3>What a FLOP Costs Today: Owned Hardware</h3>
+
+        <p>The most concrete way to compute cost per FLOP is to buy a GPU and divide its price by its throughput over its useful lifetime. Take the NVIDIA H100 SXM:</p>
+
+        <div class="math-box">
+          <strong>H100 SXM: Cost per FLOP (owned hardware)</strong><br><br>
+          $$\text{Purchase price: } \sim\$30{,}000$$
+          $$\text{FP16 tensor throughput: } 1{,}979 \text{ TFLOPS} = 1.979 \times 10^{15} \text{ FLOPS}$$
+          $$\text{Useful life: } \sim 3 \text{ years (industry standard depreciation)}$$
+          $$\text{Utilization: } \sim 70\% \text{ (realistic for a well-run cluster)}$$
+          $$\text{Uptime: } 8{,}760 \text{ hrs/yr} \times 3 \text{ yrs} = 26{,}280 \text{ hours}$$
+          $$\text{Total FLOPs delivered: } 1.979 \times 10^{15} \times 26{,}280 \times 3{,}600 \times 0.70$$
+          $$= 1.31 \times 10^{23} \text{ FLOPs}$$
+          $$\text{Power cost: } 700\text{W} \times 26{,}280 \text{ hrs} \times \$0.10/\text{kWh} = \$18{,}396$$
+          $$\text{Total cost (GPU + power): } \sim\$48{,}400$$
+          $$\text{Cost per FLOP} = \frac{\$48{,}400}{1.31 \times 10^{23}} \approx \$3.7 \times 10^{-19} \text{ per FLOP}$$
+          $$\text{Or equivalently: } \sim\$0.37 \text{ per EFLOP (per } 10^{18} \text{ FLOPs)}$$
+        </div>
+
+        <p>Notice that electricity (&#36;18,400 over three years) is a significant fraction of the total&mdash;about 38% of the all-in cost at &#36;0.10/kWh. This is a recent development. For most of computing history, power was negligible compared to hardware cost. But as chips have become cheaper and more power-hungry, electricity has become a first-order economic variable. At hyperscale (100,000+ GPUs), electricity cost alone reaches &#36;50&ndash;60 million per year.</p>
+
+        <p>This calculation also omits networking, cooling, rack space, staff, and server components (CPU, RAM, storage, NVLink switches). Epoch AI estimates that GPU chips account for 47&ndash;64% of total amortized cluster cost, with server components at 15&ndash;22%, interconnect at 9&ndash;13%, and energy at 2&ndash;6%. So the true all-in cost per FLOP is roughly $1.5$&ndash;$2\times$ the GPU-plus-power number above.</p>
+
+        <h3>What a FLOP Costs Today: Cloud Rental</h3>
+
+        <p>Most organizations do not buy GPUs. They rent them by the hour from cloud providers. This is simpler but more expensive&mdash;the cloud provider&rsquo;s margin, redundancy, and operational overhead are baked into the hourly rate.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>GPU</th>
+            <th>Provider</th>
+            <th>$/GPU/Hour</th>
+            <th>FP16 Tensor TFLOPS</th>
+            <th>Cost per $10^{18}$ FLOPs</th>
+          </tr>
+          <tr>
+            <td>H100 SXM</td>
+            <td>Lambda Labs</td>
+            <td>$2.99</td>
+            <td>1,979</td>
+            <td>$0.42</td>
+          </tr>
+          <tr>
+            <td>H100 SXM</td>
+            <td>AWS (p5)</td>
+            <td>$3.90</td>
+            <td>1,979</td>
+            <td>$0.55</td>
+          </tr>
+          <tr>
+            <td>H100 SXM</td>
+            <td>Azure</td>
+            <td>$6.98</td>
+            <td>1,979</td>
+            <td>$0.98</td>
+          </tr>
+          <tr>
+            <td>A100 80GB</td>
+            <td>AWS/GCP</td>
+            <td>$3.67</td>
+            <td>624 (sparse)</td>
+            <td>$1.63</td>
+          </tr>
+          <tr>
+            <td>B200</td>
+            <td>RunPod</td>
+            <td>$4.99</td>
+            <td>4,500</td>
+            <td>$0.31</td>
+          </tr>
+        </table>
+
+        <p>The "Cost per $10^{18}$ FLOPs" column is computed as: (price per hour) / (TFLOPS $\times\;10^{12} \times 3{,}600$ seconds). This assumes 100% utilization&mdash;that you are actually using every FLOP the GPU can deliver for the entire hour. In practice, real workloads achieve 30&ndash;50% of peak (called <em>Model FLOP Utilization</em>, or MFU, in AI training). So the effective cost is $2$&ndash;$3\times$ higher than the table shows.</p>
+
+        <p>Even so, the price trend is striking. H100 cloud pricing fell from ~&#36;8/hour in 2023 to &#36;2&ndash;4/hour by mid-2025 as supply caught up with demand. The B200, despite being a newer and faster chip, is already available at roughly &#36;5/hour&mdash;delivering $2.3\times$ the FP16 tensor throughput of an H100 at only $1.3$&ndash;$1.7\times$ the price. Cost per FLOP continues to fall, even at cloud markups.</p>
+
+        <h3>What It Costs to Train a Frontier Model</h3>
+
+        <p>Now for the question that actually matters: if a training run requires $10^{25}$ FLOPs, what does it cost?</p>
+
+        <div class="math-box">
+          <strong>Worked Example: $10^{25}$ FLOPs on H100s (owned hardware)</strong><br><br>
+          $$\text{Target: } 10^{25} \text{ FLOPs (roughly the GPT-4 training scale)}$$
+          $$\text{H100 SXM FP16 tensor (dense): } 1{,}979 \text{ TFLOPS} = 1.979 \times 10^{15} \text{ FLOPS}$$
+          $$\text{Realistic MFU: } 35\% \text{ (published figure for GPT-4 training)}$$
+          $$\text{Effective throughput per GPU: } 1.979 \times 10^{15} \times 0.35 = 6.93 \times 10^{14} \text{ FLOPS}$$
+          $$\text{GPU-seconds needed: } \frac{10^{25}}{6.93 \times 10^{14}} = 1.44 \times 10^{10} \text{ seconds}$$
+          $$\text{GPU-hours needed: } 4.01 \times 10^{6} \text{ (about 4 million GPU-hours)}$$
+          $$\text{With 25,000 GPUs: } \frac{4.01 \times 10^{6}}{25{,}000} = 160 \text{ hours} \approx 6.7 \text{ days}$$
+          $$\text{With overhead, checkpointing, restarts: } \sim 90\text{--}100 \text{ days (reported for GPT-4)}$$
+          $$\text{Hardware amortization: } 25{,}000 \times \$30{,}000 \;/\; (3 \times 365) \times 100 = \$68.5\text{M}$$
+          $$\text{Electricity: } 25{,}000 \times 700\text{W} \times 100 \text{ days} \times 24 \text{ hrs} \times \$0.10/\text{kWh} = \$42\text{M}$$
+          $$\text{Total (GPU + power only): } \sim\$110\text{M}$$
+          $$\text{With networking, cooling, staff, overhead } (\sim 1.5\times)\text{: } \sim\$40\text{--}80\text{M (Epoch AI estimate)}$$
+        </div>
+
+        <p>The gap between the naive calculation (&#36;110M) and Epoch AI&rsquo;s estimate (&#36;40&ndash;80M for GPT-4) comes from several factors: Epoch AI amortizes over the full 3-year GPU life (not just the training run), companies negotiate GPU prices well below list, and the cluster is used for other work when not training the flagship model. The cloud-rental equivalent, which includes provider margins, is higher: Epoch AI estimates ~&#36;78M for GPT-4 at cloud rates.</p>
+
+        <p>Here are published estimates for real training runs:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Training FLOPs</th>
+            <th>Estimated Cost (Owned HW)</th>
+            <th>Estimated Cost (Cloud)</th>
+          </tr>
+          <tr>
+            <td>GPT-3 175B</td>
+            <td>2020</td>
+            <td>$\sim 3.1 \times 10^{23}$</td>
+            <td>$2.2M</td>
+            <td>$4.3M</td>
+          </tr>
+          <tr>
+            <td>PaLM 540B</td>
+            <td>2022</td>
+            <td>&mdash;</td>
+            <td>$2.9M</td>
+            <td>$12.4M</td>
+          </tr>
+          <tr>
+            <td>Falcon-180B</td>
+            <td>2023</td>
+            <td>&mdash;</td>
+            <td>$10.3M</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>GPT-4</td>
+            <td>2023</td>
+            <td>$\sim 2.15 \times 10^{25}$</td>
+            <td>$41M</td>
+            <td>$78M</td>
+          </tr>
+          <tr>
+            <td>Llama 3.1 405B</td>
+            <td>2024</td>
+            <td>$\sim 3.8 \times 10^{25}$</td>
+            <td>~$60M</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td>DeepSeek V3</td>
+            <td>2024</td>
+            <td>&mdash;</td>
+            <td>$5.6M</td>
+            <td>&mdash;</td>
+          </tr>
+        </table>
+
+        <p>DeepSeek V3 is the outlier. It reported a cost of &#36;5.6 million for its final training run on 2,048 H800 GPUs (an export-restricted variant of the H100)&mdash;roughly $10\times$ cheaper than comparable Western models at similar capability. This reflects both algorithmic efficiency (mixture-of-experts, aggressive quantization) and lower Chinese cloud and labor costs. It is a data point, not a trend: most frontier models at the GPT-4 scale cost &#36;40&ndash;100 million.</p>
+
+        <h3>The Cost Is Growing Faster Than It&rsquo;s Falling</h3>
+
+        <p>Here is the critical observation. FLOPS per dollar improves by roughly $2\times$ every 2.5 years. But the compute used for frontier model training grows by roughly $4\times$ per year (Epoch AI). This means that despite hardware getting cheaper, <em>frontier training runs get more expensive every year</em>, because the appetite for compute is growing faster than the price is falling.</p>
+
+        <div class="scale-box">
+          <span class="label">TRAINING COST TRAJECTORY</span><br><br>
+          <span class="num">$2.2M</span>    <span class="comment">GPT-3 (2020). 175B parameters. $3.1 \times 10^{23}$ FLOPs.</span><br>
+          <span class="num">$41M</span>     <span class="comment">GPT-4 (2023). ~1.8T parameters (MoE). $2.15 \times 10^{25}$ FLOPs.</span><br>
+          <span class="num">$60M</span>     <span class="comment">Llama 3.1 405B (2024). $3.8 \times 10^{25}$ FLOPs.</span><br>
+          <span class="num">~$100M+</span>  <span class="comment">Grok-3 (2025). 200M H100 GPU-hours.</span><br>
+          <span class="num">&gt;$1B</span>     <span class="comment">Projected by 2027. Epoch AI estimate.</span><br>
+        </div>
+
+        <p>Training costs for frontier models grow at roughly $2.4\times$ per year. At this rate, the first billion-dollar training run arrives around 2027. The cost breakdown for a frontier model today is roughly: GPU chips 47&ndash;64%, R&amp;D staff 29&ndash;49%, server components 15&ndash;22%, interconnect 9&ndash;13%, electricity 2&ndash;6%. The GPUs dominate, but human talent is nearly as expensive&mdash;the researchers who design the architecture, tune the hyperparameters, and debug the distributed training run are themselves a scarce and expensive resource.</p>
+
+        <h3>Historical Cost per FLOP in Context</h3>
+
+        <p>Zoom out far enough and the picture is staggering:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Year</th>
+            <th>Cost per FLOP</th>
+            <th>Cost for $10^{25}$ FLOPs</th>
+            <th>Interpretation</th>
+          </tr>
+          <tr>
+            <td>1961</td>
+            <td>~$19 per FLOP</td>
+            <td>$\$1.9 \times 10^{26}$</td>
+            <td>190 trillion times global GDP. Impossible.</td>
+          </tr>
+          <tr>
+            <td>1984</td>
+            <td>~$0.019 per FLOP</td>
+            <td>$\$1.9 \times 10^{23}$</td>
+            <td>190 billion times global GDP. Still impossible.</td>
+          </tr>
+          <tr>
+            <td>1997</td>
+            <td>$\sim\$3 \times 10^{-5}$</td>
+            <td>$\$3 \times 10^{20}$</td>
+            <td>300 million times global GDP. No.</td>
+          </tr>
+          <tr>
+            <td>2011</td>
+            <td>$\sim\$1.8 \times 10^{-9}$</td>
+            <td>$\$1.8 \times 10^{16}$</td>
+            <td>&#36;18 quadrillion. $180\times$ global GDP.</td>
+          </tr>
+          <tr>
+            <td>2017</td>
+            <td>$\sim\$3 \times 10^{-11}$</td>
+            <td>$\$3 \times 10^{14}$</td>
+            <td>&#36;300 trillion. $3\times$ global GDP.</td>
+          </tr>
+          <tr>
+            <td>2024</td>
+            <td>$\sim\$4 \times 10^{-19}$</td>
+            <td>~$40&ndash;80M</td>
+            <td>One company&rsquo;s quarterly R&amp;D budget. Feasible.</td>
+          </tr>
+        </table>
+
+        <p>In 1961, performing $10^{25}$ floating-point operations would have cost 190 trillion times the entire world&rsquo;s GDP. In 2024, it costs about &#36;50 million. The operation itself has not changed&mdash;it is still just a multiply and an add on floating-point numbers. What changed is that we learned to etch the machinery for that operation onto silicon at nanometer scale, replicate it billions of times on a single chip, and run thousands of those chips in parallel. The price per operation fell by a factor of roughly $5 \times 10^{19}$ in 63 years. This is why large language models exist now and not in 2010: the algorithms were known (transformers were close to ideas from the 1990s), but the arithmetic was simply too expensive.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

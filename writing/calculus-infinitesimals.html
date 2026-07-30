@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculus and Infinitesimals: From Newton to Non-Standard Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .definition-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 2px;
+      font-size: 0.95rem;
+    }
+
+    .comparison-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .comparison-section {
+      background: white;
+      border: 1px solid #e0d9ce;
+      padding: 1.5rem;
+      border-radius: 3px;
+    }
+
+    .comparison-section h4 {
+      color: #1a3a3a;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .comparison-section p {
+      color: #5a5a5a;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .theorem-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .theorem-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .highlight {
+      background-color: #fff9f0;
+      padding: 0.2rem 0.4rem;
+      border-radius: 2px;
+      color: #8b7355;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-box {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Calculus and Infinitesimals</h1>
+      <p>From Newton's intuition to non-standard analysis</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">← Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>Calculus and Infinitesimals: From Newton to Non-Standard Analysis</h1>
+        <div class="article-meta">Mathematics</div>
+      </div>
+
+      <div class="article-body">
+        <h2>Introduction: The Problem Calculus Solves</h2>
+
+        <p>Calculus is the mathematics of change and accumulation. It answers two fundamental questions:</p>
+
+        <ul>
+          <li><strong>How fast is something changing?</strong> (Differentiation)</li>
+          <li><strong>How much has something accumulated?</strong> (Integration)</li>
+        </ul>
+
+        <p>These questions sound simple. But they're subtle. A car's speedometer tells you the speed at a single instant. But an instant has no duration. How can you have a speed with no time passing? This paradox troubled philosophers for centuries.</p>
+
+        <p>Similarly, the area under a curve can be approximated by rectangles, but rectangles with zero width contribute zero area. How do infinitely many zero-area rectangles add up to a finite area?</p>
+
+        <p>Calculus solves these paradoxes. But the solution came in two forms: the intuitive (infinitesimals) and the rigorous (epsilon-delta). For nearly 300 years, mathematicians thought these two approaches were incompatible. Then, in the 1960s, Abraham Robinson proved they weren't: infinitesimals could be rigorously justified through non-standard analysis. This article explores both approaches, with emphasis on the elegant world of infinitesimals.</p>
+
+        <h2>Part One: The Historical Problem</h2>
+
+        <h3>Newton and Leibniz: Infinitesimals Without Rigor</h3>
+
+        <p>In the late 1600s, Isaac Newton and Gottfried Leibniz independently invented calculus. Both used infinitesimals, infinitely small numbers, smaller than any positive number yet not zero.</p>
+
+        <p>Newton's approach was geometric and dynamical. He thought of curves as traced by moving points, and the instantaneous velocity as the rate of change. He called infinitesimal changes "fluxions." His notation was awkward, and his proofs weren't rigorous by modern standards.</p>
+
+        <p>Leibniz's approach was algebraic. He developed notation (the dx, dy, ∫ symbols we still use) that made manipulation intuitive. To find the slope of a curve, Leibniz computed dy/dx, the ratio of infinitesimal changes. To find area, he summed infinitely many infinitesimal strips (∫ comes from a stylized S, for "sum").</p>
+
+        <p>Both approaches worked. They solved problems that seemed impossible: finding tangent lines to curves, calculating areas under curves, determining maximum and minimum values. Yet both were philosophically troubling. How could infinitesimals be real numbers? Real numbers are fixed: they can't be "infinitely small yet nonzero."</p>
+
+        <h3>The Crisis: The Infinitesimal Paradox</h3>
+
+        <p>Bishop George Berkeley attacked infinitesimals mercilessly in the 1700s. If dx is nonzero, why can we divide by it and then treat it as zero? If it's truly zero, how can we divide by it at all? He called infinitesimals "ghosts of departed quantities," useful fictions but not genuinely real.</p>
+
+        <p>Mathematicians knew calculus worked in practice. But the foundations were shaky. For a century, calculus was used without being fully understood.</p>
+
+        <h2>Part Two: The Epsilon-Delta Revolution</h2>
+
+        <h3>Cauchy and Weierstrass: Banishing Infinitesimals</h3>
+
+        <p>In the 1800s, Augustin-Louis Cauchy and Karl Weierstrass replaced infinitesimals with limits. Instead of dy and dx being tiny numbers, they became variables approaching zero. Instead of computing dy/dx directly, you computed:</p>
+
+        <div class="definition-box">
+          The derivative of $f$ at $x$ is the limit:
+          $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+          The key: $h$ approaches zero but never equals zero.
+        </div>
+
+        <p>This was rigorous. Limits could be defined without invoking infinitesimals. Weierstrass formalized this with epsilon-delta proofs.</p>
+
+        <h3>Epsilon-Delta: Precision at a Cost</h3>
+
+        <p>Here's the epsilon-delta definition of a limit:</p>
+
+        <div class="definition-box">
+          $\lim_{x \to a} f(x) = L$ if and only if:<br><br>
+          For every $\epsilon > 0$, there exists $\delta > 0$ such that<br>
+          if $0 < |x - a| < \delta$, then $|f(x) - L| < \epsilon$
+          <br><br>
+          In English: For any acceptable error $\epsilon$, we can find a neighborhood $\delta$ around $a$ such that all points in that neighborhood produce values within $\epsilon$ of $L$.
+        </div>
+
+        <p>This is precise but unintuitive. It requires you to think about "for all ε" and "there exists δ," quantifiers nested in a way that's hard to visualize. Many calculus students find epsilon-delta proofs opaque, even after they learn them.</p>
+
+        <p>But epsilon-delta was rigorous. It built calculus on the foundation of set theory and logic. For 150 years, this was the standard approach.</p>
+
+        <h2>Part Three: Non-Standard Analysis and the Return of Infinitesimals</h2>
+
+        <h3>Abraham Robinson: Rigorous Infinitesimals</h3>
+
+        <p>In the 1960s, mathematician Abraham Robinson asked: could infinitesimals be rigorously justified? His answer was yes, through the hyperreal numbers.</p>
+
+        <p>Robinson's insight: you don't need infinitesimals to actually be infinitely small in the conventional sense. You just need a number system where they exist and behave consistently. The hyperreal numbers form such a system.</p>
+
+        <h3>The Hyperreal Numbers: What They Are</h3>
+
+        <p>The hyperreal numbers (denoted *ℝ) extend the real numbers with infinitesimal and infinite elements:</p>
+
+        <ul>
+          <li><strong>Infinitesimals:</strong> Numbers ε where |ε| < r for every positive real r, but ε ≠ 0. Examples: 1/∞, 1/10^1000000, the "infinitely small" ε from epsilon-delta proofs.</li>
+          <li><strong>Infinite numbers:</strong> Numbers H where |H| > r for every positive real r. If ε is infinitesimal, then 1/ε is infinite.</li>
+          <li><strong>Finite hyperreals:</strong> Hyperreals that are not infinite. These include all real numbers and tiny perturbations like r + ε.</li>
+        </ul>
+
+        <p>The hyperreals form a system as rich as the reals. They have addition, subtraction, multiplication, division (for non-infinitesimal denominators). You can compute with them using ordinary algebra.</p>
+
+        <h3>The Transfer Principle: The Magic of Non-Standard Analysis</h3>
+
+        <p>Robinson proved a remarkable theorem: any statement about real numbers that can be expressed in first-order logic is true for the hyperreals if and only if it's true for the reals. This is the Transfer Principle.</p>
+
+        <p>Why does this matter? It means you can use hyperreal arithmetic to prove things about real calculus. Infinitesimal techniques, properly formalized, are as rigorous as epsilon-delta proofs.</p>
+
+        <h2>Part Four: Calculus in Hyperreals</h2>
+
+        <h3>Derivatives Using Infinitesimals</h3>
+
+        <p>In the hyperreal system, the derivative becomes intuitive:</p>
+
+        <div class="definition-box">
+          f'(x) = standard part of (f(x + dx) - f(x))/dx
+          <br><br>
+          where dx is an infinitesimal, and "standard part" means rounding to the nearest real number.
+        </div>
+
+        <p>This is what Leibniz intended! You compute the change in f (which is infinitesimal if f is continuous) and divide by the infinitesimal change in x. The result is the derivative.</p>
+
+        <p><strong>Example:</strong> Find the derivative of f(x) = x² at x = 3.</p>
+
+        <p>Let dx be infinitesimal. Then:</p>
+
+        <div class="definition-box">
+          f(3 + dx) = (3 + dx)² = 9 + 6dx + (dx)²
+          <br><br>
+          f(3 + dx) - f(3) = 6dx + (dx)²
+          <br><br>
+          (f(3 + dx) - f(3))/dx = 6 + dx
+          <br><br>
+          Since dx is infinitesimal, 6 + dx is infinitesimally close to 6.
+          <br><br>
+          Standard part = 6, so f'(3) = 6.
+        </div>
+
+        <p>Notice: we treated (dx)² as negligible because dx is infinitesimal, so (dx)² is even more infinitesimal. This was Berkeley's complaint, but now it's rigorous! The key is that dx is not zero, so we can divide by it. But it's so small that (dx)² is negligible compared to dx.</p>
+
+        <h3>Continuity in Hyperreals</h3>
+
+        <p>Continuity becomes intuitive:</p>
+
+        <div class="definition-box">
+          f is continuous at x if for every infinitesimal dx,<br>
+          f(x + dx) is infinitesimally close to f(x)
+          <br><br>
+          In hyperreal notation: f(x + dx) ≈ f(x) when dx ≈ 0
+        </div>
+
+        <p>This is exactly the intuition: a function is continuous if small changes in input produce small changes in output.</p>
+
+        <h3>Integration Using Infinitesimals</h3>
+
+        <p>The Riemann integral is the limit of Riemann sums. In hyperreal analysis, it's more direct:</p>
+
+        <div class="definition-box">
+          ∫[a to b] f(x)dx = standard part of Σ f(xᵢ)·dx
+          <br><br>
+          where you partition [a,b] into infinitely many infinitesimal intervals dx,<br>
+          and sum f(xᵢ) times dx for each interval.
+        </div>
+
+        <p>This is Leibniz's original intuition! You're summing infinitesimal strips. Each strip has height f(x) and width dx, so area f(x)dx. The infinite sum of infinitesimal areas equals the total area.</p>
+
+        <h2>Part Five: Main Theorems of Calculus</h2>
+
+        <h3>The Fundamental Theorem of Calculus</h3>
+
+        <div class="theorem-box">
+          <h4>Fundamental Theorem of Calculus</h4>
+          <p>Let f be continuous on [a,b] and differentiable on (a,b). Define F(x) = ∫[a to x] f(t)dt.</p>
+          <p>Then F'(x) = f(x).</p>
+          <p>Conversely, if G'(x) = f(x), then ∫[a to b] f(x)dx = G(b) - G(a).</p>
+          <p><strong>In hyperreals:</strong> Differentiation and integration are inverse operations. Taking the infinitesimal derivative of an accumulated sum returns the summand.</p>
+        </div>
+
+        <h3>The Mean Value Theorem</h3>
+
+        <div class="theorem-box">
+          <h4>Mean Value Theorem</h4>
+          <p>If f is continuous on [a,b] and differentiable on (a,b), then there exists c ∈ (a,b) such that:</p>
+          <p>f'(c) = (f(b) - f(a))/(b - a)</p>
+          <p><strong>Interpretation:</strong> The instantaneous rate of change at some point equals the average rate of change over the interval.</p>
+          <p><strong>In hyperreals:</strong> Among all the infinitesimal slopes at points in [a,b], at least one has the same value as the average slope.</p>
+        </div>
+
+        <h3>The Intermediate Value Theorem</h3>
+
+        <div class="theorem-box">
+          <h4>Intermediate Value Theorem</h4>
+          <p>If f is continuous on [a,b] and k is any value between f(a) and f(b), then there exists c ∈ (a,b) such that f(c) = k.</p>
+          <p><strong>In hyperreals:</strong> Continuity means f(x + dx) ≈ f(x). By moving through infinitely many infinitesimal steps, f must pass through every intermediate value.</p>
+        </div>
+
+        <h3>Taylor's Theorem</h3>
+
+        <div class="theorem-box">
+          <h4>Taylor's Theorem</h4>
+          <p>If f is n-times differentiable at a, then:</p>
+          <p>f(a + h) = f(a) + f'(a)h + f''(a)h²/2! + ... + f⁽ⁿ⁾(a)hⁿ/n! + Rₙ(h)</p>
+          <p>where Rₙ(h) is a remainder term.</p>
+          <p><strong>In hyperreals:</strong> If h is infinitesimal, all terms beyond f'(a)h become infinitesimal compared to f(a) and f'(a)h. You can approximate f locally by a linear (or polynomial) function.</p>
+        </div>
+
+        <h3>L'Hôpital's Rule</h3>
+
+        <div class="theorem-box">
+          <h4>L'Hôpital's Rule</h4>
+          <p>If lim[x→a] f(x)/g(x) has form 0/0 or ∞/∞, then:</p>
+          <p>lim[x→a] f(x)/g(x) = lim[x→a] f'(x)/g'(x)</p>
+          <p><strong>In hyperreals:</strong> If both f and g are infinitesimal, their ratio is determined by their derivatives (the leading terms of their Taylor expansions).</p>
+        </div>
+
+        <h2>Part Six: Comparing the Two Approaches</h2>
+
+        <div class="comparison-box">
+          <div class="comparison-section">
+            <h4>Epsilon-Delta Approach</h4>
+            <p><strong>Intuition:</strong> Limits approach a value, getting arbitrarily close. Formalize "arbitrarily close" with ε.</p>
+            <p><strong>Rigor:</strong> Completely rigorous by set theory standards.</p>
+            <p><strong>Difficulty:</strong> Quantifiers nested in confusing ways. Takes practice to visualize.</p>
+            <p><strong>Computational:</strong> Often harder to actually compute with. Proofs are lengthy.</p>
+            <p><strong>When to use:</strong> When you need to prove existence theorems or establish that a method works in generality.</p>
+          </div>
+
+          <div class="comparison-section">
+            <h4>Infinitesimal (Non-Standard) Approach</h4>
+            <p><strong>Intuition:</strong> Use actual infinitesimal numbers. Algebra works as expected.</p>
+            <p><strong>Rigor:</strong> Completely rigorous via hyperreal numbers and transfer principle.</p>
+            <p><strong>Difficulty:</strong> Easier to visualize initially. The infinitesimal calculus feels like Leibniz intended.</p>
+            <p><strong>Computational:</strong> Often simpler. You manipulate infinitesimals algebraically.</p>
+            <p><strong>When to use:</strong> When you want intuitive understanding or doing computations. Excellent for learning.</p>
+          </div>
+        </div>
+
+        <p>Remarkably, both approaches prove the same theorems and agree on every result. They are different languages for the same mathematical truths.</p>
+
+        <h2>Part Seven: A Brief History of Calculus</h2>
+
+        <ul>
+          <li><strong>1600s:</strong> Newton (fluxions) and Leibniz (differentials) independently develop calculus.</li>
+          <li><strong>1700s:</strong> Calculus is used widely but foundations are unclear. Berkeley and others attack infinitesimals.</li>
+          <li><strong>1800s:</strong> Cauchy (limits) and Weierstrass (epsilon-delta) rigorize calculus. Infinitesimals are banished.</li>
+          <li><strong>1900s:</strong> Calculus becomes standard in mathematics, physics, engineering. Taught everywhere via epsilon-delta.</li>
+          <li><strong>1960s:</strong> Robinson proves infinitesimals can be rigorized through non-standard analysis. Infinitesimals are rehabilitated.</li>
+          <li><strong>1980s-2000s:</strong> Some calculus textbooks (notably Keisler's "Elementary Calculus: An Infinitesimal Approach") teach calculus using hyperreals. Epsilon-delta remains dominant in universities.</li>
+          <li><strong>2020s:</strong> Non-standard analysis is recognized as rigorous but primarily used in research and logic. Undergraduate calculus still mostly uses epsilon-delta.</li>
+        </ul>
+
+        <h2>Part Eight: Adjacent and Related Areas</h2>
+
+        <h3>Differential Equations</h3>
+
+        <p>A differential equation relates a function to its derivatives. Examples: dy/dx = 2x, d²y/dt² = -ky.</p>
+
+        <p>In hyperreals, these become algebraic relationships between functions and their infinitesimal differences. Much of applied mathematics (physics, engineering, biology) uses differential equations to model systems.</p>
+
+        <h3>Real Analysis</h3>
+
+        <p>The rigorous theory of limits, continuity, differentiation, and integration on the real numbers. Epsilon-delta is the foundation here. Real analysis is typically taught after calculus and is more abstract and proof-heavy.</p>
+
+        <h3>Complex Analysis</h3>
+
+        <p>Calculus extended to complex numbers. Remarkably, complex differentiation is much more restrictive than real differentiation (functions must be "holomorphic"). This leads to powerful theorems like Cauchy's Residue Theorem.</p>
+
+        <h3>Multivariable Calculus</h3>
+
+        <p>Functions of several variables. Partial derivatives, gradients, multiple integrals. The geometry becomes richer. In hyperreals, you use multidimensional infinitesimals.</p>
+
+        <h3>Functional Analysis</h3>
+
+        <p>Calculus on infinite-dimensional spaces (spaces of functions). Used in quantum mechanics and PDE theory.</p>
+
+        <h3>Numerical Analysis</h3>
+
+        <p>How to approximate derivatives and integrals computationally. Essential for solving differential equations on computers.</p>
+
+        <h3>Topology</h3>
+
+        <p>The abstract study of continuity and limits. Topological spaces generalize the notion of "closeness" beyond metric spaces.</p>
+
+        <h2>Part Nine: Why Both Approaches Still Matter</h2>
+
+        <h3>Pedagogy: Infinitesimals for Understanding</h3>
+
+        <p>Students often find infinitesimal arguments more intuitive. They connect to the geometric intuition of slopes and areas. Teaching calculus with infinitesimals (via Keisler's approach) has been shown to improve conceptual understanding.</p>
+
+        <h3>Research: Epsilon-Delta for Generality</h3>
+
+        <p>In advanced mathematics and real analysis, epsilon-delta is still the standard. It generalizes to metric spaces, topological spaces, and abstract settings where hyperreals don't naturally apply.</p>
+
+        <h3>Theoretical Depth: Non-Standard Analysis for Insight</h3>
+
+        <p>Non-standard analysis reveals why infinitesimals work. It connects calculus to logic and model theory. Some theorems in real analysis are easier to prove using non-standard methods.</p>
+
+        <h2>Conclusion: Mathematics is Richer Than One Approach</h2>
+
+        <p>For nearly 150 years, mathematicians thought infinitesimals were "not rigorous" and epsilon-delta was the only way. Robinson proved this was a false dichotomy. Both approaches are rigorous. Both are useful.</p>
+
+        <p>This teaches a deeper lesson: mathematics is not monolithic. The same truths can be expressed in different languages. Infinitesimals and limits are both valid ways to formalize calculus. The hyperreals are as rigorous as the reals.</p>
+
+        <p>Calculus began with Newton and Leibniz using infinitesimals intuitively. The 1800s gave us epsilon-delta rigor at the cost of intuition. The 1960s gave us back the infinitesimals, but now rigorously. We can use each approach where it's most useful.</p>
+
+        <p>This is why calculus remains central to mathematics: it works, it's beautiful, and it can be understood from multiple angles. Understanding both perspectives (infinitesimal and limit-based) gives the deepest appreciation for how calculus actually works.</p>
+
+        <blockquote>
+          "Newton and Leibniz were right. Infinitesimals are real, just not in the way they thought. Robinson showed us a number system where infinitesimals exist and calculus becomes algebraic again. The ghost of departed quantities turned out to have been there all along, waiting for the right framework to be born."
+        </blockquote>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

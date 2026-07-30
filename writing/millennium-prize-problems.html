@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Millennium Prize Problems</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+    }
+
+    .example-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .example-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-size: 0.95rem;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .problem-box {
+      background-color: #fff5f5;
+      border-left: 4px solid #c0392b;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .problem-box .problem-title {
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 0.5rem;
+    }
+
+    .solved-box {
+      background-color: #f0f7f0;
+      border-left: 4px solid #5a8a5a;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .solved-box .solved-title {
+      font-weight: 700;
+      color: #2a5a2a;
+      margin-bottom: 0.5rem;
+    }
+
+    .proof-box {
+      background-color: #faf8f3;
+      border: 1px solid #d4cfc4;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .proof-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .status-tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    .status-open {
+      background-color: #fde8e8;
+      color: #c0392b;
+    }
+
+    .status-solved {
+      background-color: #e8f5e9;
+      color: #2a5a2a;
+    }
+
+    .problem-header {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>The Millennium Prize Problems</h1>
+      <p>Seven problems worth seven million dollars</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>The Millennium Prize Problems: A Technical Survey</h1>
+        <div class="article-meta">Mathematics</div>
+      </div>
+
+      <div class="article-body">
+
+        <p>In May 2000, the Clay Mathematics Institute announced seven unsolved problems, each carrying a prize of one million dollars. The problems were chosen not for their difficulty alone&mdash;mathematics has no shortage of hard problems&mdash;but because they sit at the junctions where entire fields meet, where a resolution would crack open new continents of understanding. A solution to any one of them would reshape the landscape of mathematics, physics, or computer science.</p>
+
+        <p>As of today, one has been solved. The Poincar&eacute; conjecture was proved by Grigori Perelman in 2003 using Ricci flow with surgery, confirming Thurston&rsquo;s geometrization program. Perelman declined both the million-dollar prize and the Fields Medal. The remaining six are open.</p>
+
+        <p>This article treats each problem technically. The aim is not to gesticulate at the difficulty but to state each problem precisely, explain why it matters, describe the landscape of partial results and promising approaches, and give a sense of what a solution might look like.</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Problem</th>
+            <th>Field</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>Poincar&eacute; Conjecture</td>
+            <td>Topology / Geometry</td>
+            <td><span class="status-tag status-solved">Solved</span></td>
+          </tr>
+          <tr>
+            <td>P vs NP</td>
+            <td>Computer Science / Complexity Theory</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+          <tr>
+            <td>Riemann Hypothesis</td>
+            <td>Number Theory / Analysis</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+          <tr>
+            <td>Yang&ndash;Mills Existence and Mass Gap</td>
+            <td>Mathematical Physics / QFT</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+          <tr>
+            <td>Navier&ndash;Stokes Existence and Smoothness</td>
+            <td>Partial Differential Equations</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+          <tr>
+            <td>Birch and Swinnerton-Dyer Conjecture</td>
+            <td>Number Theory / Algebraic Geometry</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+          <tr>
+            <td>Hodge Conjecture</td>
+            <td>Algebraic Geometry / Topology</td>
+            <td><span class="status-tag status-open">Open</span></td>
+          </tr>
+        </table>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">1. The Poincar&eacute; Conjecture <span class="status-tag status-solved">Solved</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <div class="math-box">
+          <span class="label">Poincar&eacute; Conjecture (1904):</span><br><br>
+          Every simply connected, closed 3-manifold is homeomorphic to the 3-sphere $S^3$.
+        </div>
+
+        <p>A <em>closed</em> manifold is compact and without boundary. <em>Simply connected</em> means every closed loop can be continuously contracted to a point&mdash;there are no &ldquo;holes&rdquo; that loops can wrap around. The 3-sphere $S^3 = \{x \in \mathbb{R}^4 : |x| = 1\}$ is the three-dimensional analogue of the ordinary sphere.</p>
+
+        <p>In two dimensions, the analogous statement is trivially true: the only simply connected closed surface is $S^2$, the ordinary sphere. In dimensions $n \geq 5$, the generalized Poincar&eacute; conjecture was proved by Smale (1961) using the h-cobordism theorem. In dimension 4, Freedman proved it in 1982 (earning a Fields Medal). Dimension 3 was the hardest case.</p>
+
+        <div class="concept-box">
+          <h4>Why dimension 3 is special</h4>
+          <p>In high dimensions, there is &ldquo;room to maneuver&rdquo;&mdash;you can unknot spheres and perform surgery operations freely. In dimension 3, everything is tight. The topology of 3-manifolds is rich and constrained in ways that higher dimensions are not. This is why Poincar&eacute;&rsquo;s conjecture was the last to fall.</p>
+        </div>
+
+        <h3>Perelman&rsquo;s proof: Ricci flow with surgery</h3>
+
+        <p>The resolution came not from topology but from geometry&mdash;specifically, from the theory of geometric flows. Richard Hamilton introduced the <strong>Ricci flow</strong> in 1982:</p>
+
+        <div class="math-box">
+          <span class="label">Ricci Flow:</span><br><br>
+          $$\frac{\partial g_{ij}}{\partial t} = -2 R_{ij}$$
+          <p>where $g_{ij}$ is the Riemannian metric and $R_{ij}$ is the Ricci curvature tensor.</p>
+        </div>
+
+        <p>The Ricci flow deforms a Riemannian metric in the direction of its curvature, smoothing out geometric irregularities the way heat diffusion smooths out temperature variations. Regions of high curvature contract faster. Hamilton&rsquo;s hope was that the flow would eventually homogenize the geometry, producing a manifold of constant curvature&mdash;which, if the manifold is simply connected, would identify it as $S^3$.</p>
+
+        <p>The problem is singularities. The Ricci flow can develop &ldquo;necks&rdquo; that pinch off in finite time, and the flow ceases to exist. Hamilton proposed a <em>surgery</em> procedure: when a singularity forms, cut the manifold along the pinching neck, cap off the resulting boundary spheres with hemispheres, and restart the flow on each piece.</p>
+
+        <p>Between 2002 and 2003, Perelman posted three papers to arXiv that completed Hamilton&rsquo;s program. His key contributions:</p>
+
+        <ul>
+          <li><strong>No local collapsing theorem:</strong> Using a monotone quantity he called the $\mathcal{W}$-entropy (inspired by statistical mechanics), Perelman proved that the Ricci flow cannot collapse to lower dimensions locally. This was the critical missing estimate in Hamilton&rsquo;s program.</li>
+          <li><strong>Canonical neighborhood theorem:</strong> Near singularities, the geometry looks like one of a small catalog of model geometries (cylinders, caps, quotients). This makes surgery possible because you know exactly what you&rsquo;re cutting.</li>
+          <li><strong>Surgery algorithm terminates:</strong> Perelman showed that the surgery process terminates in finite time: either the manifold disappears (becomes extinct) or it settles into a well-understood geometric structure.</li>
+        </ul>
+
+        <p>For simply connected manifolds, Perelman showed the flow with surgery eventually makes the manifold extinct (it shrinks to a point while becoming rounder), confirming that the manifold was homeomorphic to $S^3$.</p>
+
+        <div class="solved-box">
+          <div class="solved-title">Resolution</div>
+          Perelman&rsquo;s proof was verified by multiple groups (Kleiner&ndash;Lott, Morgan&ndash;Tian, Cao&ndash;Zhu) over several years. He was awarded the Fields Medal in 2006 and the Millennium Prize in 2010. He declined both. The Poincar&eacute; conjecture is the only Millennium Problem that has been solved.
+        </div>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">2. P vs NP <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>Let $\Sigma^*$ denote the set of all finite binary strings. A <em>decision problem</em> is a subset $L \subseteq \Sigma^*$ (a &ldquo;language&rdquo;). A deterministic Turing machine $M$ <em>decides</em> $L$ in time $T(n)$ if for every input $x$ of length $n$, $M$ halts in at most $T(n)$ steps and correctly outputs whether $x \in L$.</p>
+
+        <div class="math-box">
+          <span class="label">Complexity classes:</span><br><br>
+          $$\mathbf{P} = \bigcup_{k \geq 1} \mathrm{DTIME}(n^k)$$
+          $$\mathbf{NP} = \bigcup_{k \geq 1} \mathrm{NTIME}(n^k)$$
+        </div>
+
+        <p>$\mathbf{P}$ is the class of decision problems solvable by a deterministic Turing machine in polynomial time. $\mathbf{NP}$ is the class of problems for which a proposed solution (a &ldquo;certificate&rdquo;) can be <em>verified</em> in polynomial time. Equivalently, $\mathbf{NP}$ is the class solvable in polynomial time by a <em>nondeterministic</em> Turing machine&mdash;one that can &ldquo;guess&rdquo; correctly at each step.</p>
+
+        <div class="math-box">
+          <span class="label">The P vs NP question:</span><br><br>
+          $$\mathbf{P} \stackrel{?}{=} \mathbf{NP}$$
+        </div>
+
+        <p>Clearly $\mathbf{P} \subseteq \mathbf{NP}$: if you can <em>solve</em> a problem efficiently, you can certainly <em>verify</em> a solution efficiently. The question is whether the reverse holds. Can every problem whose solutions are easy to check also be solved efficiently?</p>
+
+        <div class="concept-box">
+          <h4>Why it matters</h4>
+          <p>If $\mathbf{P} = \mathbf{NP}$, then the distinction between finding solutions and verifying them collapses. Cryptography based on factoring and discrete logarithms breaks. Optimization problems that currently require heuristics become exactly solvable. Mathematical theorem-proving becomes (in principle) automatable. If $\mathbf{P} \neq \mathbf{NP}$, there exist problems with an inherent, provable gap between the difficulty of verification and the difficulty of solution&mdash;a profound structural fact about computation.</p>
+        </div>
+
+        <h3>NP-completeness</h3>
+
+        <p>Cook (1971) and Levin (independently) showed that the Boolean satisfiability problem (SAT) is <em>NP-complete</em>: it is in $\mathbf{NP}$, and every problem in $\mathbf{NP}$ reduces to it in polynomial time. Karp (1972) showed 21 other problems are NP-complete, including graph coloring, Hamiltonian cycle, subset sum, and integer programming. Today thousands of natural problems are known to be NP-complete.</p>
+
+        <p>If <em>any</em> NP-complete problem is in $\mathbf{P}$, then $\mathbf{P} = \mathbf{NP}$. Decades of algorithmic effort have failed to find polynomial-time algorithms for any of them, which is strong circumstantial evidence that $\mathbf{P} \neq \mathbf{NP}$. But evidence is not proof.</p>
+
+        <h3>Barriers to proof</h3>
+
+        <p>The real difficulty of P vs NP is not just that we lack a proof&mdash;it is that we can <em>prove</em> that certain proof techniques cannot work. These are the known barriers:</p>
+
+        <p><strong>Relativization (Baker&ndash;Gill&ndash;Solovay, 1975).</strong> There exist oracles $A$ and $B$ such that $\mathbf{P}^A = \mathbf{NP}^A$ and $\mathbf{P}^B \neq \mathbf{NP}^B$. Any proof technique that &ldquo;relativizes&rdquo;&mdash;that works unchanged in the presence of an oracle&mdash;cannot resolve P vs NP. This rules out most techniques from classical computability theory.</p>
+
+        <p><strong>Natural proofs (Razborov&ndash;Rudich, 1997).</strong> A &ldquo;natural proof&rdquo; of circuit lower bounds is one that exploits a property shared by a large fraction of Boolean functions. Razborov and Rudich showed that if one-way functions exist (a standard cryptographic assumption), then natural proofs cannot prove superpolynomial circuit lower bounds for $\mathbf{NP}$. This rules out the combinatorial techniques used for most known lower bounds.</p>
+
+        <p><strong>Algebrization (Aaronson&ndash;Wigderson, 2009).</strong> An extension of relativization that also allows algebraic extensions of oracle queries. P vs NP cannot be resolved by any technique that algebrizes, which rules out essentially all known techniques in algebraic complexity theory.</p>
+
+        <div class="problem-box">
+          <div class="problem-title">The meta-problem</div>
+          Resolving P vs NP requires a fundamentally new proof technique&mdash;one that does not relativize, is not natural, and does not algebrize. Such techniques essentially do not exist yet in complexity theory. The few known exceptions (the IP = PSPACE proof, interactive proofs, the PCP theorem) give some hope that non-relativizing, non-naturalizing techniques exist, but none has been successfully aimed at P vs NP.
+        </div>
+
+        <h3>Promising directions</h3>
+
+        <p><strong>Geometric Complexity Theory (GCT).</strong> Mulmuley and Sohoni (2001&ndash;present) propose using algebraic geometry and representation theory to separate $\mathbf{VP}$ from $\mathbf{VNP}$ (Valiant&rsquo;s algebraic analogues of P and NP). The program aims to show that certain orbit closures in the space of polynomials cannot equal others, using multiplicity obstructions from representation theory. GCT is the most ambitious ongoing program aimed at P vs NP. It avoids all three barriers by working with geometric rather than combinatorial structure. However, recent work (B&uuml;rgisser, Ikenmeyer, Panova) has shown that the simplest forms of multiplicity obstructions are insufficient, meaning the program requires deeper representation-theoretic tools than initially hoped.</p>
+
+        <p><strong>Circuit complexity.</strong> Ryan Williams (2011) showed that $\mathrm{NEXP} \not\subseteq \mathrm{ACC}^0$, the first nontrivial circuit lower bound in decades. The technique&mdash;connecting algorithm design to lower bounds via the &ldquo;algorithmic method&rdquo;&mdash;is a new paradigm. While still far from P vs NP, it demonstrates that meaningful lower bounds are provable.</p>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">3. The Riemann Hypothesis <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>The Riemann zeta function is defined for $\operatorname{Re}(s) > 1$ by the absolutely convergent series:</p>
+
+        $$\zeta(s) = \sum_{n=1}^{\infty} \frac{1}{n^s} = \prod_{p \text{ prime}} \frac{1}{1 - p^{-s}}$$
+
+        <p>The equality between the series and the Euler product (valid for $\operatorname{Re}(s) > 1$) encodes the fundamental theorem of arithmetic: every positive integer has a unique prime factorization. Riemann showed (1859) that $\zeta$ has an analytic continuation to all of $\mathbb{C} \setminus \{1\}$, with a simple pole at $s = 1$, and satisfies the functional equation:</p>
+
+        $$\pi^{-s/2} \, \Gamma\!\left(\frac{s}{2}\right) \zeta(s) = \pi^{-(1-s)/2} \, \Gamma\!\left(\frac{1-s}{2}\right) \zeta(1-s)$$
+
+        <p>The zeta function vanishes at the <em>trivial zeros</em> $s = -2, -4, -6, \ldots$ (forced by the Gamma function poles). All other zeros lie in the <em>critical strip</em> $0 \leq \operatorname{Re}(s) \leq 1$.</p>
+
+        <div class="math-box">
+          <span class="label">The Riemann Hypothesis (1859):</span><br><br>
+          All nontrivial zeros of $\zeta(s)$ have real part $\frac{1}{2}$.
+          <br><br>
+          That is, if $\zeta(\rho) = 0$ and $\rho$ is not a negative even integer, then $\rho = \frac{1}{2} + i\gamma$ for some real $\gamma$.
+        </div>
+
+        <h3>Why the zeros of $\zeta$ control the primes</h3>
+
+        <p>The prime counting function $\pi(x) = \#\{p \leq x : p \text{ prime}\}$ is related to $\zeta$ via the explicit formula (von Mangoldt, Riemann):</p>
+
+        $$\psi(x) = x - \sum_{\rho} \frac{x^\rho}{\rho} - \frac{\zeta'(0)}{\zeta(0)} - \frac{1}{2}\log(1 - x^{-2})$$
+
+        <p>where $\psi(x) = \sum_{p^k \leq x} \log p$ is the Chebyshev function, and the sum runs over the nontrivial zeros $\rho$ of $\zeta$. Each zero $\rho = \beta + i\gamma$ contributes an oscillating correction term of magnitude $x^\beta$. If all zeros have $\beta = 1/2$, these correction terms have magnitude $\sqrt{x}$, giving:</p>
+
+        $$\pi(x) = \operatorname{Li}(x) + O(\sqrt{x} \log x)$$
+
+        <p>This is the best possible error term for the prime number theorem. If any zero has $\beta > 1/2$, the error term is larger. The Riemann Hypothesis is equivalent to the statement that primes are distributed as regularly as possible.</p>
+
+        <h3>Computational evidence</h3>
+
+        <p>Over $10^{13}$ nontrivial zeros have been computed (by Platt, Gourdon, Odlyzko, and others), and every single one lies on the critical line $\operatorname{Re}(s) = 1/2$. Hardy (1914) proved infinitely many zeros lie on the critical line. Selberg (1942) proved a positive proportion do. Conrey (1989) proved at least 40% do. But none of this proves all of them do.</p>
+
+        <h3>Connections and approaches</h3>
+
+        <p><strong>Random matrix theory.</strong> Montgomery (1973) conjectured that the pair correlation of the nontrivial zeros of $\zeta$ matches the pair correlation of eigenvalues of random matrices in $\mathrm{GUE}$ (the Gaussian Unitary Ensemble). This was famously noted by Dyson during a tea-time conversation. Odlyzko&rsquo;s numerical computations confirmed the match to extraordinary precision. The Katz&ndash;Sarnak philosophy generalizes this: zeros of $L$-functions behave statistically like eigenvalues of random matrices from classical compact groups.</p>
+
+        <p>This suggests a spectral interpretation: there should exist a self-adjoint operator whose eigenvalues are the imaginary parts of the nontrivial zeros of $\zeta$. If such an operator exists and can be shown to be self-adjoint (hence with real eigenvalues), RH would follow. This is the <strong>Hilbert&ndash;P&oacute;lya conjecture</strong>.</p>
+
+        <p><strong>Function field analogue.</strong> The Riemann Hypothesis for zeta functions of curves over finite fields was proved by Weil (1948) and generalized by Deligne (1974) to arbitrary varieties. In that setting, the zeros are eigenvalues of the Frobenius endomorphism acting on &eacute;tale cohomology, and their absolute values are controlled by the Weil conjectures. The hope is to find an analogous geometric/cohomological structure for the number field case. Connes&rsquo;s noncommutative geometry program and Deninger&rsquo;s conjectural cohomology theory are attempts in this direction.</p>
+
+        <p><strong>The de Bruijn&ndash;Newman constant.</strong> Define a family of entire functions $H_t$ parameterized by $t \in \mathbb{R}$, where $H_0$ is closely related to the Riemann xi function. The de Bruijn&ndash;Newman constant $\Lambda$ is the infimum of $t$ such that $H_t$ has only real zeros. RH is equivalent to $\Lambda \leq 0$. Newman (1976) conjectured $\Lambda \geq 0$, i.e., $\Lambda = 0$. Rodgers and Tao (2020) proved $\Lambda \geq 0$, confirming Newman&rsquo;s conjecture. This means RH, if true, is &ldquo;barely true&rdquo;&mdash;the zeros are right at the edge of the critical line.</p>
+
+        <div class="quote-box">
+          &ldquo;If I were to awaken after having slept for a thousand years, my first question would be: has the Riemann hypothesis been proved?&rdquo;
+          <div class="attribution">&mdash; attributed to David Hilbert</div>
+        </div>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">4. Yang&ndash;Mills Existence and Mass Gap <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>Quantum Yang&ndash;Mills theory is the mathematical framework underlying the Standard Model of particle physics. The gauge group of the Standard Model is $SU(3) \times SU(2) \times U(1)$, where $SU(3)$ governs the strong nuclear force (quantum chromodynamics, QCD). The Millennium Problem concerns pure Yang&ndash;Mills theory with a compact simple gauge group $G$ (such as $SU(3)$) in four-dimensional Minkowski spacetime.</p>
+
+        <div class="math-box">
+          <span class="label">Yang&ndash;Mills Millennium Problem:</span><br><br>
+          <p>Prove that for any compact simple gauge group $G$, a nontrivial quantum Yang&ndash;Mills theory exists on $\mathbb{R}^4$ (satisfying the Wightman axioms or equivalent) and has a <strong>mass gap</strong>: the lowest energy state above the vacuum has strictly positive energy $\Delta > 0$.</p>
+        </div>
+
+        <p>The <strong>classical</strong> Yang&ndash;Mills equations are well-understood. The field is a connection $A_\mu$ (a $\mathfrak{g}$-valued 1-form on $\mathbb{R}^4$), and the action is:</p>
+
+        $$S[A] = \frac{1}{4g^2} \int_{\mathbb{R}^4} \operatorname{tr}(F_{\mu\nu} F^{\mu\nu}) \, d^4x$$
+
+        <p>where $F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu + [A_\mu, A_\nu]$ is the field strength. The Euler&ndash;Lagrange equations are the Yang&ndash;Mills equations: $D_\mu F^{\mu\nu} = 0$, where $D_\mu = \partial_\mu + [A_\mu, \cdot]$ is the covariant derivative. These are nonlinear generalizations of Maxwell&rsquo;s equations.</p>
+
+        <p>The problem is <em>quantization</em>. The quantum theory requires constructing a Hilbert space, a Hamiltonian, and showing that the energy spectrum has a gap above zero. Physicists have done this perturbatively (via Feynman diagrams and renormalization) with spectacular predictive success. But a rigorous nonperturbative construction of the theory does not exist.</p>
+
+        <h3>Why a mass gap?</h3>
+
+        <p>In quantum electrodynamics (gauge group $U(1)$), there is no mass gap: the photon is massless. But in QCD (gauge group $SU(3)$), the force-carrying gluons are &ldquo;confined&rdquo;&mdash;they cannot exist as free particles. The lightest observable particles (protons, pions) have positive mass. This phenomenon, called <strong>confinement</strong>, means the spectrum has a gap. Proving confinement and the mass gap from first principles is one of the great unsolved problems in mathematical physics.</p>
+
+        <div class="concept-box">
+          <h4>The difficulty</h4>
+          <p>The problem has two parts, and both are hard. <strong>Existence:</strong> No one has rigorously constructed a nontrivial quantum field theory in four spacetime dimensions satisfying the Wightman axioms (or the Osterwalder&ndash;Schrader axioms for the Euclidean version). Constructive QFT has succeeded in 2 and 3 dimensions for simpler theories, but 4D Yang&ndash;Mills is beyond current techniques. <strong>Mass gap:</strong> Even assuming existence, proving a spectral gap requires nonperturbative control over the theory&mdash;precisely where perturbative methods fail.</p>
+        </div>
+
+        <h3>Approaches and partial results</h3>
+
+        <p><strong>Lattice gauge theory.</strong> Wilson (1974) discretized Yang&ndash;Mills theory on a spacetime lattice, making it mathematically rigorous as a finite-dimensional statistical mechanical system. Lattice QCD numerical simulations confirm confinement and predict hadron masses to high accuracy. But taking the continuum limit (lattice spacing $\to 0$) while maintaining a nontrivial theory is unproven. The lattice approach gives overwhelming numerical evidence but not a proof.</p>
+
+        <p><strong>Constructive QFT.</strong> Rigorous constructions exist for simpler models: $\phi^4$ theory in 2 and 3 dimensions (Glimm&ndash;Jaffe), Gross&ndash;Neveu model in 2D, Yang&ndash;Mills in 2D (Migdal, Witten). Balaban (1980s) made substantial progress toward 4D Yang&ndash;Mills on the lattice using renormalization group techniques, proving ultraviolet stability. Completing Balaban&rsquo;s program is an active area of research.</p>
+
+        <p><strong>Asymptotic freedom.</strong> Gross, Wilczek, and Politzer (1973, Nobel Prize 2004) showed that non-Abelian gauge theories are <em>asymptotically free</em>: the coupling constant decreases at high energies. This makes the ultraviolet behavior tractable (the theory is weakly coupled at short distances). The difficulty is the infrared: at low energies, the coupling becomes strong, and perturbation theory breaks down. The mass gap is an infrared phenomenon.</p>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">5. Navier&ndash;Stokes Existence and Smoothness <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>The Navier&ndash;Stokes equations describe the motion of a viscous incompressible fluid in $\mathbb{R}^3$:</p>
+
+        <div class="math-box">
+          <span class="label">Navier&ndash;Stokes Equations:</span><br><br>
+          $$\frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla)\mathbf{u} = -\nabla p + \nu \Delta \mathbf{u} + \mathbf{f}$$
+          $$\nabla \cdot \mathbf{u} = 0$$
+          <p>where $\mathbf{u}(x, t)$ is the velocity field, $p(x, t)$ is the pressure, $\nu > 0$ is the kinematic viscosity, and $\mathbf{f}(x, t)$ is an external force.</p>
+        </div>
+
+        <div class="math-box">
+          <span class="label">Millennium Problem (3D, no boundaries):</span><br><br>
+          <p>Given smooth, divergence-free initial data $\mathbf{u}_0$ with sufficient decay, and smooth forcing $\mathbf{f}$, prove one of:</p>
+          <p>(A) <strong>Existence and smoothness:</strong> There exists a smooth solution $\mathbf{u}(x, t)$ for all $t > 0$.</p>
+          <p>(B) <strong>Breakdown:</strong> There exist smooth initial data for which the solution develops a singularity (blows up) in finite time.</p>
+        </div>
+
+        <p>The nonlinearity $(\mathbf{u} \cdot \nabla)\mathbf{u}$ is the problem. It is quadratic in $\mathbf{u}$ and involves a derivative, which can amplify small-scale features. The viscous term $\nu \Delta \mathbf{u}$ dissipates energy and smooths the solution, but it is unclear whether dissipation always wins.</p>
+
+        <h3>What is known</h3>
+
+        <p><strong>Leray (1934):</strong> Proved that <em>weak solutions</em> (distributional solutions with finite energy) exist globally for any $L^2$ initial data. These Leray&ndash;Hopf weak solutions satisfy an energy inequality but may not be unique or smooth. The regularity question is: are these weak solutions actually smooth?</p>
+
+        <p><strong>Local existence:</strong> Classical smooth solutions exist for short time (Kato, 1984; Fujita&ndash;Kato). The time of existence depends on the size of the initial data in appropriate Sobolev or Besov norms. For small initial data, global smooth solutions exist.</p>
+
+        <p><strong>Caffarelli&ndash;Kohn&ndash;Nirenberg (1982):</strong> The set of space-time points where a suitable weak solution is singular has one-dimensional parabolic Hausdorff measure zero. In particular, singularities (if they exist) are very &ldquo;thin&rdquo;&mdash;they cannot fill a curve in space-time.</p>
+
+        <p><strong>Scaling.</strong> Navier&ndash;Stokes has a natural scaling: if $\mathbf{u}(x, t)$ is a solution, so is $\lambda \mathbf{u}(\lambda x, \lambda^2 t)$. The energy $\|\mathbf{u}\|_{L^2}^2$ scales as $\lambda^{2 - 3} = \lambda^{-1}$ in 3D, making NS <em>supercritical</em>. The energy does not control the solution at small scales. In 2D, the scaling is critical and global regularity is known (Ladyzhenskaya, 1969). The 3D supercriticality is the fundamental analytical obstruction.</p>
+
+        <h3>Approaches and recent progress</h3>
+
+        <p><strong>Self-similar blowup.</strong> If a singularity forms, the simplest scenario is self-similar: $\mathbf{u}(x, t) \sim (T - t)^{-1/2} U(x / (T-t)^{1/2})$ as $t \to T$. Ne&#x10D;as, Rusin, and &#x160;ver&aacute;k (2011) ruled out self-similar blowup under mild assumptions, and Tao (2019) showed that certain self-similar blowup profiles are inconsistent with the equations. This shifts attention to more exotic singularity scenarios.</p>
+
+        <p><strong>Tao&rsquo;s averaged model (2016).</strong> Terence Tao constructed a modified version of Navier&ndash;Stokes (preserving key features like the energy identity and supercriticality, but breaking a subtle cancellation) for which smooth solutions <em>do</em> blow up in finite time. This suggests that regularity for the actual equations, if true, relies on specific structural cancellations in the nonlinearity&mdash;not just on energy dissipation alone.</p>
+
+        <p><strong>Convex integration.</strong> Buckmaster and Vicol (2019) showed that weak solutions (below the Leray&ndash;Hopf energy class) are <em>non-unique</em>, using techniques from the Onsager conjecture resolution. This means weak solutions alone cannot resolve the problem; one needs to work with strong solutions or suitable weak solutions.</p>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">6. The Birch and Swinnerton-Dyer Conjecture <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>An <em>elliptic curve</em> over $\mathbb{Q}$ is a smooth projective curve of genus 1 with a distinguished rational point. Every such curve has an equation of the form:</p>
+
+        $$E: \quad y^2 = x^3 + ax + b, \qquad a, b \in \mathbb{Z}, \quad 4a^3 + 27b^2 \neq 0$$
+
+        <p>The set of rational points $E(\mathbb{Q})$ forms a finitely generated abelian group (Mordell&rsquo;s theorem, 1922):</p>
+
+        $$E(\mathbb{Q}) \cong \mathbb{Z}^r \oplus E(\mathbb{Q})_{\text{tors}}$$
+
+        <p>where $r \geq 0$ is the <em>algebraic rank</em> and the torsion subgroup is finite (and completely classified by Mazur&rsquo;s theorem). The rank $r$ tells you the number of independent rational points of infinite order. Computing $r$ is extremely difficult.</p>
+
+        <p>Attached to $E$ is its $L$-function, defined for $\operatorname{Re}(s) > 3/2$ by an Euler product:</p>
+
+        $$L(E, s) = \prod_{p \text{ prime}} L_p(E, s)^{-1}$$
+
+        <p>where the local factors encode the number of points on $E$ modulo $p$. The modularity theorem (Wiles&ndash;Taylor, Breuil&ndash;Conrad&ndash;Diamond&ndash;Taylor, building on Wiles&rsquo;s proof of Fermat&rsquo;s Last Theorem) implies that $L(E, s)$ extends to an entire function on $\mathbb{C}$ and satisfies a functional equation relating $L(E, s)$ to $L(E, 2-s)$.</p>
+
+        <div class="math-box">
+          <span class="label">Birch and Swinnerton-Dyer Conjecture:</span><br><br>
+          <p><strong>Weak form:</strong> The algebraic rank $r$ equals the analytic rank (the order of vanishing of $L(E, s)$ at $s = 1$):</p>
+          $$r = \operatorname{ord}_{s=1} L(E, s)$$
+          <p><strong>Strong form:</strong> The leading term of the Taylor expansion at $s = 1$ is:</p>
+          $$\lim_{s \to 1} \frac{L(E, s)}{(s - 1)^r} = \frac{\Omega_E \cdot \mathrm{Reg}(E) \cdot \prod_p c_p \cdot |\text{Ш}(E)|}{|E(\mathbb{Q})_{\text{tors}}|^2}$$
+          <p>where $\Omega_E$ is the real period, $\mathrm{Reg}(E)$ is the regulator, $c_p$ are the Tamagawa numbers, and $\text{Ш}(E)$ is the Tate&ndash;Shafarevich group.</p>
+        </div>
+
+        <div class="concept-box">
+          <h4>The intuition</h4>
+          <p>BSD connects two very different things: the <em>algebraic</em> structure of rational points on $E$ (the rank) and the <em>analytic</em> behavior of $L(E, s)$ near $s = 1$. The more rational points there are, the faster $L(E, s)$ vanishes at $s = 1$. This is a deep bridge between arithmetic (counting solutions) and analysis (the behavior of a complex function).</p>
+        </div>
+
+        <h3>What is known</h3>
+
+        <p><strong>Rank 0 and 1.</strong> Gross&ndash;Zagier (1986) and Kolyvagin (1990) proved BSD in the cases where the analytic rank is 0 or 1:</p>
+        <ul>
+          <li>If $L(E, 1) \neq 0$ (analytic rank 0), then $r = 0$: the curve has finitely many rational points.</li>
+          <li>If $L(E, 1) = 0$ and $L'(E, 1) \neq 0$ (analytic rank 1), then $r = 1$: the curve has a rational point of infinite order, constructed explicitly using Heegner points.</li>
+        </ul>
+
+        <p>These results earned Gross and Zagier the Cole Prize and represent the deepest known results toward BSD. For analytic rank $\geq 2$, essentially nothing is known unconditionally.</p>
+
+        <p><strong>The Tate&ndash;Shafarevich group.</strong> The group $\text{Ш}(E)$ measures the failure of the Hasse principle for principal homogeneous spaces of $E$. BSD predicts that $\text{Ш}(E)$ is finite. This is known for curves of rank 0 and 1 (Kolyvagin), but open in general. If $\text{Ш}$ can be infinite, the strong form of BSD fails.</p>
+
+        <p><strong>Computational evidence.</strong> BSD has been numerically verified for hundreds of thousands of elliptic curves (Cremona&rsquo;s tables, LMFDB). The agreement between algebraic rank and analytic rank is perfect in all computed cases.</p>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">7. The Hodge Conjecture <span class="status-tag status-open">Open</span></h2>
+        <!-- ====================================================== -->
+
+        <h3>The statement</h3>
+
+        <p>Let $X$ be a smooth projective algebraic variety over $\mathbb{C}$ of complex dimension $n$. De Rham&rsquo;s theorem gives an isomorphism between the singular cohomology $H^k(X, \mathbb{C})$ and the space of closed differential $k$-forms modulo exact forms. The Hodge decomposition refines this:</p>
+
+        $$H^k(X, \mathbb{C}) = \bigoplus_{p+q=k} H^{p,q}(X)$$
+
+        <p>where $H^{p,q}(X)$ consists of cohomology classes representable by closed forms of type $(p, q)$&mdash;those with $p$ holomorphic differentials $dz_i$ and $q$ anti-holomorphic differentials $d\bar{z}_j$. The Hodge decomposition is a consequence of K&auml;hler geometry and the Hodge theorem (harmonic forms).</p>
+
+        <p>A <em>rational $(p, p)$-class</em> is a class in $H^{p,p}(X) \cap H^{2p}(X, \mathbb{Q})$: it lives in the $(p,p)$ part of the Hodge decomposition and has rational periods. An <em>algebraic cycle</em> of codimension $p$ is a formal $\mathbb{Q}$-linear combination of closed irreducible subvarieties of codimension $p$. Such a cycle defines a cohomology class in $H^{2p}(X, \mathbb{Q})$ via the cycle class map, and this class always lands in $H^{p,p}$.</p>
+
+        <div class="math-box">
+          <span class="label">Hodge Conjecture (1950):</span><br><br>
+          On a smooth projective variety $X$ over $\mathbb{C}$, every rational $(p, p)$-class is a $\mathbb{Q}$-linear combination of classes of algebraic cycles.
+          <br><br>
+          That is: $\operatorname{Hdg}^p(X) := H^{p,p}(X) \cap H^{2p}(X, \mathbb{Q})$ equals the $\mathbb{Q}$-span of algebraic cycle classes.
+        </div>
+
+        <div class="concept-box">
+          <h4>The geometric picture</h4>
+          <p>The Hodge decomposition separates cohomology by &ldquo;type&rdquo;&mdash;how many holomorphic vs. anti-holomorphic directions a form involves. Classes of type $(p,p)$ are special: they are &ldquo;balanced&rdquo; between holomorphic and anti-holomorphic. The Hodge conjecture says this balanced topological condition is equivalent to an algebraic condition: these classes come from honest subvarieties sitting inside $X$.</p>
+          <p>In other words: certain purely topological objects (cohomology classes satisfying a Hodge-type condition) are secretly algebraic (representable by subvarieties).</p>
+        </div>
+
+        <h3>What is known</h3>
+
+        <p><strong>Codimension 1.</strong> The Hodge conjecture for $(1,1)$-classes is the Lefschetz $(1,1)$-theorem, proved by Lefschetz (1924) and later by Kodaira&ndash;Spencer using sheaf cohomology. Every rational $(1,1)$-class is the first Chern class of a line bundle, which is algebraic. This is the only case where the conjecture is fully proven in general.</p>
+
+        <p><strong>Abelian varieties.</strong> For abelian varieties of dimension $\leq 5$, the Hodge conjecture is known in many cases (Mattuck, Moonen, and others). For general abelian varieties, it remains open.</p>
+
+        <p><strong>Failure of the integral version.</strong> Atiyah and Hirzebruch (1962) showed that the <em>integral</em> Hodge conjecture (with $\mathbb{Z}$ instead of $\mathbb{Q}$) is false. Koll&aacute;r gave further counterexamples. The rational version remains open.</p>
+
+        <p><strong>Failure for K&auml;hler manifolds.</strong> Voisin (2002) showed that the Hodge conjecture fails for general compact K&auml;hler manifolds (which satisfy the Hodge decomposition but are not necessarily algebraic). This means projectivity is essential&mdash;the conjecture is specifically about algebraic geometry, not just complex geometry.</p>
+
+        <h3>Approaches</h3>
+
+        <p><strong>Algebraic $K$-theory and motivic cohomology.</strong> The Hodge conjecture is intimately connected to the theory of motives. Grothendieck&rsquo;s standard conjectures (which imply the Hodge conjecture) posit algebraic cycle classes satisfying specific properties. The Bloch&ndash;Beilinson conjectures relate Chow groups (algebraic cycles modulo rational equivalence) to $L$-functions, providing a framework where the Hodge conjecture is part of a much larger conjectural picture linking arithmetic, geometry, and analysis.</p>
+
+        <p><strong>Normal functions and Griffiths&rsquo;s program.</strong> Griffiths introduced the study of normal functions (sections of intermediate Jacobian fibrations) as a tool for constructing algebraic cycles. Recent work by Green&ndash;Griffiths&ndash;Kerr has developed this into a systematic approach, relating the Hodge conjecture to singularities of normal functions and to the structure of Hodge loci in moduli spaces.</p>
+
+
+
+        <!-- ====================================================== -->
+        <h2 class="section-divider">The View from 2025</h2>
+        <!-- ====================================================== -->
+
+        <p>Twenty-five years after the Clay Institute&rsquo;s announcement, the landscape is sobering. One problem solved, six open, and on several of them the community is not obviously closer than it was in 2000. The Riemann Hypothesis remains as mysterious as it was in 1859. P vs NP is blocked by provable barriers. Yang&ndash;Mills requires mathematical tools that do not yet exist. Navier&ndash;Stokes sits in the gap between what analysis can control and what fluids actually do.</p>
+
+        <p>But progress has been made, even where problems remain open. Perelman&rsquo;s proof showed that geometric analysis could solve purely topological problems, revitalizing Ricci flow as a tool across mathematics. Tao&rsquo;s work on averaged Navier&ndash;Stokes clarified what structural features would need to prevent blowup. The Rodgers&ndash;Tao result on the de Bruijn&ndash;Newman constant sharpened our understanding of how &ldquo;close to the edge&rdquo; the Riemann Hypothesis sits. The modularity theorem, which resolved Fermat&rsquo;s Last Theorem and established BSD for rank $\leq 1$, opened the Langlands program as the dominant framework in number theory.</p>
+
+        <p>The problems were chosen well. Each one sits at a junction where resolving it would force the creation of new mathematical ideas&mdash;not just settling a question, but building new machinery. That machinery, more than the million-dollar prizes, is the point.</p>
+
+        <div class="highlight-box">
+          <p><strong>The Millennium Problems are not seven isolated questions.</strong> They are seven windows into the deepest structures of mathematics: the topology of spaces, the limits of computation, the distribution of primes, the foundations of quantum physics, the behavior of fluids, the arithmetic of curves, and the algebraic nature of geometry. Progress on any one of them tends to illuminate the others.</p>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

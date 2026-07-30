@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Large Language Models Work</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .math-box {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: #2c2c2c;
+    }
+
+    .math-box .label {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .concept-box {
+      background-color: #fffbf5;
+      border-left: 4px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .definition-box {
+      background-color: #f0f0fa;
+      border-left: 4px solid #5a5a8a;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #2c2c2c;
+    }
+
+    .definition-box .def-title {
+      font-weight: 700;
+      color: #3a3a6a;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .theorem-box {
+      background-color: #f0f7f0;
+      border-left: 4px solid #5a8a5a;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #2c2c2c;
+    }
+
+    .theorem-box .thm-title {
+      font-weight: 700;
+      color: #2a5a2a;
+      margin-bottom: 0.5rem;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f5f1e8 0%, #fffbf5 100%);
+      border: 2px solid #8b7355;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .highlight-box p {
+      text-align: center;
+    }
+
+    .note-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+      font-size: 0.95rem;
+    }
+
+    .note-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-box {
+      background-color: #fff5f5;
+      border-left: 4px solid #c0392b;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .warning-box .warning-title {
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 0.5rem;
+    }
+
+    .quote-box {
+      border-left: 4px solid #8b7355;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #5a5a5a;
+    }
+
+    .quote-box .attribution {
+      font-style: normal;
+      font-weight: 600;
+      color: #1a3a3a;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .example-box {
+      background-color: #fffbf5;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 3px;
+    }
+
+    .example-box h4 {
+      color: #1a3a3a;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    .timeline-item {
+      border-left: 3px solid #8b7355;
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .timeline-item .year {
+      font-weight: 600;
+      color: #8b7355;
+      font-size: 0.95rem;
+    }
+
+    .timeline-item .person {
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e0d9ce;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d4cfc4;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .comparison-table th {
+      background-color: #f5f1e8;
+      font-weight: 600;
+      color: #1a3a3a;
+    }
+
+    .comparison-table td {
+      vertical-align: top;
+    }
+
+    .comparison-table tr:nth-child(even) td {
+      background-color: #faf8f3;
+    }
+
+    .arch-box {
+      background-color: #f0f7fa;
+      border-left: 4px solid #3a7a9a;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .arch-box .arch-title {
+      font-weight: 700;
+      color: #2a5a7a;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-table { font-size: 0.78rem; }
+      .comparison-table th, .comparison-table td { padding: 0.5rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>How Large Language Models Work</h1>
+      <p>From gradient descent to the transformer&mdash;the mathematics of machines that predict words</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">&larr; Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>How Large Language Models Work</h1>
+        <div class="article-meta">Computer Science, Mathematics &amp; Information Theory</div>
+      </div>
+
+      <div class="article-body">
+
+        <!-- ============================================================ -->
+        <h2>1. Introduction &mdash; Machines That Predict the Next Word</h2>
+        <!-- ============================================================ -->
+
+        <p>A large language model is, at bottom, a function. It takes a sequence of words&mdash;or, more precisely, tokens&mdash;and outputs a probability distribution over what the next token should be. That is all. There is no explicit database of facts, no hand-coded grammar, no symbolic reasoning engine. There is a single, enormous mathematical function, learned from text, that assigns probabilities to continuations.</p>
+
+        <p>And yet this function can write code, translate languages, prove theorems, explain quantum mechanics, compose poetry, diagnose medical conditions, and pass the bar exam. The gap between the simplicity of the objective (predict the next word) and the sophistication of the behavior is the central surprise of the field. Understanding how this happens is the goal of this article.</p>
+
+        <p>The explanation has several layers. At the lowest level, there are neural networks&mdash;compositions of simple differentiable functions organized into layers. Above that, there is a learning algorithm: gradient descent with backpropagation, which adjusts millions or billions of parameters to minimize prediction error on a vast corpus of text. At the architectural level, there is the transformer&mdash;a specific neural network design based on the <em>attention mechanism</em>, which allows the model to dynamically determine which parts of the input are relevant to predicting each output. And surrounding all of this is a deeper question from information theory: what is it about human language that makes next-word prediction so powerful? The answer, as we will see, is that prediction is compression, and compression requires understanding.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;Prediction is the business of every living brain.&rdquo;</p>
+          <div class="attribution">&mdash; Jeff Hawkins</div>
+        </div>
+
+        <p>This article is aimed at someone with a strong mathematical background&mdash;comfortable with linear algebra, calculus, and probability&mdash;who wants a precise understanding of what LLMs are, how they learn, and why they work. We will develop the mathematics from first principles, trace the historical path that led here, and then step back to consider what it all means.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">2. Historical Context &mdash; From Perceptrons to Transformers</h2>
+        <!-- ============================================================ -->
+
+        <p>The transformer did not appear from nowhere. It is the product of seven decades of ideas, false starts, and breakthroughs. Understanding the history clarifies why each piece of the modern architecture exists.</p>
+
+        <div class="timeline-item">
+          <div class="year">1943</div>
+          <div class="person">McCulloch &amp; Pitts &mdash; The Artificial Neuron</div>
+          <p>Warren McCulloch and Walter Pitts proposed that neurons compute logical functions. Their model: a neuron takes binary inputs, computes a weighted sum, and fires if the sum exceeds a threshold. This was the first mathematical model of a neural network&mdash;an idealization, but a productive one.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">1958</div>
+          <div class="person">Frank Rosenblatt &mdash; The Perceptron</div>
+          <p>Rosenblatt built the perceptron, the first machine that could <em>learn</em> to classify inputs by adjusting its weights from data. It was a single layer of McCulloch-Pitts neurons with a learning rule: if the output is wrong, adjust the weights in the direction that would have given the right answer. The U.S. Navy funded it. The New York Times reported that the Navy had built a machine that could &ldquo;think.&rdquo;</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">1969</div>
+          <div class="person">Minsky &amp; Papert &mdash; The First Winter</div>
+          <p>Marvin Minsky and Seymour Papert proved that a single-layer perceptron cannot learn the XOR function&mdash;it can only represent linearly separable functions. This was mathematically correct but widely misinterpreted as applying to all neural networks. Funding dried up. The first &ldquo;AI winter&rdquo; began.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">1986</div>
+          <div class="person">Rumelhart, Hinton &amp; Williams &mdash; Backpropagation</div>
+          <p>The solution to Minsky&rsquo;s criticism was to use <em>multiple layers</em>. But how do you train a multi-layer network? You need to know how to adjust the weights in the hidden layers, where you cannot directly observe the error. The answer is <strong>backpropagation</strong>&mdash;applying the chain rule of calculus to propagate error gradients backward through the network. The idea had appeared earlier (Werbos, 1974; Linnainmaa, 1970), but Rumelhart, Hinton, and Williams demonstrated it convincingly and reignited interest in neural networks.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">1997</div>
+          <div class="person">Hochreiter &amp; Schmidhuber &mdash; LSTMs</div>
+          <p>Recurrent neural networks (RNNs) process sequences by maintaining a hidden state that is updated at each time step. But training them on long sequences fails: gradients either explode or vanish exponentially with sequence length. Hochreiter and Schmidhuber invented the <strong>Long Short-Term Memory</strong> (LSTM) network, which uses gating mechanisms to control the flow of information through time, allowing the network to learn dependencies over hundreds of time steps. LSTMs dominated sequence modeling for two decades.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">2003</div>
+          <div class="person">Bengio et al. &mdash; Neural Language Models</div>
+          <p>Yoshua Bengio and collaborators trained a neural network to predict the next word in a sentence using learned word representations (embeddings). This was the first neural language model&mdash;the direct ancestor of GPT. The key insight: instead of treating words as atomic symbols, represent them as vectors in a continuous space where similar words are nearby.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">2013</div>
+          <div class="person">Mikolov et al. &mdash; Word2Vec</div>
+          <p>Tom&aacute;&scaron; Mikolov and colleagues at Google trained simple neural networks (skip-gram and CBOW) on massive text corpora to produce word embeddings with remarkable algebraic properties: $\text{vec}(\text{king}) - \text{vec}(\text{man}) + \text{vec}(\text{woman}) \approx \text{vec}(\text{queen})$. Semantic relationships are encoded as geometric relationships in vector space. This demonstrated that distributed representations can capture meaning.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">2017</div>
+          <div class="person">Vaswani et al. &mdash; &ldquo;Attention Is All You Need&rdquo;</div>
+          <p>The paper that changed everything. Researchers at Google proposed the <strong>transformer</strong>&mdash;an architecture that dispenses with recurrence entirely and relies solely on <strong>attention</strong>. It processes all positions in a sequence in parallel, using self-attention to let each token attend to every other token. It was faster to train than RNNs (fully parallelizable on GPUs), scaled better, and produced superior results. The title was not hyperbole.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">2018&ndash;2020</div>
+          <div class="person">GPT, BERT, GPT-2, GPT-3</div>
+          <p>OpenAI&rsquo;s GPT (2018) showed that a transformer trained to predict the next token, then fine-tuned on specific tasks, was highly effective. BERT (Google, 2018) used a bidirectional transformer with masked language modeling. GPT-2 (2019, 1.5 billion parameters) generated surprisingly coherent text. GPT-3 (2020, 175 billion parameters) demonstrated <strong>in-context learning</strong>&mdash;the ability to perform new tasks from a few examples in the prompt, without updating its weights. The scaling hypothesis was born: bigger models trained on more data are not just incrementally better; they gain qualitatively new capabilities.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="year">2022&ndash;present</div>
+          <div class="person">ChatGPT, Claude, and the LLM Era</div>
+          <p>GPT-3.5 fine-tuned with reinforcement learning from human feedback (RLHF) became ChatGPT (November 2022), reaching 100 million users faster than any technology in history. Anthropic&rsquo;s Claude, Google&rsquo;s Gemini, Meta&rsquo;s LLaMA, and others followed. The technology went from a research curiosity to the center of a multi-hundred-billion-dollar industry in under two years.</p>
+        </div>
+
+        <div class="note-box">
+          <h4>The Pattern</h4>
+          <p>Every breakthrough in this timeline is a story of the same three ingredients: a mathematical idea (neurons, backpropagation, attention), sufficient compute (GPUs, then GPU clusters, then datacenters), and sufficient data (the internet). The ideas often existed for decades before the compute and data caught up. The transformer architecture was not fundamentally more complex than earlier designs&mdash;it was <em>more parallelizable</em>, which made it scalable, which made it trainable on internet-scale data, which made it work.</p>
+        </div>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">3. Information Theory &mdash; Language as a Statistical Process</h2>
+        <!-- ============================================================ -->
+
+        <p>Before we build the machine, we need to understand what it is learning. The deepest answer comes from Claude Shannon&rsquo;s information theory.</p>
+
+        <h3>Shannon Entropy</h3>
+
+        <p>In 1948, Shannon defined the <strong>entropy</strong> of a discrete random variable $X$ with possible values $\{x_1, \ldots, x_n\}$ and probability distribution $P$:</p>
+
+        <div class="math-box">
+          <span class="label">Shannon Entropy:</span><br>
+          $$H(X) = -\sum_{i=1}^{n} P(x_i) \log_2 P(x_i)$$
+          <p>Entropy measures the average amount of information (in bits) gained by observing the value of $X$. Equivalently, it measures the irreducible uncertainty before the observation. A fair coin has $H = 1$ bit. A biased coin ($P(\text{heads}) = 0.99$) has $H \approx 0.08$ bits&mdash;there is very little surprise in the outcome.</p>
+        </div>
+
+        <h3>Language Has Structure, and Structure Means Redundancy</h3>
+
+        <p>Shannon applied his theory to English text. If English were a sequence of uniformly random letters (26 letters plus space), the entropy per character would be $\log_2 27 \approx 4.75$ bits. But English is highly structured. After seeing &ldquo;th,&rdquo; the next letter is almost certainly &ldquo;e&rdquo; or &ldquo;a&rdquo; or &ldquo;i.&rdquo; After seeing &ldquo;The president of the United,&rdquo; the next word is almost certainly &ldquo;States.&rdquo; Shannon estimated the true entropy of English at about <strong>1.0&ndash;1.5 bits per character</strong>&mdash;roughly one-third to one-quarter of the maximum. The rest is redundancy imposed by the statistical structure of the language.</p>
+
+        <div class="concept-box">
+          <h4>Prediction Is Compression</h4>
+          <p>This is the central insight connecting information theory to language modeling. A model that can predict the next character (or word) with high accuracy can also <em>compress</em> the text efficiently, because it only needs to encode the surprises&mdash;the deviations from its predictions. Conversely, any good compressor is implicitly a good predictor. Shannon proved that the optimal compression rate equals the entropy rate of the source. So when we train an LLM to minimize prediction error, we are training it to discover the statistical structure of language&mdash;to compress out the redundancy&mdash;and what remains is, in a precise sense, the information content.</p>
+        </div>
+
+        <h3>Cross-Entropy: The Loss Function of Language Models</h3>
+
+        <p>When we train a language model, we minimize the <strong>cross-entropy</strong> between the true distribution $P$ (the actual next token in the training data) and the model&rsquo;s predicted distribution $Q$:</p>
+
+        <div class="math-box">
+          <span class="label">Cross-Entropy Loss:</span><br>
+          $$H(P, Q) = -\sum_{x} P(x) \log Q(x)$$
+          <p>For next-token prediction, the &ldquo;true distribution&rdquo; is a one-hot vector (the actual next token has probability 1, all others have probability 0), so this simplifies to:</p>
+          $$\mathcal{L} = -\log Q(x_{\text{actual}})$$
+          <p>This is the negative log-likelihood of the correct token under the model&rsquo;s predictions. Minimizing this is equivalent to maximizing the probability the model assigns to the actual next token.</p>
+        </div>
+
+        <p>Cross-entropy has a beautiful decomposition: $H(P, Q) = H(P) + D_{\text{KL}}(P \| Q)$, where $D_{\text{KL}}$ is the Kullback-Leibler divergence&mdash;a measure of the &ldquo;distance&rdquo; between $P$ and $Q$ (always $\geq 0$, zero iff $P = Q$). Since the entropy $H(P)$ of the true distribution is fixed, minimizing cross-entropy is equivalent to minimizing KL divergence&mdash;making $Q$ as close to $P$ as possible.</p>
+
+        <h3>Information Embedded in Text</h3>
+
+        <p>Here is the deeper point. Every text ever written by a human being&mdash;every book, every article, every conversation, every line of code, every medical record, every legal brief&mdash;encodes information about the world. A physics textbook encodes the laws of physics. A novel encodes models of human psychology. A recipe encodes chemistry. Code encodes logic. Even casual conversation encodes social norms, common knowledge, and causal reasoning.</p>
+
+        <p>This information is not stored <em>explicitly</em>. It is stored <em>implicitly</em>, in the statistical relationships between words. &ldquo;Water boils at 100&rdquo; is followed by &ldquo;degrees Celsius&rdquo; because that is a fact about the world. &ldquo;She picked up the heavy box and&rdquo; is more likely followed by &ldquo;strained&rdquo; than &ldquo;floated&rdquo; because gravity exists and humans have limited strength. The conditional probabilities between words reflect the structure of reality as filtered through human expression.</p>
+
+        <div class="highlight-box">
+          <p><strong>The corpus of all human text is an enormous, noisy, implicit encoding of human knowledge.</strong></p>
+          <p>A model that learns to predict text well must, in the process, learn the structure that generates text. And the structure that generates text is, ultimately, the world.</p>
+        </div>
+
+        <h3>Kolmogorov Complexity and the Limits of Compression</h3>
+
+        <p>Kolmogorov complexity $K(x)$ is the length of the shortest program that produces string $x$. It is the theoretical limit of compression: you cannot describe $x$ in fewer bits than $K(x)$. Kolmogorov complexity is uncomputable (by a reduction to the halting problem), but it provides a theoretical frame: a perfect language model would assign probabilities reflecting the true Kolmogorov complexity of continuations.</p>
+
+        <p>Real language models approximate this. They discover patterns&mdash;syntactic, semantic, factual, logical&mdash;that allow them to compress text below the naive character-level entropy. The better the model, the lower the cross-entropy, the closer it approaches the true information content of the language. Modern LLMs achieve perplexities that correspond to roughly 0.7&ndash;1.0 bits per character on English text, close to Shannon&rsquo;s estimated entropy rate.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;The fundamental problem of communication is that of reproducing at one point either exactly or approximately a message selected at another point.&rdquo;</p>
+          <div class="attribution">&mdash; Claude Shannon, &ldquo;A Mathematical Theory of Communication&rdquo; (1948)</div>
+        </div>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">4. Neural Networks from First Principles</h2>
+        <!-- ============================================================ -->
+
+        <p>A neural network is a parametric function composed of simple, differentiable building blocks. Every LLM is a neural network. Let us build the concept from scratch.</p>
+
+        <h3>The Artificial Neuron</h3>
+
+        <p>A single artificial neuron computes:</p>
+
+        <div class="math-box">
+          <span class="label">Single Neuron:</span><br>
+          $$y = \sigma\!\left(\sum_{i=1}^{n} w_i x_i + b\right) = \sigma(\mathbf{w}^T\mathbf{x} + b)$$
+          <p>where $\mathbf{x} \in \mathbb{R}^n$ is the input, $\mathbf{w} \in \mathbb{R}^n$ are the weights, $b \in \mathbb{R}$ is the bias, and $\sigma$ is a nonlinear <strong>activation function</strong>.</p>
+        </div>
+
+        <p>The linear part $\mathbf{w}^T\mathbf{x} + b$ computes a weighted sum of the inputs&mdash;geometrically, a hyperplane in input space. The activation function introduces nonlinearity, without which a composition of any number of layers would still be linear (a composition of linear functions is linear).</p>
+
+        <h3>Activation Functions</h3>
+
+        <p>Common choices:</p>
+
+        <ul>
+          <li><strong>Sigmoid:</strong> $\sigma(z) = \frac{1}{1 + e^{-z}}$. Maps to $(0, 1)$. Historically popular but causes vanishing gradients for large $|z|$.</li>
+          <li><strong>Tanh:</strong> $\sigma(z) = \tanh(z)$. Maps to $(-1, 1)$. Zero-centered, better than sigmoid but still saturates.</li>
+          <li><strong>ReLU:</strong> $\sigma(z) = \max(0, z)$. The modern default. Cheap to compute, no saturation for positive inputs. Can &ldquo;die&rdquo; (output zero for all inputs if weights drift negative).</li>
+          <li><strong>GELU:</strong> $\sigma(z) = z \cdot \Phi(z)$, where $\Phi$ is the standard normal CDF. A smooth approximation to ReLU used in most transformers. Allows small negative values, which aids optimization.</li>
+        </ul>
+
+        <h3>Layers and Depth</h3>
+
+        <p>A <strong>layer</strong> applies the neuron computation to every component simultaneously. For a layer with $m$ neurons and input dimension $n$:</p>
+
+        $$\mathbf{h} = \sigma(W\mathbf{x} + \mathbf{b}), \qquad W \in \mathbb{R}^{m \times n}, \;\; \mathbf{b} \in \mathbb{R}^m$$
+
+        <p>A <strong>deep neural network</strong> is a composition of layers:</p>
+
+        $$f(\mathbf{x}) = f_L \circ f_{L-1} \circ \cdots \circ f_1(\mathbf{x})$$
+
+        <p>where each $f_\ell(\mathbf{h}) = \sigma(W_\ell \mathbf{h} + \mathbf{b}_\ell)$. The layers between the input and output are called <strong>hidden layers</strong>. The word &ldquo;deep&rdquo; in deep learning means many layers&mdash;modern transformers have dozens to over a hundred.</p>
+
+        <h3>The Universal Approximation Theorem</h3>
+
+        <div class="theorem-box">
+          <div class="thm-title">Universal Approximation (Cybenko 1989, Hornik 1991)</div>
+          <p>A feedforward network with a single hidden layer containing a finite number of neurons, with any &ldquo;squashing&rdquo; activation function (like sigmoid), can approximate any continuous function on a compact subset of $\mathbb{R}^n$ to arbitrary accuracy.</p>
+        </div>
+
+        <p>This theorem says neural networks are <em>expressive enough</em>&mdash;the function class is rich enough to represent any continuous mapping. But it says nothing about whether gradient descent can <em>find</em> a good approximation, or how many neurons are needed. In practice, depth (many layers) is far more parameter-efficient than width (many neurons in one layer) for most problems. Deep networks learn hierarchical representations&mdash;early layers learn simple features, later layers compose them into complex ones.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">5. Learning: Gradient Descent and Backpropagation</h2>
+        <!-- ============================================================ -->
+
+        <p>A neural network with fixed weights is just a function. The magic is in <em>learning</em>&mdash;adjusting the weights so that the function does something useful. This is an optimization problem.</p>
+
+        <h3>The Setup</h3>
+
+        <p>We have a dataset $\{(\mathbf{x}_i, y_i)\}_{i=1}^N$ (for language models: $\mathbf{x}_i$ is a sequence of tokens, $y_i$ is the next token). We have a neural network $f(\mathbf{x}; \boldsymbol{\theta})$ with parameters $\boldsymbol{\theta} = \{W_1, \mathbf{b}_1, W_2, \mathbf{b}_2, \ldots\}$. We have a loss function $\mathcal{L}(\boldsymbol{\theta})$ that measures how badly the network&rsquo;s predictions match the data. For language models, this is the cross-entropy loss:</p>
+
+        $$\mathcal{L}(\boldsymbol{\theta}) = -\frac{1}{N}\sum_{i=1}^{N} \log f(y_i \mid \mathbf{x}_i; \boldsymbol{\theta})$$
+
+        <p>The goal: find $\boldsymbol{\theta}^*$ that minimizes $\mathcal{L}$. The parameter space is enormous&mdash;billions of dimensions&mdash;and the loss surface is non-convex, full of saddle points, plateaus, and local minima. Exact optimization is intractable. We use gradient descent.</p>
+
+        <h3>Gradient Descent</h3>
+
+        <div class="math-box">
+          <span class="label">Gradient Descent Update:</span><br>
+          $$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}(\boldsymbol{\theta}_t)$$
+          <p>At each step, compute the gradient of the loss with respect to all parameters, and move the parameters in the direction of steepest descent. The learning rate $\eta > 0$ controls the step size.</p>
+        </div>
+
+        <p><strong>Intuition:</strong> Imagine standing on a hilly landscape in fog. You cannot see the lowest valley, but you can feel the slope under your feet. Gradient descent says: step downhill. Repeat. You may not find the global minimum, but you will find a low point.</p>
+
+        <p>In practice, computing the gradient over the entire dataset at each step is too expensive. <strong>Stochastic gradient descent (SGD)</strong> estimates the gradient from a random subset (a <strong>mini-batch</strong>) of the data:</p>
+
+        $$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}_{\text{batch}}(\boldsymbol{\theta}_t)$$
+
+        <p>The noise from mini-batch sampling is not a bug&mdash;it is a feature. It helps escape shallow local minima and saddle points, acting as a form of implicit regularization.</p>
+
+        <h3>Backpropagation</h3>
+
+        <p>The gradient $\nabla_{\boldsymbol{\theta}}\mathcal{L}$ involves derivatives of the loss with respect to every parameter in every layer. For a network with $L$ layers, this means computing $\frac{\partial \mathcal{L}}{\partial W_\ell}$ and $\frac{\partial \mathcal{L}}{\partial \mathbf{b}_\ell}$ for each $\ell = 1, \ldots, L$. Backpropagation computes all of these efficiently using the <strong>chain rule</strong>.</p>
+
+        <div class="example-box">
+          <h4>Backpropagation by the Chain Rule</h4>
+          <p>Consider a simple two-layer network: $\mathbf{h} = \sigma(W_1\mathbf{x} + \mathbf{b}_1)$, $\hat{y} = W_2\mathbf{h} + \mathbf{b}_2$, $\mathcal{L} = \ell(\hat{y}, y)$.</p>
+          <p><strong>Forward pass:</strong> Compute $\mathbf{h}$, then $\hat{y}$, then $\mathcal{L}$. Store the intermediate values.</p>
+          <p><strong>Backward pass:</strong> Apply the chain rule in reverse.</p>
+          <p>1. Compute $\frac{\partial \mathcal{L}}{\partial \hat{y}} = \ell'(\hat{y}, y)$ &mdash; the gradient of the loss with respect to the output.</p>
+          <p>2. Compute $\frac{\partial \mathcal{L}}{\partial W_2} = \frac{\partial \mathcal{L}}{\partial \hat{y}} \cdot \mathbf{h}^T$ and $\frac{\partial \mathcal{L}}{\partial \mathbf{b}_2} = \frac{\partial \mathcal{L}}{\partial \hat{y}}$.</p>
+          <p>3. Propagate backward: $\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = W_2^T \frac{\partial \mathcal{L}}{\partial \hat{y}}$.</p>
+          <p>4. Through the activation: $\frac{\partial \mathcal{L}}{\partial (W_1\mathbf{x} + \mathbf{b}_1)} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(W_1\mathbf{x} + \mathbf{b}_1)$, where $\odot$ is elementwise multiplication.</p>
+          <p>5. Finally: $\frac{\partial \mathcal{L}}{\partial W_1} = \frac{\partial \mathcal{L}}{\partial (W_1\mathbf{x} + \mathbf{b}_1)} \cdot \mathbf{x}^T$.</p>
+          <p>The key insight: the gradient at each layer depends only on the gradient from the layer above and the local values stored in the forward pass. This makes the computation $O(N)$ in the number of parameters&mdash;the same cost as a single forward pass.</p>
+        </div>
+
+        <p>Backpropagation is just the chain rule applied systematically to a computational graph. It is not heuristic, not approximate&mdash;it computes the exact gradient. The practical miracle is that it scales: computing the gradient of a function with a billion parameters costs roughly twice the computation of evaluating the function itself.</p>
+
+        <h3>Modern Optimizers</h3>
+
+        <p>Vanilla SGD is rarely used in practice. Modern training uses <strong>Adam</strong> (Kingma and Ba, 2014), which maintains per-parameter estimates of the first moment (mean) and second moment (uncentered variance) of the gradient:</p>
+
+        $$m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t, \qquad v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2$$
+
+        $$\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+
+        <p>where $g_t = \nabla_\theta \mathcal{L}$, $\hat{m}_t$ and $\hat{v}_t$ are bias-corrected estimates, and $\epsilon \sim 10^{-8}$ prevents division by zero. Adam adapts the learning rate for each parameter independently: parameters with consistently large gradients get smaller effective learning rates, and vice versa. This is crucial for training deep networks where different parameters can have gradients that differ by orders of magnitude.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">6. From Words to Vectors &mdash; Embeddings and Representation</h2>
+        <!-- ============================================================ -->
+
+        <p>Neural networks operate on real-valued vectors. Language is a sequence of discrete symbols. The bridge between them is the <strong>embedding</strong>.</p>
+
+        <h3>Tokenization</h3>
+
+        <p>The first step is breaking text into <strong>tokens</strong>. Early models used whole words, but this creates a vocabulary of hundreds of thousands of entries, with many rare words poorly represented. Modern LLMs use <strong>subword tokenization</strong> (Byte-Pair Encoding or SentencePiece), which breaks text into frequently occurring subword units. For example:</p>
+
+        <p>&ldquo;unhappiness&rdquo; &rarr; [&ldquo;un&rdquo;, &ldquo;happiness&rdquo;] or [&ldquo;un&rdquo;, &ldquo;happ&rdquo;, &ldquo;iness&rdquo;]</p>
+
+        <p>A typical LLM vocabulary has 30,000&ndash;100,000 tokens. Every piece of text&mdash;English, code, Chinese, mathematical notation&mdash;is converted into a sequence of integer token IDs.</p>
+
+        <h3>The Embedding Matrix</h3>
+
+        <p>Each token $t$ in the vocabulary is assigned a learned vector $\mathbf{e}_t \in \mathbb{R}^d$, where $d$ is the <strong>embedding dimension</strong> (typically 768 to 12,288 in modern models). These vectors are stored as rows of an <strong>embedding matrix</strong> $E \in \mathbb{R}^{V \times d}$, where $V$ is the vocabulary size. Looking up a token&rsquo;s embedding is a matrix indexing operation.</p>
+
+        <p>Initially, these embeddings are random. During training, they are adjusted by gradient descent along with all other parameters. After training, the geometry of the embedding space encodes semantic relationships.</p>
+
+        <h3>The Geometry of Meaning</h3>
+
+        <div class="concept-box">
+          <h4>Why Does $\text{king} - \text{man} + \text{woman} \approx \text{queen}$?</h4>
+          <p>Word embeddings learn to represent semantic relationships as geometric relationships. The vector from &ldquo;man&rdquo; to &ldquo;king&rdquo; (which encodes something like &ldquo;royalty&rdquo;) is approximately the same as the vector from &ldquo;woman&rdquo; to &ldquo;queen.&rdquo; This is not programmed&mdash;it emerges from the training objective. Words that appear in similar contexts get similar embeddings (the distributional hypothesis: &ldquo;you shall know a word by the company it keeps&rdquo;&mdash;Firth, 1957). And because the model needs to predict diverse contexts accurately, it separates different senses and captures analogical structure.</p>
+          <p>The embedding space is not a lookup table. It is a learned, continuous, high-dimensional manifold where proximity encodes similarity, directions encode relationships, and clusters encode categories.</p>
+        </div>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">7. The Transformer Architecture</h2>
+        <!-- ============================================================ -->
+
+        <p>The transformer is the architecture that makes modern LLMs possible. Every major language model since 2018&mdash;GPT, BERT, Claude, Gemini, LLaMA&mdash;is a transformer or a close variant. The key innovation is the <strong>attention mechanism</strong>.</p>
+
+        <h3>The Problem with Recurrence</h3>
+
+        <p>Before transformers, sequence models were recurrent: they processed tokens one at a time, maintaining a hidden state that was updated at each step. This has two problems:</p>
+        <ol>
+          <li><strong>Sequential computation:</strong> Token $t$ cannot be processed until token $t-1$ is done. This prevents parallelism and makes training slow.</li>
+          <li><strong>Long-range dependencies:</strong> Information from early tokens must be preserved through many sequential updates to influence later tokens. Despite LSTMs, this remains a bottleneck.</li>
+        </ol>
+
+        <p>The transformer solves both problems. It processes all tokens simultaneously, and each token can attend directly to any other token, regardless of distance.</p>
+
+        <h3>Self-Attention: The Core Mechanism</h3>
+
+        <p>Given an input sequence of $n$ token embeddings $\mathbf{x}_1, \ldots, \mathbf{x}_n \in \mathbb{R}^d$, stacked into a matrix $X \in \mathbb{R}^{n \times d}$, self-attention computes three projections:</p>
+
+        <div class="math-box">
+          <span class="label">Query, Key, Value Projections:</span><br>
+          $$Q = XW^Q, \qquad K = XW^K, \qquad V = XW^V$$
+          <p>where $W^Q, W^K \in \mathbb{R}^{d \times d_k}$ and $W^V \in \mathbb{R}^{d \times d_v}$ are learned parameter matrices.</p>
+        </div>
+
+        <p>Then the attention output is:</p>
+
+        <div class="math-box">
+          <span class="label">Scaled Dot-Product Attention:</span><br>
+          $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+        </div>
+
+        <p>Let us unpack this step by step.</p>
+
+        <p><strong>Step 1: Compute attention scores.</strong> $QK^T$ is an $n \times n$ matrix where entry $(i, j)$ is the dot product $\mathbf{q}_i^T\mathbf{k}_j$&mdash;a measure of how much token $i$ should attend to token $j$. High dot product means high relevance.</p>
+
+        <p><strong>Step 2: Scale.</strong> Divide by $\sqrt{d_k}$ to prevent the dot products from growing too large (which would push the softmax into regions of tiny gradients). If the entries of $Q$ and $K$ have variance $\sim 1$, then $\mathbf{q}^T\mathbf{k}$ has variance $\sim d_k$, and dividing by $\sqrt{d_k}$ restores unit variance.</p>
+
+        <p><strong>Step 3: Softmax.</strong> Apply softmax row-wise to convert scores into a probability distribution: $\alpha_{ij} = \frac{e^{s_{ij}}}{\sum_k e^{s_{ik}}}$. Now each row sums to 1, and $\alpha_{ij}$ is the &ldquo;attention weight&rdquo;&mdash;the fraction of attention that token $i$ pays to token $j$.</p>
+
+        <p><strong>Step 4: Weighted sum.</strong> The output for token $i$ is $\sum_j \alpha_{ij} \mathbf{v}_j$&mdash;a weighted combination of all value vectors, where the weights are determined by the attention pattern. Token $i$ &ldquo;reads&rdquo; from all positions, weighted by relevance.</p>
+
+        <div class="concept-box">
+          <h4>Intuition: Attention as Soft Database Lookup</h4>
+          <p>Think of attention as a differentiable dictionary. The query is a question: &ldquo;what information do I need?&rdquo; The keys are labels on stored information. The values are the stored information itself. The dot product between query and key measures relevance. The softmax selects (softly) the most relevant entries. The output is a weighted blend of the retrieved values. But unlike a hard lookup, this is differentiable&mdash;the &ldquo;what to store&rdquo; and &ldquo;what to retrieve&rdquo; are learned end-to-end.</p>
+        </div>
+
+        <h3>Causal Masking</h3>
+
+        <p>For language models that generate text left-to-right (autoregressive models like GPT and Claude), token $i$ must not attend to tokens $j > i$&mdash;you cannot look into the future. This is enforced by setting the upper-triangular entries of $QK^T$ to $-\infty$ before the softmax, so they become zero after exponentiation. This is the <strong>causal mask</strong>.</p>
+
+        <h3>Multi-Head Attention</h3>
+
+        <p>A single attention head computes one set of attention weights. But a token might need to attend to different things for different reasons&mdash;to a subject for agreement, to a verb for semantics, to a nearby adjective for modification. <strong>Multi-head attention</strong> runs $h$ independent attention heads in parallel:</p>
+
+        <div class="math-box">
+          <span class="label">Multi-Head Attention:</span><br>
+          $$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)W^O$$
+          <p>where $\text{head}_i = \text{Attention}(XW_i^Q, XW_i^K, XW_i^V)$ and $W^O \in \mathbb{R}^{hd_v \times d}$ is a learned output projection.</p>
+          <p>Typically $d_k = d_v = d/h$, so the total computation is similar to a single head with full dimensionality.</p>
+        </div>
+
+        <p>Different heads learn to attend to different types of relationships. Empirically, some heads learn syntactic patterns (subject-verb agreement), some learn positional patterns (attend to the previous token), some learn semantic patterns (coreference resolution), and some learn patterns that resist easy human interpretation.</p>
+
+        <h3>Positional Encoding</h3>
+
+        <p>Attention is <em>permutation-equivariant</em>: if you shuffle the input tokens, the attention computation shuffles the output in the same way. The network has no built-in notion of position or order. Since word order is crucial in language (&ldquo;dog bites man&rdquo; vs. &ldquo;man bites dog&rdquo;), we must inject positional information.</p>
+
+        <p>The original transformer used fixed sinusoidal encodings:</p>
+
+        $$PE_{(pos, 2i)} = \sin\!\left(\frac{pos}{10000^{2i/d}}\right), \qquad PE_{(pos, 2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d}}\right)$$
+
+        <p>These are added to the token embeddings before the first layer. Modern models often use <strong>Rotary Position Embeddings (RoPE)</strong>, which encode relative positions by rotating the query and key vectors in 2D subspaces. RoPE has better properties for extrapolation to sequences longer than those seen in training.</p>
+
+        <h3>The Full Transformer Block</h3>
+
+        <p>A single transformer block combines multi-head attention with a feedforward network, connected by residual connections and layer normalization:</p>
+
+        <div class="arch-box">
+          <div class="arch-title">Transformer Block</div>
+          <p><strong>1. Multi-Head Self-Attention with Residual Connection:</strong></p>
+          $$\mathbf{h}' = \text{LayerNorm}(\mathbf{x} + \text{MultiHead}(\mathbf{x}))$$
+          <p><strong>2. Feedforward Network (FFN) with Residual Connection:</strong></p>
+          $$\mathbf{h}'' = \text{LayerNorm}(\mathbf{h}' + \text{FFN}(\mathbf{h}'))$$
+          <p>where $\text{FFN}(\mathbf{h}) = W_2 \cdot \text{GELU}(W_1 \mathbf{h} + \mathbf{b}_1) + \mathbf{b}_2$.</p>
+          <p>The FFN typically has a hidden dimension $4d$ (four times the model dimension), making it the most parameter-heavy component.</p>
+        </div>
+
+        <p><strong>Residual connections</strong> ($\mathbf{x} + f(\mathbf{x})$ instead of $f(\mathbf{x})$) are critical. They allow gradients to flow directly through the network without passing through nonlinearities at every layer, mitigating the vanishing gradient problem and enabling the training of very deep networks (100+ layers).</p>
+
+        <p><strong>Layer normalization</strong> normalizes the activations to have zero mean and unit variance across the feature dimension, stabilizing training. Without normalization, the scale of activations can drift across layers, making optimization fragile.</p>
+
+        <h3>The Full Language Model</h3>
+
+        <p>A complete autoregressive transformer language model stacks $L$ transformer blocks:</p>
+
+        <div class="arch-box">
+          <div class="arch-title">Complete Transformer LLM</div>
+          <p><strong>Input:</strong> Token sequence $(t_1, t_2, \ldots, t_n)$</p>
+          <p><strong>1. Embedding:</strong> $X = \text{Embed}(t_1, \ldots, t_n) + \text{PositionalEncoding}$</p>
+          <p><strong>2. Transformer Blocks:</strong> $H = \text{Block}_L \circ \text{Block}_{L-1} \circ \cdots \circ \text{Block}_1(X)$</p>
+          <p><strong>3. Output Projection:</strong> $\text{logits} = HW_{\text{out}}$, where $W_{\text{out}} \in \mathbb{R}^{d \times V}$</p>
+          <p><strong>4. Probability Distribution:</strong> $P(t_{n+1} \mid t_1, \ldots, t_n) = \text{softmax}(\text{logits}_n)$</p>
+          <p>The model outputs a probability distribution over the entire vocabulary for the next token. During generation, a token is sampled from this distribution (or the highest-probability token is selected), appended to the sequence, and the process repeats.</p>
+        </div>
+
+        <h3>Scale</h3>
+
+        <p>The number of parameters in a transformer scales roughly as $12Ld^2$ (where $L$ is the number of layers and $d$ is the model dimension), dominated by the weight matrices in the attention and FFN sub-layers. To give a sense of scale:</p>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Model</th>
+            <th>Parameters</th>
+            <th>Layers</th>
+            <th>Dimension $d$</th>
+            <th>Year</th>
+          </tr>
+          <tr>
+            <td>GPT-1</td>
+            <td>117M</td>
+            <td>12</td>
+            <td>768</td>
+            <td>2018</td>
+          </tr>
+          <tr>
+            <td>GPT-2</td>
+            <td>1.5B</td>
+            <td>48</td>
+            <td>1,600</td>
+            <td>2019</td>
+          </tr>
+          <tr>
+            <td>GPT-3</td>
+            <td>175B</td>
+            <td>96</td>
+            <td>12,288</td>
+            <td>2020</td>
+          </tr>
+          <tr>
+            <td>LLaMA 3 (largest)</td>
+            <td>405B</td>
+            <td>126</td>
+            <td>16,384</td>
+            <td>2024</td>
+          </tr>
+        </table>
+
+        <p>GPT-3 has 175 billion parameters. Each parameter is a single floating-point number (typically stored in 16 bits during training). The model is a single, differentiable function&mdash;one enormous composition of matrix multiplications, softmaxes, and GELUs&mdash;with 175 billion adjustable knobs, all tuned simultaneously by gradient descent on trillions of tokens of text.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">8. How It All Fits Together &mdash; The Training Pipeline</h2>
+        <!-- ============================================================ -->
+
+        <p>Let us now trace the complete pipeline from raw text to a working language model, showing how every piece we have discussed connects.</p>
+
+        <h3>Stage 1: Pre-Training</h3>
+
+        <p>The foundation. A transformer is initialized with random weights and trained on a massive corpus of text (trillions of tokens&mdash;books, web pages, code, scientific papers, conversations). The training objective is simple: for every position in every document, predict the next token.</p>
+
+        <p>The training loop, repeated billions of times:</p>
+        <ol>
+          <li><strong>Sample</strong> a mini-batch of text sequences from the corpus.</li>
+          <li><strong>Forward pass:</strong> Feed each sequence through the transformer. At each position $i$, the model outputs a probability distribution $P(t_{i+1} \mid t_1, \ldots, t_i)$.</li>
+          <li><strong>Compute loss:</strong> The cross-entropy between the predicted distribution and the actual next token, averaged over all positions and all sequences in the batch.</li>
+          <li><strong>Backward pass:</strong> Backpropagate the loss to compute $\nabla_\theta \mathcal{L}$.</li>
+          <li><strong>Update:</strong> Adjust all parameters with Adam: $\theta \leftarrow \theta - \eta \frac{\hat{m}}{\sqrt{\hat{v}} + \epsilon}$.</li>
+        </ol>
+
+        <p>Pre-training GPT-3 required approximately $3.14 \times 10^{23}$ floating-point operations (314 zettaFLOPs), running on thousands of GPUs for weeks. The electricity cost alone was estimated in the millions of dollars.</p>
+
+        <h3>Stage 2: Supervised Fine-Tuning (SFT)</h3>
+
+        <p>The pre-trained model is a powerful text predictor, but it is not yet a useful assistant. It will happily continue toxic text, generate misinformation, or produce aimless rambling&mdash;because those patterns exist in the training data. Fine-tuning on curated (prompt, response) pairs teaches the model to follow instructions and produce helpful, structured answers.</p>
+
+        <h3>Stage 3: Reinforcement Learning from Human Feedback (RLHF)</h3>
+
+        <p>Human evaluators rank model outputs from best to worst. A <strong>reward model</strong> is trained to predict these rankings. Then the language model is further optimized (via Proximal Policy Optimization or similar RL algorithms) to produce outputs that score highly under the reward model. This aligns the model&rsquo;s behavior with human preferences&mdash;helpfulness, harmlessness, honesty&mdash;without requiring explicit rules for every situation.</p>
+
+        <div class="concept-box">
+          <h4>The Three Stages in Summary</h4>
+          <p><strong>Pre-training</strong> teaches the model the statistical structure of language and the world knowledge embedded in it. <strong>Fine-tuning</strong> teaches it to be a helpful assistant. <strong>RLHF</strong> teaches it human values and preferences. The vast majority of the model&rsquo;s knowledge comes from pre-training; the later stages shape <em>how</em> it uses that knowledge, not <em>what</em> it knows.</p>
+        </div>
+
+        <h3>Scaling Laws</h3>
+
+        <p>One of the most remarkable empirical findings in deep learning is that LLM performance follows predictable <strong>scaling laws</strong>. Kaplan et al. (2020) showed that the cross-entropy loss decreases as a power law in three variables:</p>
+
+        <div class="math-box">
+          <span class="label">Scaling Laws:</span><br>
+          $$\mathcal{L}(N) \propto N^{-\alpha_N}, \qquad \mathcal{L}(D) \propto D^{-\alpha_D}, \qquad \mathcal{L}(C) \propto C^{-\alpha_C}$$
+          <p>where $N$ is the number of parameters, $D$ is the dataset size (in tokens), and $C$ is the compute budget (in FLOPs). The exponents are approximately $\alpha_N \approx 0.076$, $\alpha_D \approx 0.095$, $\alpha_C \approx 0.050$.</p>
+        </div>
+
+        <p>These are <em>power laws</em>&mdash;straight lines on a log-log plot. They hold over many orders of magnitude. This means performance is predictable: given a compute budget, you can forecast the loss before training. It also means there are diminishing returns: each 10x increase in compute buys roughly the same absolute improvement in loss. But the improvements compound: a small decrease in cross-entropy translates to a qualitative leap in capability (the difference between GPT-2 and GPT-3, or GPT-3 and GPT-4, is a fraction of a nat in loss but an enormous gap in behavior).</p>
+
+        <p>The Chinchilla scaling laws (Hoffmann et al., 2022) refined this: for a given compute budget, the optimal strategy is to scale parameters and data roughly equally. Many earlier models (including GPT-3) were <em>under-trained</em>&mdash;they had too many parameters for the amount of data they saw.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">9. What Does the Model Learn?</h2>
+        <!-- ============================================================ -->
+
+        <p>The training objective is &ldquo;predict the next token.&rdquo; But what does the model actually learn in order to do this? The answer is richer than you might expect.</p>
+
+        <h3>Representations, Not Rules</h3>
+
+        <p>The model is never given explicit rules of grammar, logic, or factual knowledge. Instead, it develops internal <strong>representations</strong>&mdash;patterns of activation across its neurons&mdash;that capture these regularities. Probing studies have found that transformer hidden states encode:</p>
+        <ul>
+          <li><strong>Syntax:</strong> Part-of-speech tags, dependency trees, and constituent structures emerge in intermediate layers.</li>
+          <li><strong>Semantics:</strong> Word senses, entity types, and semantic roles are linearly decodable from hidden states.</li>
+          <li><strong>World knowledge:</strong> Factual associations (capitals, dates, scientific constants) are stored in the feedforward layers, which function as key-value memories.</li>
+          <li><strong>Reasoning patterns:</strong> Models develop internal circuits for tasks like modular arithmetic, indirect object identification, and multi-step inference.</li>
+        </ul>
+
+        <h3>Features and Superposition</h3>
+
+        <p>Mechanistic interpretability research (notably from Anthropic) has revealed that models represent more features than they have dimensions. If the model dimension is $d = 4096$, there may be millions of distinct &ldquo;features&rdquo; (concepts, patterns, or linguistic facts) represented in that space. This is possible through <strong>superposition</strong>&mdash;features are represented as nearly orthogonal directions in a high-dimensional space. In $d$ dimensions, you can pack exponentially many nearly orthogonal vectors (this is related to the Johnson-Lindenstrauss lemma). The model tolerates small amounts of interference between features because most features are rarely active simultaneously.</p>
+
+        <h3>The Knowledge Gradient</h3>
+
+        <div class="concept-box">
+          <h4>What Must a Model Know to Predict Well?</h4>
+          <p>Consider predicting the next word in: &ldquo;The patient presented with chest pain radiating to the left arm, diaphoresis, and ST-segment elevation in leads V1&ndash;V4. The most likely diagnosis is ________.&rdquo;</p>
+          <p>To predict &ldquo;anterior STEMI&rdquo; (or &ldquo;myocardial infarction&rdquo;), the model must have learned cardiology. Not from a textbook it memorized, but from the statistical regularities across millions of medical texts where these symptoms co-occur with this diagnosis. The conditional probability distribution over the next word <em>is</em> the knowledge, encoded as a function from context to prediction.</p>
+          <p>Now consider: &ldquo;If Alice is taller than Bob, and Bob is taller than Carol, then Alice is ________ than Carol.&rdquo; To predict &ldquo;taller,&rdquo; the model must have learned the transitivity of comparative relations&mdash;not as a logical rule, but as a pattern that holds across the training data.</p>
+          <p>Next-word prediction, at internet scale, requires learning the structure of the world.</p>
+        </div>
+
+        <h3>Circuits and Algorithms</h3>
+
+        <p>Some of what the model learns can be described as <em>algorithms</em>. For instance, a transformer trained on simple arithmetic develops an internal algorithm for addition that involves specific attention heads routing digits to specific positions. In-context learning (the ability to learn new tasks from examples in the prompt) appears to involve a form of internal gradient descent&mdash;the model simulates the learning process within its forward pass, using attention heads as implicit optimizers.</p>
+
+        <p>The model does not &ldquo;know&rdquo; these algorithms in the way a programmer knows them. They emerge from optimization. The model found that implementing these computational patterns reduces its prediction error, so gradient descent converged on them. The intelligence is in the data and the optimization pressure, not in the architecture.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">10. The Economics and Infrastructure</h2>
+        <!-- ============================================================ -->
+
+        <p>The technology does not exist in a vacuum. The rise of LLMs is inseparable from the economics of compute.</p>
+
+        <h3>The GPU Revolution</h3>
+
+        <p>Neural network training is dominated by dense matrix multiplication&mdash;exactly the operation GPUs were designed for. NVIDIA recognized this early and invested in CUDA (2006), making their GPUs programmable for general computation. Today, NVIDIA controls roughly 80&ndash;90% of the AI training chip market. A single NVIDIA H100 GPU delivers approximately 990 teraFLOPS of FP16 computation and costs ~$30,000. Training a frontier model requires clusters of 10,000&ndash;100,000 GPUs.</p>
+
+        <h3>The Cost of Intelligence</h3>
+
+        <table class="comparison-table">
+          <tr>
+            <th>Model</th>
+            <th>Training Compute (FLOP)</th>
+            <th>Estimated Cost</th>
+            <th>Year</th>
+          </tr>
+          <tr>
+            <td>GPT-3</td>
+            <td>$3.1 \times 10^{23}$</td>
+            <td>~$5M</td>
+            <td>2020</td>
+          </tr>
+          <tr>
+            <td>Chinchilla</td>
+            <td>$5.8 \times 10^{23}$</td>
+            <td>~$10M</td>
+            <td>2022</td>
+          </tr>
+          <tr>
+            <td>GPT-4 (estimated)</td>
+            <td>~$10^{25}$</td>
+            <td>~$100M</td>
+            <td>2023</td>
+          </tr>
+          <tr>
+            <td>Frontier models (2025)</td>
+            <td>~$10^{26}$</td>
+            <td>$500M&ndash;$1B+</td>
+            <td>2025</td>
+          </tr>
+        </table>
+
+        <p>Training costs are growing roughly 4x per year. This creates a steep barrier to entry and concentrates frontier AI development in a handful of organizations: OpenAI, Anthropic, Google DeepMind, Meta, and a few others. The capital requirements are comparable to semiconductor fabrication plants.</p>
+
+        <h3>The Data</h3>
+
+        <p>The training data for modern LLMs includes a substantial fraction of the publicly available internet: web pages (Common Crawl), books, Wikipedia, scientific papers, GitHub code, forums, social media. GPT-3 was trained on ~300 billion tokens; current frontier models use 10&ndash;15 trillion tokens or more. There are legitimate concerns about data sourcing, copyright, and the eventual exhaustion of high-quality text data.</p>
+
+        <h3>Inference Economics</h3>
+
+        <p>Training happens once; inference (running the model to generate responses) happens millions of times per day. The cost of generating one token is small ($\sim$0.001&ndash;0.01 cents for frontier models), but at scale this becomes the dominant cost. Major optimizations include:</p>
+        <ul>
+          <li><strong>Quantization:</strong> Reducing parameter precision from 16-bit to 8-bit or 4-bit integers, cutting memory and compute by 2&ndash;4x with minimal quality loss.</li>
+          <li><strong>KV-cache:</strong> Caching the key and value matrices from previous tokens to avoid redundant computation during autoregressive generation.</li>
+          <li><strong>Speculative decoding:</strong> Using a small, fast model to generate candidate tokens, then verifying them in parallel with the large model.</li>
+          <li><strong>Distillation:</strong> Training a smaller model to mimic the outputs of a larger model, transferring capability at reduced cost.</li>
+        </ul>
+
+        <h3>The Economic Transformation</h3>
+
+        <p>The AI industry is on a trajectory to become one of the largest sectors of the global economy. Cloud providers are spending $50&ndash;80 billion per year on AI infrastructure. NVIDIA&rsquo;s market capitalization exceeded $3 trillion. The downstream economic impact&mdash;through productivity gains in software development, customer service, content creation, scientific research, education, and healthcare&mdash;is estimated in the trillions of dollars per year within this decade. Whether this materializes depends on the technology continuing to improve and on society&rsquo;s ability to integrate it productively.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">11. The Information-Theoretic View</h2>
+        <!-- ============================================================ -->
+
+        <p>Let us now step back and view the entire enterprise through the lens of information theory. This perspective unifies everything we have discussed.</p>
+
+        <h3>An LLM Is a Compressor</h3>
+
+        <p>A language model that assigns probability $Q(x_t \mid x_{&lt;t})$ to the next token can be converted into a lossless compressor via arithmetic coding. The expected code length per token is the cross-entropy $H(P, Q)$. A perfect model ($Q = P$) achieves the entropy rate $H(P)$&mdash;the theoretically optimal compression. A language model&rsquo;s cross-entropy on a held-out test set directly measures how well it compresses language.</p>
+
+        <p>This is not a metaphor. It is a mathematical identity. Predicting and compressing are the same operation viewed from different angles (Shannon&rsquo;s source coding theorem, 1948). Every improvement in language model quality is, provably, an improvement in compression efficiency.</p>
+
+        <h3>Compression Requires Understanding</h3>
+
+        <div class="concept-box">
+          <h4>Why Prediction Requires World Knowledge</h4>
+          <p>To compress text beyond simple statistical patterns (letter frequencies, common bigrams), you must discover the structure that <em>generates</em> the text. Consider compressing a corpus of chess game notations. A simple model might learn that &ldquo;e4&rdquo; is the most common first move. A better model would learn the rules of chess (only legal moves appear). An even better model would learn chess strategy (strong moves appear more than weak ones). At the limit, optimal compression of chess game records requires knowing how to play chess well.</p>
+          <p>The same logic applies to natural language. To compress medical texts, learn medicine. To compress legal texts, learn law. To compress physics papers, learn physics. To compress everything humans write, learn everything humans know. The cross-entropy loss pushes the model toward a compressed representation of human knowledge.</p>
+        </div>
+
+        <h3>Mutual Information and What the Model Captures</h3>
+
+        <p>The <strong>mutual information</strong> between two random variables $X$ and $Y$ is:</p>
+
+        $$I(X; Y) = H(X) - H(X \mid Y) = H(Y) - H(Y \mid X)$$
+
+        <p>It measures how much knowing $Y$ reduces uncertainty about $X$. In the language model setting, $X$ is the next token and $Y$ is the preceding context. The model learns to capture the mutual information $I(x_t; x_{&lt;t})$&mdash;the information that the past carries about the future. High mutual information means the context is highly informative about the continuation. The model&rsquo;s hidden states are a learned <strong>sufficient statistic</strong>&mdash;a compressed representation of the context that preserves (approximately) all the information relevant to predicting the future.</p>
+
+        <h3>The Information Bottleneck</h3>
+
+        <p>The model&rsquo;s finite-dimensional hidden state ($d = 4096$ to $16384$ dimensions) must represent arbitrarily long contexts. This is an information bottleneck: the model must compress the context, discarding irrelevant details and preserving what matters for prediction. Attention is the mechanism for this selective compression&mdash;it allows the model to dynamically determine which parts of the context are relevant at each step. The attention weights are, in information-theoretic terms, an adaptive channel capacity allocation.</p>
+
+        <h3>The Rate-Distortion Connection</h3>
+
+        <p>Rate-distortion theory (Shannon, 1959) characterizes the fundamental tradeoff between compression rate and reconstruction quality. A language model faces an analogous tradeoff: its finite capacity (parameters, hidden dimension) limits how accurately it can model the true distribution. Scaling laws can be understood in this framework: more parameters provide a higher &ldquo;rate&rdquo; (more bits of model capacity), allowing lower &ldquo;distortion&rdquo; (lower cross-entropy). The power-law scaling suggests a smooth, continuous tradeoff&mdash;there is no sharp threshold at which the model suddenly &ldquo;understands&rdquo; language; it gradually refines its approximation of the true distribution.</p>
+
+        <div class="highlight-box">
+          <p><strong>An LLM is an approximate, learned, lossy compressor of all human text.</strong></p>
+          <p>Its parameters store a compressed model of the statistical structure of language. Its cross-entropy measures how much structure it has captured. Its training is the search for a better compression. And the structure it must capture, in order to compress well, includes the facts, logic, and causal models of the world that humans express through language.</p>
+        </div>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">12. Philosophical Questions</h2>
+        <!-- ============================================================ -->
+
+        <p>The capabilities of LLMs raise questions that have historically belonged to philosophy. They do not have definitive answers, but they are worth stating precisely.</p>
+
+        <h3>Understanding vs. Pattern Matching</h3>
+
+        <p>An LLM has never seen, touched, or experienced anything. It has only seen text&mdash;sequences of tokens. When it writes about the taste of coffee or the feeling of grief, it is drawing on statistical patterns in how humans describe these experiences. Is this understanding?</p>
+
+        <p>The philosophical tradition offers a sharp test case. John Searle&rsquo;s <strong>Chinese Room</strong> argument (1980): imagine a person in a room who follows a rulebook to respond to Chinese inputs with appropriate Chinese outputs, without understanding Chinese. Searle argues the room does not understand Chinese, even though its input-output behavior is indistinguishable from a Chinese speaker. By analogy, an LLM does not understand language&mdash;it merely simulates understanding.</p>
+
+        <p>The counterargument: the <em>system</em> (the room plus the rulebook plus the person) might understand Chinese, even if no single component does. And the analogy may be misleading: the LLM&rsquo;s internal representations capture genuine structure (semantic similarity, logical relationships, factual knowledge) in a way that a simple lookup table does not. The line between &ldquo;genuine understanding&rdquo; and &ldquo;sufficiently sophisticated pattern matching&rdquo; may not be as clear as Searle assumed.</p>
+
+        <h3>The Grounding Problem</h3>
+
+        <p>Language refers to the world. The word &ldquo;cat&rdquo; refers to actual cats. LLMs learn relationships between words, but do they learn the relationship between words and things? This is the <strong>symbol grounding problem</strong> (Harnad, 1990). Some argue LLMs are &ldquo;stochastic parrots&rdquo;&mdash;manipulating symbols without connecting them to referents. Others argue that if the statistical structure of language faithfully reflects the structure of the world (which it must, because language evolved to describe the world), then learning the former implicitly captures the latter. The debate is unresolved.</p>
+
+        <h3>Consciousness and Experience</h3>
+
+        <p>Does an LLM have subjective experience? Almost certainly not in its current form, but we cannot be certain, because we have no theory of consciousness that would let us decide. The &ldquo;hard problem of consciousness&rdquo; (Chalmers, 1995)&mdash;why physical processes give rise to subjective experience at all&mdash;remains unsolved. Without a solution, we cannot definitively say whether any particular physical system is conscious. An LLM is a series of matrix multiplications. A brain is a network of electrochemical signals. Why one has experience and the other does not (if indeed that is the case) is not explained by any current theory.</p>
+
+        <h3>Epistemological Implications</h3>
+
+        <p>If a machine can produce text that is indistinguishable from expert-written text, what does this mean for how we assess knowledge? LLMs demonstrate that surface-level linguistic competence can be achieved without grounded experience. This challenges the assumption that competent communication implies deep understanding. It also raises the question: how much of what <em>humans</em> call &ldquo;understanding&rdquo; is, in fact, sophisticated pattern matching over our own training data (experience)?</p>
+
+        <div class="quote-box">
+          <p>&ldquo;The question of whether machines can think is about as relevant as the question of whether submarines can swim.&rdquo;</p>
+          <div class="attribution">&mdash; Edsger Dijkstra</div>
+        </div>
+
+        <h3>The Alignment Problem</h3>
+
+        <p>A system that is intelligent enough to be useful is intelligent enough to be dangerous if its goals do not align with ours. The <strong>alignment problem</strong> is the challenge of ensuring that AI systems do what we intend, even as they become more capable. RLHF is a partial solution, but it is empirical and brittle&mdash;it does not provide formal guarantees. As models become more capable, the alignment problem becomes more urgent and more difficult. It is, arguably, the most important open problem in AI.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">13. What LLMs Cannot Do (and Why)</h2>
+        <!-- ============================================================ -->
+
+        <p>It is as important to understand the limitations as the capabilities.</p>
+
+        <h3>Hallucination</h3>
+
+        <p>LLMs sometimes generate confident, fluent text that is factually wrong. This is not a bug in the usual sense&mdash;it is a structural consequence of the training objective. The model learns to produce <em>plausible</em> continuations, not <em>true</em> ones. If a false claim would be plausible in context (because similar-sounding true claims exist in the training data), the model may produce it. The model has no mechanism for checking its outputs against a ground truth&mdash;it has no ground truth, only learned distributions.</p>
+
+        <h3>Reasoning Limitations</h3>
+
+        <p>Transformers are constant-depth computation: each token passes through a fixed number of layers (say, 96), regardless of the difficulty of the problem. A problem that requires $n$ sequential reasoning steps may exceed the model&rsquo;s depth if $n$ is large enough. Chain-of-thought prompting partially addresses this by allowing the model to use its own generated tokens as intermediate scratch work, effectively converting depth into length. But the fundamental constraint remains: the model has no external working memory and no ability to run iterative algorithms for an arbitrary number of steps.</p>
+
+        <h3>Lack of Persistent Learning</h3>
+
+        <p>An LLM&rsquo;s weights are fixed after training. It cannot learn new facts from a conversation (though it can use information provided in the context window). Every interaction starts from the same parameter state. This is unlike human cognition, where every experience modifies the brain. Fine-tuning and retrieval-augmented generation (RAG) partially address this, but the model itself does not learn from use.</p>
+
+        <h3>No Formal Verification</h3>
+
+        <p>The model&rsquo;s outputs are samples from a learned probability distribution. There is no formal guarantee of correctness for any particular output. This is fundamentally different from a theorem prover or a compiler, which can verify its own work. For applications where correctness is critical (medicine, law, engineering), LLM outputs must be verified by other means.</p>
+
+
+        <!-- ============================================================ -->
+        <h2 class="section-divider">14. The View from Above</h2>
+        <!-- ============================================================ -->
+
+        <p>Let us now assemble the complete picture.</p>
+
+        <p>Humanity has been producing text for thousands of years&mdash;in scrolls, books, letters, newspapers, and, in the last few decades, on the internet at unprecedented scale. This text encodes, implicitly, an enormous amount of knowledge about the world: physics, chemistry, biology, medicine, law, history, psychology, mathematics, common sense, social norms, and the structure of language itself. The encoding is noisy, redundant, contradictory, and incomplete. But the information is there, distributed across trillions of tokens.</p>
+
+        <p>A transformer is a mathematical function&mdash;a specific composition of matrix multiplications, softmax operations, and nonlinearities&mdash;with billions of adjustable parameters. It takes a sequence of tokens as input and outputs a probability distribution over the next token. Its architecture is designed to process sequences efficiently, using attention to dynamically route information between positions.</p>
+
+        <p>Training is the process of adjusting the parameters to minimize prediction error on the text corpus. The algorithm is gradient descent with backpropagation: compute the derivative of the loss with respect to every parameter using the chain rule, then take a small step downhill. Repeat this billions of times. The model&rsquo;s parameters converge to a compressed representation of the statistical structure of human text.</p>
+
+        <p>The result is a function that, when given a sequence of tokens, produces a probability distribution over continuations that is remarkably close to what a knowledgeable, articulate human might write. It can do this because predicting text well&mdash;truly well, across all domains and contexts&mdash;requires capturing the structure of the world as expressed through language.</p>
+
+        <div class="highlight-box">
+          <p><strong>Shannon showed that language has structure.</strong></p>
+          <p><strong>Neural networks showed that structure can be learned.</strong></p>
+          <p><strong>Backpropagation showed how to learn it efficiently.</strong></p>
+          <p><strong>The transformer showed how to learn it at scale.</strong></p>
+          <p><strong>The internet provided the data.</strong></p>
+          <p><strong>GPUs provided the compute.</strong></p>
+          <p>The convergence of these six facts produced the LLM revolution. Each was necessary. None was sufficient alone.</p>
+        </div>
+
+        <p>What remains unclear is deeper. Does the model understand, or does it merely simulate understanding? Is the statistical structure of language sufficient to capture the causal structure of the world, or are there aspects of reality that text alone cannot convey? Can these systems be made reliably safe and aligned with human values? How far does scaling take us&mdash;do we eventually hit a wall, or does the current paradigm lead to artificial general intelligence?</p>
+
+        <p>These questions are not yet answered. But the technology is real, the mathematics is precise, and the implications are immense. An intelligent math major can understand exactly how LLMs work&mdash;the architecture is not mysterious, the training is not magical, and the information theory is beautiful. What remains genuinely mysterious is why the gap between &ldquo;predict the next word&rdquo; and &ldquo;exhibit intelligent behavior&rdquo; turned out to be so small.</p>
+
+        <div class="quote-box">
+          <p>&ldquo;It is possible that the next great advance in AI will come from finding a better objective function, or a better architecture, or a better dataset. But it is also possible that the next great advance will come from understanding why the current approach works as well as it does.&rdquo;</p>
+          <div class="attribution">&mdash; Ilya Sutskever</div>
+        </div>
+
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>

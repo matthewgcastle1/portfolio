@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Happens When You Type a URL into a Search Engine</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .stage-section {
+      background: white;
+      border: 2px solid #8b7355;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 3px;
+    }
+
+    .stage-section h3 {
+      color: #1a3a3a;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .stage-number {
+      display: inline-block;
+      background-color: #8b7355;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .deep-dive {
+      background-color: #f5f1e8;
+      border-left: 4px solid #8b7355;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 2px;
+      font-size: 0.9rem;
+    }
+
+    .deep-dive strong {
+      color: #8b7355;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .code-snippet {
+      background-color: #2c2c2c;
+      color: #e0e0e0;
+      padding: 1rem;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    .physical-detail {
+      background-color: #fffbf5;
+      border-left: 3px solid #c44536;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #5a5a5a;
+    }
+
+    .timeline-vertical {
+      border-left: 3px solid #8b7355;
+      padding-left: 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .timeline-item {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .timeline-item:before {
+      content: '';
+      position: absolute;
+      left: -2.35rem;
+      top: 0.3rem;
+      width: 12px;
+      height: 12px;
+      background: #8b7355;
+      border-radius: 50%;
+    }
+
+    .time-marker {
+      color: #8b7355;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .code-snippet {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Typing a URL into a Search Engine</h1>
+      <p>A complete journey through hardware, network, and algorithms</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <a href="../index.html">← Home</a>
+      <a href="../writing.html">Essays</a>
+    </nav>
+
+    <article class="article-content">
+      <div class="article-header">
+        <h1>What Happens When You Type a URL Into a Search Engine: The Complete Journey</h1>
+        <div class="article-meta">Systems & Networks | Comprehensive deep dive</div>
+      </div>
+
+      <div class="article-body">
+        <h2>Introduction: The Hidden Complexity</h2>
+
+        <p>You press keys. A search results page appears. The action seems instantaneous and simple. In reality, it involves billions of transistors, thousands of servers, electromagnetic waves traveling at light speed, sophisticated algorithms, and coordinated action across the globe.</p>
+
+        <p>This article traces the complete journey: from electrical signal in your keyboard to ranking algorithms in Google's data centers to the page rendering on your screen. Each stage is dense with technical depth. At each stage, you'll find pointers to where you could go deeper.</p>
+
+        <h2><span class="stage-number">1</span>The Keypress: Electrical Signal to the CPU</h2>
+
+        <div class="stage-section">
+          <h3>1.1: Keyboard Hardware</h3>
+
+          <p>When you press a key, you close an electrical circuit. A spring-loaded switch beneath the key makes contact.</p>
+
+          <div class="physical-detail">
+            <strong>Physical Reality:</strong> The key press is not instantaneous. The mechanical switch takes 50-100 milliseconds to fully actuate. During actuation, the electrical signal bounces (makes and breaks contact multiple times) due to mechanical imperfections. This is called "debouncing."
+          </div>
+
+          <p>The keyboard controller (a microcontroller in your keyboard) samples the electrical signal. If the signal is stable for a certain duration (typically 10-20ms), it registers as a valid keypress. This debouncing is done in the keyboard itself, not by the OS.</p>
+
+          <div class="code-snippet">
+Keyboard controller logic (simplified):
+read electrical_state_from_key
+if state == pressed AND was_unpressed:
+  wait 10ms  (debounce delay)
+  read electrical_state again
+  if still pressed:
+    send scan_code to computer
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Mechanical Switch Technology</strong>
+            Mechanical switches vary: Cherry MX, Topre, Membrane. Each has different actuation points, travel distance, and noise characteristics. Gaming keyboards use mechanical switches for lower latency. Laptop keyboards use membrane switches (slower response but quieter). The physical design of the switch affects how fast your input reaches the computer.
+          </div>
+
+          <h3>1.2: Scan Code Transmission</h3>
+
+          <p>The keyboard controller sends a "scan code" to the computer. This is not the character you typed—it's a numerical code representing the physical key position.</p>
+
+          <div class="code-snippet">
+When you press 'G':
+Keyboard sends: 0x22 (scan code for QWERTY key position)
+
+When you press Shift:
+Keyboard sends: 0x12 (left shift scan code)
+
+The OS interprets: 0x12 followed by 0x22 = "G"
+Or: Shift held + 0x22 = capital "G"
+          </div>
+
+          <p>Communication happens via USB (or PS/2 on older systems). USB transfers data in packets over electromagnetic signals. A typical keyboard sends scan codes at 125Hz (8ms between checks), though modern gaming keyboards claim 1000Hz (1ms) polling rates.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: USB Protocol Stack</strong>
+            USB (Universal Serial Bus) is extraordinarily complex. Data is encoded using NRZI (Non-Return-to-Zero Inverted). The USB controller negotiates speed (1.5Mbps for low-speed keyboards, up to 480Mbps for high-speed). Packets include headers, checksums, and control signals. The keyboard appears as a "Human Interface Device" class to the OS. Understanding this requires knowledge of serial communication protocols, electrical signaling, and the USB specification (which is 1000+ pages).
+          </div>
+
+          <h3>1.3: Interrupt to the CPU</h3>
+
+          <p>The USB controller receives the scan code. It signals the CPU via an interrupt request (IRQ). This is critical: the CPU stops what it's doing and handles the interrupt.</p>
+
+          <div class="physical-detail">
+            <strong>Physical Reality:</strong> An interrupt is a hardware signal (an electrical pulse on the interrupt line). The CPU has interrupt pins that can be triggered. When triggered, the CPU saves its current state (registers, program counter) to the stack and jumps to an interrupt handler routine. This context switch takes microseconds but is a hard context switch—the OS cannot prevent it.
+          </div>
+
+          <div class="code-snippet">
+CPU execution timeline:
+[executing user application]
+  ... microsecond 1000: USB interrupt signal arrives
+  ... CPU raises interrupt flag after current instruction
+  CPU saves: Instruction Pointer, Flags, Registers → Stack
+  CPU loads: Interrupt Handler Address from IDT
+[executing interrupt handler]
+  Handle keyboard input
+  Return from interrupt (restore registers from stack)
+[resume user application]
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Interrupt Descriptor Table (IDT)</strong>
+            The IDT is a table in kernel memory specifying which function to call for each interrupt type. Interrupt 33 might be keyboard, interrupt 32 might be timer, interrupt 0x80 might be system calls. The CPU is hard-wired to fetch from the IDT when an interrupt occurs. This is fundamental to how the OS retains control—without interrupts, the OS couldn't regain control from user applications.
+          </div>
+
+          <h3>1.4: Kernel Driver Processing</h3>
+
+          <p>The interrupt handler routes to the keyboard driver (a kernel module). The driver:</p>
+
+          <ol>
+            <li>Reads the scan code from the keyboard's data port</li>
+            <li>Converts scan code to key symbol (accounting for shift, alt, ctrl keys)</li>
+            <li>Queues the key event to the input subsystem</li>
+            <li>Signals waiting applications</li>
+          </ol>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Linux input Subsystem</strong>
+            Linux abstracts all input devices (keyboards, mice, joysticks) through /dev/input/. The kernel input subsystem normalizes different hardware interfaces into a common event stream. The driver enqueues events; the application dequeues them. This abstraction allows the OS to work with any keyboard without per-application changes. The actual driver code (in drivers/input/keyboard/) handles device-specific details.
+          </div>
+
+          <h3>1.5: Timeline So Far</h3>
+
+          <div class="timeline-vertical">
+            <div class="timeline-item">
+              <span class="time-marker">0ms:</span> Key physically pressed
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">50-100ms:</span> Mechanical switch actuates
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+10-20ms:</span> Debounce delay in keyboard controller
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+0.1ms:</span> Scan code sent via USB
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+0.001ms:</span> USB interrupt triggered
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+0.001ms:</span> CPU interrupt handler executes
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+0.01ms:</span> Keyboard driver processes event
+            </div>
+          </div>
+
+          <p>Total so far: ~100-150ms from physical key press to OS event. Most of this is mechanical switch latency.</p>
+
+        </div>
+
+        <h2><span class="stage-number">2</span>OS to Application: Input Event Delivery</h2>
+
+        <div class="stage-section">
+          <h3>2.1: Browser Process Scheduling</h3>
+
+          <p>The browser (Chrome, Firefox) is a user-space application blocked waiting for input. The kernel scheduler wakes it when input arrives. The scheduler uses a priority queue and time slices.</p>
+
+          <div class="code-snippet">
+Process state transitions:
+[Browser: BLOCKED, waiting for input event]
+  Keyboard interrupt arrives
+  Kernel input subsystem queues event
+  Scheduler marks Browser: RUNNABLE
+[CPU scheduler context switches]
+[Browser: RUNNING]
+  Browser's event loop executes
+  Retrieves event from input queue
+  Routes to UI handler
+          </div>
+
+          <p>Context switching (saving one process, loading another) takes ~1-10 microseconds. This includes TLB flushes, cache invalidation, and register restoration.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Linux Scheduler (CFS)</strong>
+            The Linux Completely Fair Scheduler maintains a red-black tree of runnable processes. Each gets a fair time slice based on priority. Keyboard input typically triggers a "wakeup" event, which moves the process to high priority (high priority = more frequent scheduling). The scheduler code is in kernel/sched/. Understanding scheduling requires knowledge of tree data structures, priority algorithms, and CPU affinity (keeping processes on same CPU to improve cache locality).
+          </div>
+
+          <h3>2.2: Browser UI Event Processing</h3>
+
+          <p>Browser has an event loop (a core pattern in UI frameworks).</p>
+
+          <div class="code-snippet">
+Browser event loop (simplified):
+while true:
+  event = wait_for_input()  // or timeout
+  if event is keyboard:
+    target_element = focused_element
+    target_element.on_keypress(event)
+  else if event is mouse:
+    target_element = element_at(event.x, event.y)
+    target_element.on_click(event)
+  render_if_needed()
+  process_timers()
+  sleep_until_next_event()
+          </div>
+
+          <p>The browser determines which UI element should receive the key (usually the focused element). On a search page, that's the search input box.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Browser Event Bubbling</strong>
+            Events propagate through the DOM tree. A keypress on an input element may bubble to its parent div, then to the body. JavaScript can stop propagation. This is specified in the DOM Events specification. Different browsers implement this with slight variations, causing cross-browser compatibility issues.
+          </div>
+
+          <h3>2.3: Input Box Updates</h3>
+
+          <p>The search input box's event handler executes:</p>
+
+          <div class="code-snippet">
+inputElement.addEventListener('keypress', function(event) {
+  // Append the character to the input value
+  this.value += event.key;  // e.g., "g" → "google"
+
+  // Trigger autocomplete suggestions
+  updateSuggestions(this.value);
+
+  // Mark the DOM as needing re-render
+  markDirty();
+});
+          </div>
+
+          <p>This updates the DOM (Document Object Model), the in-memory representation of the page. It triggers layout recalculation and re-rendering. This is where UI latency becomes visible—if this takes too long, you notice a delay between pressing and character appearing.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Browser Rendering Pipeline</strong>
+            After DOM update: Style Recalculation (match CSS selectors), Layout (calculate positions), Paint (draw pixels), Composite (combine layers). Each step is expensive. Modern browsers use GPU acceleration for compositing. The rendering code is in browser/renderer/ (Chromium) or layout/ (Firefox). Optimizing this is a major focus of browser teams.
+          </div>
+
+        </div>
+
+        <h2><span class="stage-number">3</span>Suggestion System: Local Autocomplete</h2>
+
+        <div class="stage-section">
+          <h3>3.1: Local Caching</h3>
+
+          <p>As you type "google," the search engine provides autocomplete suggestions. These may come from local cache (previously cached suggestions) or from the server.</p>
+
+          <p>Modern browsers and search pages cache suggestions locally in IndexedDB or localStorage. This allows instant suggestions without network latency.</p>
+
+          <div class="code-snippet">
+Autocomplete logic:
+input_text = "go"
+cached_suggestions = localStorage.getItem("suggestions_go")
+if cached_suggestions exists:
+  display cached_suggestions immediately
+  (trigger network request for fresh data)
+else:
+  (trigger network request)
+  show loading indicator
+          </div>
+
+          <p>This is why autocomplete feels instant—you're hitting local cache, not the network.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Client-Side Caching Strategies</strong>
+            Cache invalidation is a classic computer science problem. When is a cache entry stale? Strategies: time-based (expire after 24 hours), event-based (invalidate on certain events), or versioned (include version in key). IndexedDB can store gigabytes. Learning caching strategies is crucial for web performance.
+          </div>
+
+          <h3>3.2: Network Request for Fresh Suggestions</h3>
+
+          <p>After displaying cached suggestions, the browser makes a network request for fresh suggestions. This is debounced—if you keep typing, requests are cancelled and reissued.</p>
+
+          <div class="code-snippet">
+Debounced autocomplete request:
+let requestTimer;
+inputElement.addEventListener('input', function(e) {
+  clearTimeout(requestTimer);  // Cancel previous timer
+  requestTimer = setTimeout(() => {
+    fetchSuggestions(this.value);
+  }, 300);  // Wait 300ms before making request
+});
+          </div>
+
+          <p>Debouncing reduces network load. Without it, typing "google" would trigger 6 requests. With debouncing, it triggers 1.</p>
+
+        </div>
+
+        <h2><span class="stage-number">4</span>Network Layer: DNS to Routing</h2>
+
+        <div class="stage-section">
+          <h3>4.1: DNS Lookup</h3>
+
+          <p>The browser needs to convert "google.com" (or the search endpoint) to an IP address. This is DNS (Domain Name System) resolution.</p>
+
+          <div class="code-snippet">
+DNS Lookup process:
+1. Browser checks: is IP cached? (browser cache, OS cache)
+2. If not cached, construct DNS query:
+   Query Type: A (IPv4 address)
+   Domain: www.google.com
+3. Send query to configured DNS resolver (usually ISP or 1.1.1.1)
+          </div>
+
+          <p>DNS queries are sent over UDP (User Datagram Protocol) on port 53. UDP is chosen for its speed (no connection setup), though some DNS now uses TCP or DoT (DNS over TLS).</p>
+
+          <div class="physical-detail">
+            <strong>Physical Reality:</strong> The DNS query is a UDP packet. It travels through your network stack: application layer (DNS protocol) → transport layer (UDP) → network layer (IP) → link layer (Ethernet/WiFi). At each layer, headers are added. The packet leaves your computer, travels through your router, through your ISP's network, to a DNS resolver (likely remote).
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: DNS Protocol and DNSSEC</strong>
+            DNS query format is specified in RFC 1035. The query includes a QName (the domain), QType (A, AAAA, MX, etc.), and QClass (usually IN for internet). The response includes ResourceRecords with TTL (Time To Live). DNSSEC adds cryptographic signatures to prevent DNS spoofing. Learning DNS requires understanding the binary packet format and the hierarchical nature of DNS (root nameservers, TLD nameservers, authoritative nameservers).
+          </div>
+
+          <h3>4.2: DNS Resolver Hierarchy</h3>
+
+          <p>If the resolver doesn't have the answer cached:</p>
+
+          <div class="code-snippet">
+Recursive DNS resolution:
+Resolver (1.1.1.1):
+  → Query root nameserver: "Where is www.google.com?"
+  Root: "Ask the .com TLD server"
+  → Query .com TLD: "Where is www.google.com?"
+  TLD: "Ask google.com authoritative server"
+  → Query google.com authoritative: "Where is www.google.com?"
+  Auth: "IP is 216.58.217.46"
+  Cache result for 300 seconds
+  Return to browser
+          </div>
+
+          <p>Each lookup involves network round trips. Total DNS time: 50-300ms depending on caching and distance to resolvers. This is why DNS caching is critical.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: DNS Security and Privacy</strong>
+            Traditional DNS queries are unencrypted. Your ISP (or anyone on your network) can see what sites you're looking up. DoH (DNS over HTTPS) and DoT (DNS over TLS) encrypt queries. Some browsers (Firefox) now use DoH by default. This is a privacy improvement but adds computational overhead (TLS handshake).
+          </div>
+
+          <h3>4.3: Socket Creation and TCP Connection</h3>
+
+          <p>With IP address resolved, the browser creates a socket and initiates a TCP connection. On modern HTTPS, this is a TLS handshake.</p>
+
+          <div class="code-snippet">
+TCP Connection sequence (SYN, SYN-ACK, ACK):
+Browser → Server: SYN (sequence 100)
+Server → Browser: SYN-ACK (sequence 200, ack 101)
+Browser → Server: ACK (sequence 101, ack 201)
+[Connection established]
+          </div>
+
+          <p>Each message traverses network devices (your router, ISP routers, backbone routers). Typical latency: 10-100ms depending on distance.</p>
+
+          <div class="physical-detail">
+            <strong>Physical Reality:</strong> The TCP packets travel through undersea cables, terrestrial fiber, and wireless links. The physical path depends on BGP (Border Gateway Protocol) routing decisions. Packets may traverse different routes. Latency is fundamentally limited by light speed (300,000 km/s) in fiber: California to London is 16,000 km, so minimum latency is ~53ms.
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: TCP Congestion Control and RTT Estimation</strong>
+            TCP uses algorithms (CUBIC, BBR) to estimate network capacity and adjust sending rate. RTT (Round Trip Time) estimation affects timeout values. The TCP code is in the kernel (net/ipv4/tcp.c on Linux). Understanding this requires knowledge of control theory and network analysis.
+          </div>
+
+          <h3>4.4: TLS Handshake for HTTPS</h3>
+
+          <p>Over the TCP connection, a TLS handshake establishes encryption.</p>
+
+          <div class="code-snippet">
+TLS 1.3 Handshake (simplified):
+Browser → Server: ClientHello (supported ciphers, supported versions)
+Server → Browser: ServerHello (chosen cipher, certificate)
+Browser: Verify certificate (check signature against trusted CA)
+Browser → Server: KeyExchange (encrypted session key)
+[Encrypted connection established]
+Browser → Server: HTTP request (now encrypted)
+          </div>
+
+          <p>Certificate verification is critical. The browser checks:</p>
+
+          <ul>
+            <li>Certificate is signed by a trusted Certificate Authority (CA)</li>
+            <li>Certificate domain matches the requested domain</li>
+            <li>Certificate is not expired</li>
+            <li>Certificate hasn't been revoked (CRL or OCSP check)</li>
+          </ul>
+
+          <p>This is where HTTPS security lives. If any check fails, the browser refuses to proceed.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Public Key Infrastructure (PKI) and Certificate Chains</strong>
+            CA private keys sign certificates. Browsers trust root CAs (typically 50-200 of them). A certificate may be signed by an intermediate CA, which is signed by a root CA. Understanding this requires knowledge of asymmetric cryptography (RSA, ECDSA), hash functions (SHA-256), and the X.509 certificate format.
+          </div>
+
+          <h3>4.5: Timeline: DNS to Connected</h3>
+
+          <div class="timeline-vertical">
+            <div class="timeline-item">
+              <span class="time-marker">0ms:</span> DOM updated, browser initiates network request
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+0-50ms:</span> DNS lookup (may hit cache)
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+50-100ms:</span> TCP SYN, SYN-ACK, ACK (connection established)
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+100-200ms:</span> TLS handshake (ClientHello, ServerHello, KeyExchange)
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">Total: 100-300ms</span> to send encrypted HTTP request
+            </div>
+          </div>
+
+        </div>
+
+        <h2><span class="stage-number">5</span>HTTP Request and Search Query Processing</h2>
+
+        <div class="stage-section">
+          <h3>5.1: HTTP Request Format</h3>
+
+          <div class="code-snippet">
+GET /search?q=google&tbm=isch HTTP/1.1
+Host: www.google.com
+User-Agent: Mozilla/5.0...
+Accept-Encoding: gzip, deflate
+Cookie: NID=...; ANID=...
+[encrypted via TLS]
+          </div>
+
+          <p>The request includes:</p>
+
+          <ul>
+            <li><strong>URL:</strong> /search with query parameters (q=google)</li>
+            <li><strong>Headers:</strong> Metadata (User-Agent browser info, Accept-Encoding compression preferences)</li>
+            <li><strong>Cookies:</strong> Session data (Google tracks user session)</li>
+          </ul>
+
+          <p>The request is transmitted, encrypted by TLS, through the network to Google's servers.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: HTTP/2 Multiplexing and HTTP/3 QUIC</strong>
+            Modern HTTP versions optimize for latency. HTTP/2 multiplexes multiple requests over single connection. HTTP/3 uses QUIC protocol (UDP-based) for faster connection establishment. Understanding these requires knowledge of connection pooling, header compression (HPACK), and stream prioritization.
+          </div>
+
+          <h3>5.2: Load Balancing</h3>
+
+          <p>Google doesn't have a single server. Your request is routed to one of millions of servers globally. This routing is done by load balancers.</p>
+
+          <div class="code-snippet">
+Request routing:
+Browser → DNS returns 142.251.40.4 (a Google IP)
+This IP belongs to a load balancer (likely at a regional data center)
+Load balancer receives request
+→ Checks server load and latency
+→ Routes to best backend server (might be different from load balancer)
+          </div>
+
+          <p>Load balancing is performed at multiple levels:</p>
+
+          <ul>
+            <li><strong>DNS-level:</strong> Different A records for different geographies</li>
+            <li><strong>IP-level:</strong> Anycast routing (multiple servers share same IP, closer one responds)</li>
+            <li><strong>HTTP-level:</strong> Layer 7 load balancers (can inspect request and route based on URL, cookies, etc.)</li>
+          </ul>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Anycast Routing and BGP</strong>
+            Anycast allows multiple servers to advertise the same IP address. The network routes you to the geographically closest one. This is implemented via BGP (Border Gateway Protocol), the routing protocol of the internet. Understanding this requires knowledge of network routing, prefix aggregation, and autonomous system numbers (ASNs).
+          </div>
+
+          <h3>5.3: Data Center Processing</h3>
+
+          <p>Your request arrives at a Google data center. This is extraordinary infrastructure:</p>
+
+          <ul>
+            <li><strong>Physical:</strong> Thousands of servers in racks, custom cooling systems, redundant power</li>
+            <li><strong>Network:</strong> Internal datacenter network (10Gbps or 100Gbps links) interconnecting servers</li>
+            <li><strong>Storage:</strong> Massive distributed storage systems (Google's Bigtable, Colossus)</li>
+            <li><strong>Compute:</strong> Distributed search indexing and ranking systems</li>
+          </ul>
+
+          <div class="physical-detail">
+            <strong>Physical Reality:</strong> Google operates dozens of data centers globally. Each data center consumes megawatts of power. Google has invested in custom hardware: custom CPUs (TPUs for machine learning), custom network switches, custom storage hardware. Your request triggers specific machines to activate. These machines may access cached data, hit SSD storage, or trigger real-time computations.
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Distributed Systems and CAP Theorem</strong>
+            At Google's scale, no single server holds all data. Data is sharded (distributed across servers). CAP theorem states that a distributed system can guarantee Consistency, Availability, or Partition tolerance—only 2 of 3. Google chooses Consistency and Partition tolerance (Google's Bigtable guarantees strong consistency). Understanding distributed systems requires knowledge of consensus algorithms, replication strategies, and fault tolerance.
+          </div>
+
+        </div>
+
+        <h2><span class="stage-number">6</span>Search Algorithm: Query Processing and Ranking</h2>
+
+        <div class="stage-section">
+          <h3>6.1: Query Understanding</h3>
+
+          <p>Google receives your query "google". The system understands:</p>
+
+          <ul>
+            <li><strong>Intent:</strong> Are you searching for the company Google, the verb "google," or something else?</li>
+            <li><strong>Language:</strong> What language is the query?</li>
+            <li><strong>Location:</strong> What country are you in? (affects local results)</li>
+            <li><strong>Personalization:</strong> What results do you prefer based on search history?</li>
+          </ul>
+
+          <p>This is done via machine learning models trained on billions of queries.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: NLP and Query Classification</strong>
+            NLP (Natural Language Processing) models parse the query. Tokenization breaks "google" into tokens. Embeddings convert tokens to vectors. Classification models predict intent. Google uses transformers and BERT-like models. Understanding NLP requires knowledge of deep learning, attention mechanisms, and language models.
+          </div>
+
+          <h3>6.2: Index Lookup</h3>
+
+          <p>Google's search index is inverted: for each word, which documents contain it?</p>
+
+          <div class="code-snippet">
+Inverted index (simplified):
+"google" → [doc_id: 1, pos: 5], [doc_id: 42, pos: 12], ...
+"search" → [doc_id: 1, pos: 10], [doc_id: 100, pos: 3], ...
+
+Query "google search":
+Find docs containing "google" AND "search"
+Result: doc_id 1 (contains both)
+          </div>
+
+          <p>The index is enormous (trillions of word→document mappings). It's sharded across many servers. Query processing hits multiple index shards in parallel.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Index Data Structures and Compression</strong>
+            Indexes use compressed data structures: Huffman coding, variable-byte encoding. Posting lists (the document lists for each word) are stored in compressed format. Real inverted indexes are far more complex: position information, field information, synonym expansion, spelling correction. Understanding this requires knowledge of information retrieval, data compression, and distributed indexing.
+          </div>
+
+          <h3>6.3: PageRank and Ranking</h3>
+
+          <p>Multiple documents match your query. How are they ranked? Google uses 200+ ranking signals, including:</p>
+
+          <ul>
+            <li><strong>PageRank:</strong> Link popularity (how many pages link to this page?)</li>
+            <li><strong>Relevance:</strong> How relevant is the page to your query?</li>
+            <li><strong>Authority:</strong> Is the domain authoritative on this topic?</li>
+            <li><strong>Freshness:</strong> Is the page recently updated?</li>
+            <li><strong>Machine Learning Ranking:</strong> Neural networks trained on millions of queries and click data</li>
+          </ul>
+
+          <div class="code-snippet">
+Ranking pipeline (simplified):
+1. Initial retrieval: Find all docs matching query
+2. Feature extraction: Compute 200+ features for each doc
+   - PageRank score
+   - Query term match (exact, partial, synonym)
+   - URL quality
+   - Domain authority
+   - Click history
+   - BERT relevance score
+3. Learning-to-rank model: Neural network predicts click probability
+4. Re-rank results based on predicted click probability
+5. Apply diversity (avoid duplicate results)
+6. Return top 10
+          </div>
+
+          <p>The neural networks are trained on billions of data points: which results did users click on, how long did they stay, did they return to search results (indicating unsatisfactory result)?</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Learning-to-Rank and RankNet</strong>
+            Learning-to-rank is a machine learning task: given a query and candidate documents, order them by relevance. RankNet, LambdaRank, and LambdaMART are algorithms optimizing for ranking quality. Google's RankBrain uses neural networks. Training requires millions of labeled query-document pairs. Understanding this requires knowledge of machine learning, ranking loss functions, and gradient descent optimization.
+          </div>
+
+          <h3>6.4: Response Assembly</h3>
+
+          <p>Results are assembled into an HTML response:</p>
+
+          <div class="code-snippet">
+Search results response:
+<!DOCTYPE html>
+<html>
+<head><title>google - Google Search</title></head>
+<body>
+  <div id="searchbox">
+    <input value="google">
+  </div>
+  <div id="results">
+    <div class="result">
+      <h2><a href="https://www.google.com/">Google</a></h2>
+      <p>Search the world's information...</p>
+      <div class="cite">google.com</div>
+    </div>
+    <!-- More results... -->
+  </div>
+</body>
+</html>
+          </div>
+
+          <p>The response also includes:</p>
+
+          <ul>
+            <li><strong>Ads:</strong> Sponsored results (Google makes money here)</li>
+            <li><strong>Knowledge panels:</strong> Quick answer boxes</li>
+            <li><strong>Related searches:</strong> Suggestions for refining query</li>
+            <li><strong>Analytics pixels:</strong> Tracking your interaction with results</li>
+          </ul>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Ad Auction and Quality Score</strong>
+            Google's ad system is a real-time auction. Advertisers bid for keywords. Winner is determined by: bid × quality_score. Quality score depends on click-through rate, landing page quality, etc. Understanding this requires knowledge of auction theory and mechanism design.
+          </div>
+
+          <h3>6.5: Response Transmission</h3>
+
+          <p>The HTML response (along with CSS, JavaScript) is transmitted back to your browser. The response is compressed (gzip) and may be split across multiple HTTP/2 streams.</p>
+
+          <div class="code-snippet">
+Response headers:
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Content-Encoding: gzip
+Content-Length: 45123
+Set-Cookie: NID=...; Path=/; Domain=.google.com
+Cache-Control: public, max-age=3600
+X-Frame-Options: SAMEORIGIN
+[gzip compressed HTML...]
+          </div>
+
+          <p>The response travels back through the network, unencrypted by TLS, to your browser.</p>
+
+        </div>
+
+        <h2><span class="stage-number">7</span>Browser Rendering: Turning HTML into Pixels</h2>
+
+        <div class="stage-section">
+          <h3>7.1: HTML Parsing</h3>
+
+          <p>The browser receives HTML and parses it into a DOM tree.</p>
+
+          <div class="code-snippet">
+HTML Parsing (tokenizer):
+"<html><head><title>..."
+→ StartTag("html")
+→ StartTag("head")
+→ StartTag("title")
+→ Text("google - Google Search")
+→ EndTag("title")
+→ EndTag("head")
+→ StartTag("body")
+[... more tokens ...]
+          </div>
+
+          <p>Parser creates DOM nodes as it goes. JavaScript can access the DOM while it's being parsed.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: HTML5 Parsing Algorithm</strong>
+            The HTML5 spec defines a state machine for parsing. Different tokens trigger different states. Error handling is specified (how do malformed documents get parsed?). The parser is context-aware (script tags are parsed differently from regular elements). Browser parser code (Chromium: third_party/blink/) is thousands of lines implementing this spec.
+          </div>
+
+          <h3>7.2: CSS Styling</h3>
+
+          <p>CSS in the page is parsed and matched against DOM elements.</p>
+
+          <div class="code-snippet">
+Style recalculation:
+For each DOM element:
+  Match all CSS selectors that apply
+  Cascade rules (specificity, importance)
+  Compute final values (CSS variables, inheritance)
+  Result: computed style for each element
+
+For search box:
+<input id="searchbox" value="google">
+
+CSS selectors matching:
+#searchbox { padding: 10px; }  (ID selector, specificity 100)
+input { border: 1px solid; }    (element selector, specificity 1)
+[inherited from parent] { color: #333; }
+
+Final computed style:
+padding: 10px (from #searchbox)
+border: 1px solid (from input)
+color: #333 (inherited)
+          </div>
+
+          <p>This is expensive: if the page has thousands of elements and thousands of CSS rules, matching all combinations is slow. Modern browsers use techniques like specificity pre-calculation and selector indexing.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: CSS Cascade and Specificity Algorithm</strong>
+            CSS specificity determines which rule wins when multiple rules match. Inline styles (1000), ID selectors (100), class selectors (10), element selectors (1). The cascade is defined in CSS specification. Understanding this is crucial for debugging CSS issues. Browser rendering engines (Blink, Gecko) have style calculation code that implements this.
+          </div>
+
+          <h3>7.3: Layout (Reflow)</h3>
+
+          <p>With styles computed, the browser calculates positions and sizes (layout).</p>
+
+          <div class="code-snippet">
+Layout (simplified):
+For each element in document order:
+  Determine containing block
+  Calculate width and height based on CSS
+  Position based on CSS (absolute, relative, flex, grid)
+  Handle text wrapping and line breaking
+  Calculate bounding box
+
+Example:
+<div class="result">  width=500px, height=auto
+  <h2>Google</h2>
+  <p>Search the world's...</p>
+  <div class="cite">google.com</div>
+</div>
+
+Layout calculation:
+h2 bounding box: x=0, y=0, width=500, height=24
+p bounding box: x=0, y=24, width=500, height=48
+cite bounding box: x=0, y=72, width=500, height=16
+div total height: 88px
+          </div>
+
+          <p>Layout must recalculate if:</p>
+
+          <ul>
+            <li>DOM is modified</li>
+            <li>CSS changes</li>
+            <li>Window is resized</li>
+            <li>Images load (changing content height)</li>
+          </ul>
+
+          <p>Forced layout recalculation is a performance anti-pattern (layout thrashing).</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: CSS Layout Algorithms (Flexbox, Grid, Float)</strong>
+            Each layout mode has different rules. Flexbox uses item growth factors. Grid uses template definitions. Float uses line breaking around floated elements. Understanding layout requires knowledge of the CSS spec and how each property affects positioning. Browser layout code (Chromium: third_party/blink/renderer/core/layout/) implements these algorithms.
+          </div>
+
+          <h3>7.4: Paint</h3>
+
+          <p>With layout determined, the browser paints pixels onto a surface.</p>
+
+          <div class="code-snippet">
+Paint (simplified):
+For each element in paint order:
+  Create paint commands:
+    DrawRect(x=0, y=0, width=500, height=24, bg-color=white)
+    DrawText("Google", font=sans-serif, color=blue)
+    DrawUnderline(x=0, y=20, width=50)
+  Handle z-index stacking
+  Handle transparency and opacity
+
+Result: list of paint commands for rasterization
+          </div>
+
+          <p>Paint order matters (z-index). Elements are painted in order, later paintings can cover earlier ones.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Paint Order and Stacking Context</strong>
+            z-index creates stacking contexts. Children of a stacking context are ordered relative to siblings, but the entire stacking context is ordered relative to its siblings. This creates a hierarchy. Understanding stacking context is crucial for fixing z-index bugs.
+          </div>
+
+          <h3>7.5: Rasterization and Compositing</h3>
+
+          <p>Paint commands are converted to pixels (rasterization). This is now typically done by the GPU.</p>
+
+          <div class="code-snippet">
+Rasterization:
+Paint command: DrawRect(0, 0, 500, 24, white)
+GPU rasterizes: Sets pixels [0,0] to [500,24] to white
+
+Modern optimization: Compositor
+Instead of rasterizing whole page:
+1. Identify layers (elements with will-change, 3D transforms, opacity)
+2. Rasterize each layer to a texture
+3. Compositor GPU command: blend textures with transforms
+4. Output to display
+
+Result: Transforms and opacity changes don't require re-rasterization
+        </div>
+
+          <p>Compositing is a major browser optimization. Creating layers reduces paint cost for animations.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: GPU Rendering and WebGL</strong>
+            Modern browsers use GPU for rendering via OpenGL or Vulkan. Each browser layer is a GPU texture. Rendering is done via vertex and fragment shaders (GPU programs). Understanding this requires knowledge of graphics programming, transformation matrices, and GPU architecture.
+          </div>
+
+          <h3>7.6: Timeline: Response to Render</h3>
+
+          <div class="timeline-vertical">
+            <div class="timeline-item">
+              <span class="time-marker">0ms:</span> HTTP response starts arriving
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+50ms:</span> HTML fully received and parsed
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+80ms:</span> CSS parsed and matched to DOM
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+100ms:</span> Layout calculated
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+120ms:</span> Paint commands generated
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+150ms:</span> GPU rasterization complete
+            </div>
+            <div class="timeline-item">
+              <span class="time-marker">+150ms:</span> Page visible on screen
+            </div>
+          </div>
+
+        </div>
+
+        <h2><span class="stage-number">8</span>JavaScript and Interactivity</h2>
+
+        <div class="stage-section">
+          <h3>8.1: Script Execution</h3>
+
+          <p>The page includes JavaScript. Browser downloads and executes it.</p>
+
+          <div class="code-snippet">
+<script src="main.js"></script>
+
+Execution timeline:
+1. Fetch main.js (blocked rendering until downloaded)
+2. Parse JavaScript (create AST)
+3. JIT compile to machine code
+4. Execute main.js top-level code
+5. Register event handlers
+6. Resume rendering
+          </div>
+
+          <p>Blocking script downloads are a performance issue. Modern practice: async or defer scripts.</p>
+
+          <div class="code-snippet">
+<script async src="analytics.js"></script>
+<!-- Download in parallel, execute immediately when ready -->
+
+<script defer src="app.js"></script>
+<!-- Download in parallel, execute after HTML parsing complete -->
+          </div>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: JavaScript JIT Compilation and V8</strong>
+            JavaScript is dynamically typed. V8 (Chrome's JS engine) compiles frequently-executed code to machine code. The TurboFan compiler optimizes assuming types don't change (if they do, deoptimization occurs). Understanding V8 requires knowledge of dynamic language optimization, inline caching, and speculative optimization.
+          </div>
+
+          <h3>8.2: Click Tracking and Analytics</h3>
+
+          <p>Search results have click tracking. Clicking a result sends data to Google.</p>
+
+          <div class="code-snippet">
+<a href="google.com"
+   onmousedown="trackClick(this, event)">
+  Google
+</a>
+
+function trackClick(element, event) {
+  url = element.href;
+  // Send ping to Google Analytics
+  navigator.sendBeacon('/log?url=' + url);
+  // After ping sent, navigate
+  return true;
+}
+          </div>
+
+          <p>This data feeds back into Google's machine learning models, improving ranking for future queries.</p>
+
+          <div class="deep-dive">
+            <strong>Go Deeper: Behavioral Analytics and Reinforcement Learning</strong>
+            User behavior (clicks, dwell time, return to results) is used to train ranking models. This is a form of reinforcement learning: each user query and click is a training signal. Understanding this requires knowledge of information retrieval evaluation metrics (NDCG, MAP) and online learning systems.
+          </div>
+
+        </div>
+
+        <h2><span class="stage-number">9</span>Complete Timeline and Summary</h2>
+
+        <div class="timeline-vertical">
+          <div class="timeline-item">
+            <span class="time-marker">0ms:</span> Key pressed mechanically
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">100ms:</span> Debounce complete, scan code to CPU via USB interrupt
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">110ms:</span> Keyboard driver processes, updates input box DOM
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">120ms:</span> Browser re-renders input box
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">130ms:</span> Autocomplete request triggered (or cached results shown)
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">130-200ms:</span> DNS lookup if needed
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">200-400ms:</span> TCP connection and TLS handshake
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">400-500ms:</span> HTTP request sent to Google
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">500-600ms:</span> Query processing (indexing, ranking)
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">600-650ms:</span> HTTP response returned to browser
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">650-800ms:</span> HTML parsing, CSS styling, layout, paint
+          </div>
+          <div class="timeline-item">
+            <span class="time-marker">800-850ms:</span> Search results visible on screen
+          </div>
+        </div>
+
+        <p>Total: ~850ms from first keypress to results visible. Modern expectations: under 1 second.</p>
+
+        <h2>Areas for Deeper Exploration</h2>
+
+        <ul>
+          <li><strong>Network Protocols:</strong> TCP window scaling, congestion control (CUBIC, BBR), packet loss recovery</li>
+          <li><strong>Cryptography:</strong> Elliptic curve cryptography, TLS 1.3 optimizations, AEAD ciphers</li>
+          <li><strong>Browser Architecture:</strong> Multi-process model, sandboxing, IPC between processes</li>
+          <li><strong>Search Ranking:</strong> BERT models, cross-encoder reranking, position bias</li>
+          <li><strong>Data Centers:</strong> Custom silicon (TPUs, CPUs), distributed consensus (Paxos, Raft)</li>
+          <li><strong>GPU Rendering:</strong> WebGL, shader programming, GPU texture management</li>
+          <li><strong>Machine Learning:</strong> Query intent classification, entity recognition, semantic understanding</li>
+          <li><strong>Caching:</strong> Multi-level caches (browser, DNS, CDN, server), cache coherence</li>
+          <li><strong>Security:</strong> CSRF protection, XSS mitigation, SQL injection prevention</li>
+          <li><strong>Performance Optimization:</strong> Critical path rendering, jank detection, profiling tools</li>
+        </ul>
+
+        <h2>Conclusion: Layers Upon Layers</h2>
+
+        <p>What appears as a simple action—typing and searching—involves extraordinary complexity. Each layer (keyboard, OS, network, datacenter, algorithms, rendering) operates independently yet coordinates seamlessly.</p>
+
+        <p>This is the essence of modern software engineering: systems so complex that no single person understands all of it. Yet through layered abstractions, we build systems that work reliably.</p>
+
+        <p>Every layer has opportunities for deeper understanding. The physical keyboard mechanism, USB protocol, TCP congestion control, TLS cryptography, query intent classification, GPU texture management—each is a deep field of study.</p>
+
+        <p>Understanding the journey illuminates why the web works at all: it's because thousands of engineers have built each layer carefully, with redundancy, error handling, and optimization. The web is not magic. It's engineering at scale.</p>
+
+        <blockquote>
+          "Every second of interaction hides months of engineering. The search results appearing in under a second represent billions of instructions, thousands of machines, and sophisticated algorithms all coordinated at planetary scale. This is what we take for granted."
+        </blockquote>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2024. All rights reserved.</p>
+  </footer>
+</body>
+</html>
