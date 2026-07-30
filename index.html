@@ -315,17 +315,6 @@
   }
   footer a { color: var(--ink-dust); }
   footer a:hover { color: var(--orange); }
-  .footer-btn {
-    display: inline-block;
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13.5px;
-    color: var(--orange-dim) !important;
-    border: 1px solid var(--orange-dim);
-    padding: 9px 18px;
-    border-radius: 2px;
-    transition: background .25s ease;
-  }
-  .footer-btn:hover { background: rgba(232,98,15,0.08); color: var(--orange-dim) !important; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -495,12 +484,21 @@
       </div>
     </div>
   </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><h2>Reading &amp; Writing</h2><span class="rule"></span><span class="label">&nbsp;</span></div>
+    <p class="section-sub">Technical explanations I've directed and edited, plus a running list of favorite books.</p>
+    <div class="resume-row">
+      <a class="resume-btn" href="writing.html">Technical Writing &rarr;</a>
+      <a class="resume-btn alt" href="books.html">Favorite Books &rarr;</a>
+    </div>
+  </section>
 </main>
 
 <footer>
   Matthew Castle &middot; Austin, TX &middot; <a href="mailto:matthewgcastle@gmail.com">matthewgcastle@gmail.com</a>
-  <div style="margin-top: 20px;"><a href="writing.html" class="footer-btn">technical writing &rarr;</a></div>
-  <div style="margin-top: 14px;"><a href="books.html">favorite books &rarr;</a></div>
 </footer>
 
 <script>
