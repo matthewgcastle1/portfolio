@@ -54,64 +54,57 @@
   /* ---------------- Hero ---------------- */
 
   .hero {
-    padding: 96px 0 64px;
+    padding: 40px 0 20px;
     text-align: center;
   }
 
   .hero .kicker {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 12.5px;
+    font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--gold);
     display: block;
-    margin-bottom: 22px;
+    margin-bottom: 8px;
   }
 
   .hero h1 {
-    font-size: clamp(46px, 9vw, 84px);
+    font-size: clamp(28px, 5.5vw, 46px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.01em;
   }
 
   .hero .role {
-    margin-top: 18px;
-    font-size: 19px;
+    margin-top: 6px;
+    font-size: 15.5px;
     font-style: italic;
     color: var(--chalk-soft);
   }
 
-  .hero p.lede {
-    margin: 22px auto 0;
-    max-width: 52ch;
-    color: var(--chalk-soft);
-    font-size: 16.5px;
-  }
-
   .contact-row {
-    margin-top: 32px;
+    margin-top: 16px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px 26px;
+    gap: 8px 22px;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13.5px;
+    font-size: 13px;
   }
   .contact-row a { color: var(--chalk); border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
   .contact-row a:hover { color: var(--gold); border-color: var(--gold); }
 
   .looking-for {
-    margin: 20px auto 0;
+    margin: 10px auto 0;
     max-width: 52ch;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--gold);
     letter-spacing: 0.01em;
   }
 
   .resume-row {
-    margin-top: 26px;
+    margin-top: 14px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -139,7 +132,7 @@
 
   .scroll-hint {
     display: block;
-    margin-top: 46px;
+    margin-top: 20px;
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
     font-size: 11.5px;
     letter-spacing: 0.1em;
@@ -154,13 +147,14 @@
 
   /* ---------------- Section chrome ---------------- */
 
-  section { padding: 60px 0; }
+  section { padding: 40px 0; }
+  section:first-of-type { padding-top: 26px; }
 
   .section-head {
     display: flex;
     align-items: baseline;
     gap: 14px;
-    margin-bottom: 30px;
+    margin-bottom: 18px;
   }
   .section-head .label {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
@@ -174,12 +168,18 @@
     height: 1px;
     background: var(--rule);
   }
-  .section-head h2 { font-size: 26px; }
+  .section-head h2 { font-size: 24px; }
   .section-sub {
     color: var(--chalk-soft);
     max-width: 60ch;
-    margin: -14px 0 28px;
-    font-size: 15.5px;
+    margin: -8px 0 18px;
+    font-size: 15px;
+  }
+
+  .intro-line {
+    max-width: 70ch;
+    color: var(--chalk-soft);
+    font-size: 16px;
   }
 
   hr.chalk {
@@ -334,7 +334,6 @@
     <span class="kicker">Austin, Texas</span>
     <h1>Matthew Castle</h1>
     <p class="role">Software Engineer</p>
-    <p class="lede">Four and a half years building backend infrastructure, APIs, and zero-trust security systems at Trend Micro, with a mathematics degree (minors in physics and computer science) underneath it. I work from first principles, communicate clearly, and try to use good judgment about what actually matters.</p>
     <p class="looking-for">Currently looking for backend, data, or infrastructure engineering roles &mdash; Austin-based, open to remote.</p>
     <div class="contact-row">
       <a href="mailto:matthewgcastle@gmail.com">matthewgcastle@gmail.com</a>
@@ -372,6 +371,13 @@
     </div>
 
     <div class="see-all"><a href="demos.html">See all 13 demos &rarr;</a></div>
+  </section>
+
+  <hr class="chalk">
+
+  <section class="wrap">
+    <div class="section-head"><span class="label">&nbsp;</span><span class="rule"></span><h2>About</h2></div>
+    <p class="intro-line">Four and a half years building backend infrastructure, APIs, and zero-trust security systems at Trend Micro, with a mathematics degree (minors in physics and computer science) underneath it. I work from first principles, communicate clearly, and try to use good judgment about what actually matters.</p>
   </section>
 
   <hr class="chalk">
